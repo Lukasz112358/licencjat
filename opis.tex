@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[polish]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{Algorytm znajdowania sumy podzbioru}
+\author{You}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Your abstract.
+\end{abstract}
+
+\section{Wstęp}
+Problem sprawdzania czy z $n-$elementowego muiltizbioru $S$ liczb naturalnych jesteśmy w stanie wybrać podzbiór, którego suma elementów jest równa zadanej liczbie $t$ jest jednym z klasycznych problemów algorytmicznych. W nieniejszej pracy zaprezentuję niedeterministyczny algorytm opracowany przez Ce Jin i Hongxun Wu, który kożystając ze sprytnych obserwacji na polu analizy matematycznej i algebry jest w stanie podać wynik w czasie $O(n+tlog^2(t))$, co jest czasem znacznie szybszym niż klasyczny algorytm oparty na programowanie dynamiczne. 
+
+\section{Algorytm klasyczny}
+
+Na wejściu otrzymujemy multizbiór liczb naturalnych $S=\{s_1,s_2,...,s_n\}$, oraz liczbę naturalną $t$. Chcemy odpowiedzieć na pytanie czy jest możliwe wybranie $S' \subsetq S$ taki, że suma jego elementów jest równa $t$, przy czym wskazanie tego podzbioru nie jest konieczne, a wystarczy nam jedynie odpowiedź Tak lub Nie. 
+
+Klasyczny algorytym polega na stworzeniu t-elementowej tablicy przechowującej wartości $0$ i $1$(dlatego najoptymalniej jest użyć do tego bitsetu). 
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+
+
+
+\end{document}
