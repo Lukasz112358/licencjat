@@ -444,11 +444,17 @@ $a.value$ na strumień $out$ i zwraca ten strumień.
 Omówiony w powyższej sekcji kod został napisany w języku $C++$ i znajduje się w 
 pliku $field.h$ w dołączonym do pracy repozytorium.
 
+
+
+
+
+
+
 \section{Teorio-liczbowa szybka transformata Furiera}
 
-Dyskretna transformata Furiera jest służy przyspieszeniu mnożenia wielomianów. Idea algorytmu jest następująca. Idea algorytmu jest następująca. Chcemy pomnożyć wielomiany(reprezentowane jako wektor współczynników)$A(x)$ i $B(x).$Zamiast liczyć naiwnie wartości współczynników $AB$ najpierw obliczamy wartości wielomianów $A$ i $B$ w punktach których liczba jest większa lub równa stopniowi $AB$, a następnie mnożymy 
-wartości w tych samych punktach, wyznaczając wartości $AB$ w nich. Ponieważ liczba punktów
-przekracza stopień $AB$ wyznacza jednoznacznie ten wielomian i z tych obliczonych wartości możemy szybko wyznaczyć wartości współczynników $AB$. 
+Dyskretna transformata Furiera służy przyspieszeniu mnożenia wielomianów. Idea algorytmu jest następująca. Chcemy pomnożyć wielomiany(reprezentowane jako wektor współczynników)$A(x)$ i $B(x).$Zamiast liczyć naiwnie wartości współczynników $AB$ najpierw obliczamy wartości wielomianów $A$ i $B$ w punktach których liczba jest większa id stopnia $AB$, 
+a następnie mnożymy je odpowiednio ze sobą  wyznaczając wartości wielomianu $AB$ w tych punktach. Ponieważ liczba punktów
+przekracza stopień $AB$ ich wartości wyznaczają jednoznacznie ten wielomian i jak się okazuje możemy szybko przy użyciu tych informacji wyliczyć współczynniki szukanego wielomianu.
 
 Wybór punktów opiera się na prostej obserwacji, że jeżeli $A(x) = a_0x^0+a_1x^1+..+a_{2n-1}x^{2n-1}$
 (jeżeli stopień $A$ ma stopień parzysty przyjmujemy po prostu, że $a_{2n-1}$ jest równe $0$). jest równe
@@ -473,7 +479,7 @@ Zaóważmy, że :
   \systeme{
   A(\omega_m^1) = A_0(\omega_m^2)+A_1(\omega_m^2)\omega_m^1 = A_0(\omega_{m-1}^1)+A_1(\omega_{m-1}^1)\omega_m^1,
   A(\omega_m^2) = A_0(\omega_m^4)+A_1(\omega_m^4)\omega_m^2 = A_0(\omega_{m-1}^2)+A_1(\omega_{m-1}^2)\omega_m^2,
-  A(\omega_m^6) = A_0(\omega_m^6)+A_1(\omega_m^6)\omega_m^3 = A_0(\omega_{m-1}^3)+A_1(\omega_{m-1}^3)\omega_m^3,
+  A(\omega_m^3) = A_0(\omega_m^6)+A_1(\omega_m^6)\omega_m^3 = A_0(\omega_{m-1}^3)+A_1(\omega_{m-1}^3)\omega_m^3,
   \cdot \cdot \cdot ,
   A(\omega_m^{2^m}) = A_0(\omega_m^{2^{m+1}})+A_1(\omega_m^{2^{m+1}})\omega_m^{2^m} = A_0(\omega_{m-1}^{2^m})+A_1(\omega_{m-1}^{2^m})\omega_m^{2^m}}
 \end{equation*}
@@ -484,30 +490,30 @@ $V_1=\Bigl( A_1(\omega_{m-1}^0),A_1(\omega_{m-1}^1),...,A_1(\omega_{m-1}^{2^{m-1
 w czasie liniowym wyliczyć wektor $V=\Bigl( A(\omega_{m}^0),A(\omega_{m}^1),...,A(\omega_{m}^{2^{m}})\Bigr)$, jednak wektory 
 $V_1$ i $V_2$ można znów rozbić na wyliczenie najpierw $2$ wektorów długości $2^{m-2}$ i 
 połączenia tych dwóch wektorów w czasie liniowym od ich długośći. Możemy tak rozbijać kolejne wektory, aż dojdziemy do wektorów długości
-$2$ które przechowują wartości pewnych wielomianów $0$-stopnia będący po prostu jednym ze współczynników $A$.
- Niech $O(t)$ będzie czasem 
-policzenia wartości wielomianu $A$ w $n=2^m$ punktach przy pomocy dyskretnej transformaty Furiera. 
+$1$ które przechowują wartości pewnych wielomianów $0$-stopnia będący po prostu jednym ze współczynników $A$.
+
+Niech $O(t)$ będzie czasem policzenia wartości wielomianu $A$ w $n=2^m$ punktach przy pomocy dyskretnej transformaty Furiera. 
 Furiera. Wiemy, że $O(t)=2O(\frac{t}{2})+O(n)$. Rozwiązaniem takiego równania jest $O(t)=O(n\log(n))$.
-Okazuje się, że po wyliczeniu wartości wielomianów u $AB$ w omawianych punktach możemy "wyciągnąć" z tych wartości w czasie
-$O(n)$ wartości współczynników wielomianu $AB$, gdzie $n$ to ilość tych punktów.
+Okazuje się, że po wyliczeniu wartości wielomianu $AB$ w omawianych punktach możemy "wyciągnąć" z tych wartości w czasie
+$O(n)$ wartości współczynników wielomianu $AB$, gdzie $n$ to ilość tych punktów, tak więc cały algorytm mnożenia odbywa się w czasie $O(\log(n)n)+O(n)=O(\log(n)n)$
 
 Moja implementacja kożysta z dwóch klasycznych ulepszeń dyskretnej transformaty Furiera. 
 
 Pierwsza to tak zwana "Teorio-liczbowa transformata Furiera". Polega ona na nie wykonywaniu obliczeń w ciele $C$ lecz
-w $Z_p$, przy czym istnieje oczywiście musi istnieć pierwiastek z $1$ stopnia $2^m$, gdzie $2^m$ jest potęgą $2$ o wykładniku
+w $Z_p$, przy czym oczywiście musi w ciele tym istnieć pierwiastek z $1$ stopnia $2^m$, gdzie $2^m$ jest potęgą $2$ o wykładniku
 naturalnym i większa niż stopień zwracanego wielomianu. Pierwiastek ten też podniesiony do jakiejkolwiek potęgi 
 o wykładniku naturalnym dodatnim, mniejszym niż $2^m$ musi być różny od $1$. 
 Tak naprawdę oznacza to po prostu, że $p$ ma postać $r2^m+1$, gdzie $r$ jest liczbą nauralną, o czym pisałem w poprzedniej 
 sekcji.
 
-Drugim ulepszeniem jest użycie tak zwanego szybkiej transformaty Furiera. Opiera się na obserwacji że rekurencyjna wersja dyskretnej transformaty Furiera opiera
-się na najpierw podzieleniu współczynników wielomianu na coraz mniejsze grupy, aż do pojedynczego współczynnika, a następnie łączeniu pojedynczych współczynników
-w pary zawieerające informację o $2$ współczynnikach, potem czwórki, ósemki, aż gdy połączymy je w jeden blok, zawierający informacje o wszystkich współczynnikach, a rekurencyjne wywołania służą jedynie pogrupowaniu
-w jakiej kolejności będziemy wykonywać łączenia.
+Drugim ulepszeniem jest użycie tak zwanej szybkiej transformaty Furiera. Opiera się ona na obserwacji że rekurencyjna wersja dyskretnej transformaty Furiera 
+polega najpierw na dzieleniu współczynników wielomianu na coraz mniejsze grupy, aż do zawierających tylko pojedynczy współczynnik, a następnie łączeniu pojedynczych współczynników
+w pary zawieerające informację o $2$ współczynnikach, potem czwórki, ósemki itd aż do połączenia ich w jeden duży blok zawierający informacje o wszystkich współczynnikach, a rekurencyjne wywołania służą jedynie 
+pogrupowaniu w jakiej kolejności będziemy wykonywać łączenia.(NIE WIEM JAK TO NAPISAC LEPIEJ????)
  
-Możemy jednak to grupowanie wykonać bez rekurencyjnego wywoływania transformaty po prostu ustawiając obok siebie współczynniki w takiej kolejności odpowiadającej 
-tak aby pary indeksów $(0,1)$, $(2,3)$,...,$(2^m-1)$ odpowiadały polom w wektorze łączonych w pierwszej fazie łączenia iteracji, $(0,1,2,3)$,
-$(4,5,6,7)$, $(8,9,10,11)$,...,$(2^m-4,2^m-3,2^m-2,2^m-1)$ w drugiej, itd. 
+Możemy jednak to grupowanie wykonać bez kolejnych rekurencyjnych wywoływa transformaty po prostu ustawiając obok siebie współczynniki w takiej kolejności 
+żeby pary indeksów $(0,1)$, $(2,3)$,...,$(2^m-2,2^m-1)$ odpowiadały polom w wektorze łączonych na najgłębszym poziomie rekurencji, $(0,1,2,3)$,
+$(4,5,6,7)$, $(8,9,10,11)$,...,$(2^m-4,2^m-3,2^m-2,2^m-1)$ na drugim najgłębszym poziomie rekurencji itd. 
 
 Przejdźmy do dokładnego opisu naszej implementacji. 
 
@@ -536,19 +542,96 @@ do wyliczenia jego szybkiej transformaty Furiera. Jako argumenty dla tej funkcji
 zmienną $long$ $long$ o nazwie $size$ oznaczającą rządaną długość wektora wynikowego(tak naprawdę jest to odpowiednio duża potęga dwójki o wykładniku naturalnym). Na początku dopełniamy wektor $coefficients$ elementami równymi $field(0)$ do rozmiaru $size$. Następnie w pętli z $iteratorem$ i przechodzącym po wszystkich liczbach naturalnych od $0$ do $size-1$ i jeżeli $reverseBits(i,\log_2(size)) > i$(warunek ten służy temu, by każdy element został zamieniony dokładnie raz, zauważmy też, że $reverseBits( reverseBits (i ,\log_2(size)),\log_2(size))=i$) zamieniam w tabeli pole o indeksie $i$ z polem o indeksie 
 $reverseBits (i ,\log_2(size))$ miejscami. Funkcja nic nie zwraca, a jedynie modyfikuje wektor podany jako argument.
 
-Przejdźmy do funkcji $DFT$, która otrzymując wektor współczynników wielomianu $coefficients$, liczbę $size$ nie mniejszą niż długość tego wektora i będący potęgą $2$ o wykładniku naturalnym oraz obiekt omegaM typu $field$, który jest pierwiastkiem z $1$ stopnia $size$ takim, że podniesiony do jakiejkolwiek liczby naturalnej mniejszej niż size nie jest równy $0$ zwracamy wektor zawierający wartości tego wielomianu w punktach kolejno $omegaM^0$, $omegaM^1$,...,$omegaM^{size}$. 
+Przejdźmy do funkcji $DFT$, która otrzymując wektor współczynników wielomianu $coefficients$, 
+liczbę $size$ nie mniejszą niż długość tego wektora i będący potęgą $2$ o wykładniku naturalnym oraz obiekt $omegaM$ typu $field$,
+który jest pierwiastkiem z $1$ stopnia $size$ takim, że podniesiony do jakiejkolwiek liczby naturalnej mniejszej niż size nie jest 
+równy $0$ zwraca wektor zawierający wartości tego wielomianu w punktach kolejno $omegaM^0$, $omegaM^1$,...,$omegaM^{size}$. 
+
+Poniżej umieściłem kod tej procedutry.
+
+\begin{lstlisting}
+void inline DFT(std::vector<field>&coefficients, long long size, field omegaM){
+    setToDo(coefficients,size);
+    std::stack<field> omegasM;
+    while(omegaM != 1){
+        omegasM.push(omegaM);
+        omegaM *= omegaM;
+    }
+    long long m = 1;
+    while(!omegasM.empty()){   
+        field currentOmegaM= omegasM.top();
+        std::cout<<std::endl;
+        omegasM.pop();
+        field omega = 1;
+        m*=2;
+        std::cout<<m;
+        for(long long j = 0; j<m/2;j+=1){
+            for(long long k = j; k<size; k+=m){
+                field t = omega * coefficients[k+m/2];
+                field u = coefficients[k];
+                coefficients[k] = u+t;
+                coefficients[k+m/2] =  u - t;
+            }
+            omega *= currentOmegaM;
+        }
+    }
+}
+\end{lstlisting}
+
+
+
 
 Na początku przygotowywujemy wektor do wykonania dalszej części obliczeń wywołując zdefiniowaną w poprzednim paragrafie funkcję $setToDo$ na wektorze $coefficients$ i dla liczby $size$. 
 
 Tworzymy stos na który kładziemy wyniki kolejnych złożeń podniesiania do kwadratu liczby $omegaM$ aż do $-1$.
 
 Póki stos nie będzie pusty będę w każdej iteracji pętli $while$ ściągał z niego kolejne wartości i przypisywał je do zmiennej $currentOmegaM$.
+
+W dalszej części będę oznaczał jako $\omega_i$ pierwiastek z $1$ stopnia $2^i$, w $Z_p$ który podniesiony do żadnej mniejszej niż $2^i$ potęgi o wykładniku
+naturalnym nie jest równy $1$, zaś $f_{j}$
+
 Przyjmijmgy oznaczenie, że na początku $i-tej$ iteracji wektor $coefficients$ ma postać $\frac{size}{2^{i-1}}$ bloków postaci
-$(f_{i,j,0}(\omega_i^0),f_{i,j,1}(\omega_i^1),...,f_{i,j,2^{i-1}-1}(\omega^{2^{i-1}-1}_i))$. gdzie $j$ to numer bloku. Chcemy następujące po sobie pary bloków połączyć w jeden blok postaci $(f_{i+1,k,0}(\omega_{i+1}^0),f_{i+1,,1}(\omega_{i+1}^1),...,f_{i+1,j,2^{i}-1}(\omega^{2^{i}-1}_{i+1}))$, przy czym $f_{i+1,j,1}(\omega_{i+1}^k) = f_{i,2j,1}(\omega_{i}^\frac{k}{2})+f_{i,2j+1,1}(\omega_{i}^{\frac{k}{2}})\omega_{i+1}^k$. 
+$(f_{i,k}(\omega_i^0),f_{i,k}(\omega_i^1),...,f_{i,k}(\omega^{2^{i-1}-1}_i))$. gdzie $k$ to numer bloku. Chcemy
+następujące po sobie pary bloków połączyć w jeden blok postaci $(f_{i+1,k}(\omega_{i+1}^0),f_{i+1,k}(\omega_{i+1}^1),...,
+f_{i+1,k}(\omega^{2^{i}-1}_{i+1}))$, przy czym 
+$f_{i+1,k}(\omega_{i+1}^j) = f_{i,2k}(\omega_{i}^\frac{j}{2})+f_{i,2k+1}(\omega_{i}^{\frac{j}{2}})\omega_{i+1}^j$. 
 
-Każda iteracja głównej pętli zawiera 
+Kolejne iteracje pętli z iteratorem $j$ odpowiadają kolejnym punktom w których wyliczamy wartości odpowiednich wielomianów, zaś pętla z iteratorem $k$
+numery kolejnych rozpatrywanych wielomianów. Ponieważ $\omega_{i+1}^{2^i}=-1$ wyliczenie $f_{i+1,k}(\omega_{i+1}^{j})$ i $f_{i+1,k}(\omega_{i+1}^{j+2^i})$ 
+wyliczam w jednej iteracji pętli.(jak lepiej to napisać?)
 
 
+Przejdźmy do pełnej procedury mnożenia. 
+\begin{lstlisting}
+std::vector<field>multiplication(std::vector<field> A, std::vector<field> B){
+    long long size = 1;
+    while(size < (long long)((A.size() + B.size()) +2 )){
+        size *= 2;
+    }
+    long long l = log(size);
+    field omegaM = enoughGoodRoot(l);
+    DFT(A,size,omegaM);  
+    DFT(B,size,omegaM);
+    for(long long i=0;i<size;i++){
+        A[i] = B[i] * A[i]; 
+    }
+    omegaM = field(1)/omegaM;
+    DFT(A,size,omegaM);
+    for(long long i=0;i<size;i++){
+        A[i] /= field(size);
+    }
+    return A;
+}
+\end{lstlisting}
+Wektorów nie przekazuję przez referencje bo będę je modyfikował.
 
- 
+Najpierw wiliczamy wartość $size$ będącą liczbą punktów w których będziemy liczyć wartości wielomianu $AB$(jest to najmniejsza liczba będąca potgą 
+$2$ o wykładniku naturalnym większa niż stopień $AB$). Kolejnym etapem jest znalezienie pierwiastka stopnia $size$ z $1$ w $Z_p$, nie będącym w tym ciele jednocześnie pierwiastkiem 
+z $1$ niższeg naturalnego stopnia. Następnie wyliczamy przez wywołania $DFT$ na odpowiednich argumentach wektor $(A(omegaM^0),A(omegaM^1),...,A(omegaM^{size}))$ oraz
+$(B(omegaM^0),B(omegaM^1),...,B(omegaM^{size}))$, następnie w kopii wektora $A$ zapisuję wartości $AB$ w kolejnych punktach będące wartościami odpowiednich 
+mnożeń.
+
+Okazuje się, że aby zmienić, wektor $(AB(omegaM^0),AB(omegaM^1),...,AB(omegaM^{size}))$ w wektor kolejnych współczynników $AB$ wystarczy wywołać na nim $DFT$ z drugim argumentem równym $size$ i trzecim 
+będącym równym odwrotności $omegaM$ w $Z_p$, a następnie podzielić w $Z_p$ każdy jego element przez $size$. 
+
 \end{document}
