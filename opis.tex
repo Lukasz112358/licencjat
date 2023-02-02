@@ -6,6 +6,7 @@
 \usepackage{amsfonts}
 \usepackage{tikz}
 \usepackage{systeme}
+\usepackage{tcolorbox}
 % Language setting
 % Replace `english' with e.g. `spanish' to change the document language
 \usepackage[polish]{babel}
@@ -16,7 +17,7 @@
 
 % Useful packages
 \usepackage{amsmath}
-
+\usepackage{inconsolata}
 \usepackage{graphicx}
 \graphicspath{ {./} }
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
@@ -32,9 +33,26 @@ Your abstract.
 \end{abstract}
 
 \section{Wstęp}
-Problem sprawdzania czy z $n-$elementowego muiltizbioru $S$ liczb naturalnych jesteśmy w stanie wybrać podzbiór, którego suma elementów jest równa zadanej liczbie $t$ jest jednym z klasycznych problemów algorytmicznych. W nieniejszej pracy zaprezentuję niedeterministyczny algorytm opracowany przez Ce Jin i Hongxun Wu, który kożystając ze sprytnych obserwacji na polu analizy matematycznej i algebry jest w stanie podać wynik w czasie $O(n+tlog^2(t))$, co jest czasem znacznie szybszym niż klasyczny algorytm oparty na programowanie dynamiczne. 
+Problem sprawdzania czy z $n-$elementowego muiltizbioru $S$ liczb naturalnych jesteśmy w stanie wybrać podzbiór, którego suma elementów jest równa zadanej liczbie $t$ jest jednym z klasycznych problemów algorytmicznych. W nieniejszej pracy zaprezentuję niedeterministyczny algorytm opracowany przez Ce Jin i Hongxun Wu, który kożystając ze sprytnych obserwacji na polu analizy matematycznej i algebry jest w stanie podać wynik w czasie $O(n+t\log^2(t))$, co jest czasem znacznie szybszym niż klasyczny algorytm oparty na programowanie dynamiczne. 
+
+
 
 \section{Algorytm klasyczny}
+Specyfikacja problemu $SubsetSum$, który będziemy rozwiązywać jest następująca:
+
+\begin{tcolorbox}
+    \textbf{Wejście:} Liczba naturalna $n$ , liczba naturalna $t$, zbiór $S$ reprezentowany jako ciąg $n$ liczb naturalnych.
+    
+    \textbf{Wyjście:} \texttt{true} jeżeli istnieje $S' \subseteq S$ którego suma elementów jest równa $t$ lub \texttt{false} w przeciwnym przypadku.
+\end{tcolorbox}
+Lub alternatywnie
+\begin{tcolorbox}
+    \textbf{Wejście:} Liczba naturalna $n$ , liczba naturalna $t$, zbiór $S$ reprezentowany jako ciąg $n$ liczb naturalnych.
+    
+    \textbf{Wyjście:} Wektor $t+1$-elementowy wektor \texttt{ans} wartości boolowskich, taki, że dla każdego
+    $i \in \{0,1,2,...,t\}$ \texttt{ans[i]=true} wtedy i tylko wtedy, gdy
+    istnieje $S' \subseteq S$ którego suma elementów jest równa $t$.
+\end{tcolorbox}
 
 Na wejściu otrzymujemy multizbiór liczb naturalnych $S=\{s_1,s_2,...,s_n\}$, oraz 
 liczbę naturalną $t$. Chcemy odpowiedzieć na pytanie czy jest możliwe wybranie 
@@ -52,9 +70,9 @@ $0$ i $1$(dlatego najoptymalniej jest użyć do tego bitsetu).
     \STATE $DP[0] = T$
     \FOR{$i$ from $1$ to $n$}
     \FOR{$k$ from $s_i$ to $t$}
-    \STATE $dp[i] = dp[i] \lor dp[k-s_i] $
+    \STATE $DP[i] = DP[i] \lor DP[k-s_i] $
     \ENDFOR
-    \IF{dp[t]}
+    \IF{DP[t]}
     \STATE return T
     \ENDIF
     \ENDFOR
@@ -71,16 +89,17 @@ $m$(oczywiście dla $k \in \{0,1,...,t\}$).
     \item Dla $i = 0$ teza jest oczywista.
     \item Załóżmy, że teza jest prawdziwa dla $i-1$. Jeżeli istnieje podzbiór
     zbioru $\{s_1,s_2,...,s_i\}$ taki, że suma jego elementów wynosi $k$ to jest to 
-    albo podzbiór zbioru $\{s_1,s_2,...,s_{i-1}\}$ i z tezy indukcyjnej $dp[k]=T$
+    albo podzbiór zbioru $\{s_1,s_2,...,s_{i-1}\}$ i z tezy indukcyjnej $DP[k]=T$
     jeszcze przed wykonaniem $i$-tej iteracji, albo jest to podzbiór zawierający element
     $s_i$, którego pozostałe elementy należące do $\{s_1,s_2,...,s_{i-1}\}$ sumują się 
-    do $k-s_i$, więc z tezy indukcyjnej $dp[k-s_i] = T$. Ponieważ $dp[k]$ po wykonaniu $i$-tej iteracji
-    przyjmuje wartość $dp[i] \lor dp[k-s_i] $ teza indukcyjna jest prawdziwa.
+    do $k-s_i$, więc z tezy indukcyjnej $DP[k-s_i] = T$. Ponieważ $DP[k]$ po wykonaniu $i$-tej iteracji
+    przyjmuje wartość $DP[i] \lor DP[k-s_i] $ teza indukcyjna jest prawdziwa.
   \end{itemize}
 Ponieważ komórki $DP$ przyjmują tylko wartości $T$ i $F$ do reprezentacji jej najoptymalniej
-użyć bitsetu a kolejne iteracje pętli zewnętrznej wykonać poleceniem $dp |= (dp >> s_i)$.
+użyć bitsetu a kolejne iteracje pętli zewnętrznej wykonać poleceniem $DP |= (DP >> s_i)$.
 
-Pętla zewnętrzna wykona się $O(n)$ razy i każda iteracja zajmie $O(t)$ czasu tak więc czas działania całego algorytmu zajmie $O(nt)$ i $O(t+n)$ pamięci.
+Pętla zewnętrzna wykona się $O(n)$ razy i każda iteracja zajmie $O(t)$ czasu tak więc
+czas działania całego algorytmu zajmie $O(nt)$ i $O(t+n)$ pamięci.
 \section{Idea algorytmu Ce Jin i Hongxun Wu}
 
 Specyfikacja naszego problemu jest następująca. Na wejściu otrzymujemy liczbę $n$ będącą wielkością
@@ -99,7 +118,7 @@ Współczynnik przy $x^t$ w rozwinięciu w szereg Taylora $\exp(B(x))$ istotnie 
 przy $x^t$ w $A(x)$. Wynika to bezpośrednio z jednoznaczności rozwinięcia w szereg potęgowy. 
 
 W dalszej części pracy będę stosował schemat notacji $F_t(x)$ jako oznaczenie rozwinięcia w szereg Taylora 
-$t$-pierwszych wyrazów funkcji $F$, tak więc $exp_t(x) = \sum_{i=0}^t\frac{x^i}{i!}$, zaś 
+$t$-pierwszych wyrazów funkcji $F$, tak więc $\exp_t(x) = \sum_{i=0}^t\frac{x^i}{i!}$, zaś 
 $\ln_t(\prod)=\sum_{i=0}^t\frac{(-1)^{i-1}x^i}{n}$ 
 
 Aby znaleźć odpowiedź na omawiany w tej pracy problem wystarczy oczywiście ustalić jedynie 
@@ -279,7 +298,7 @@ sama dla wszystkich instancji klasy możemy uczynić ją zmienną statyczną(pod
 omawianą w dalszej części m).
 
 Pole, które przechowuje wartość pojedynczego obiektu nazwałem value. Oczywiście
-pole te już nie może być statyczne.
+pole to już nie może być statyczne.
 Stworzyłem kilka konstruktorów dla klasy $field$. Konstruktor domyślny
 nie przyjmuje żadnego argumentu i ustawia wartość $value$ na $0$. 
 Konstruktor kopiujący ustawia wartość $value$ na wartość $value$ obiektu 
@@ -365,7 +384,7 @@ jest obiekt typu $field$ o nazwie $a$ oraz zmienna typu $long$ $long$ o
 nazwie $b$. Zauważmy, że z małego twierdzenia Fermata $a^{p-1} \equiv 1 (\mod p) $, tak więc
 zamiast podnosić $a$ do potęgi $B$ możemy podnieść ją do potęgi $B\%(p-1)$.
 Teoretycznie moglibyśmy rozpatrywać $((b\%(p-1))+p-1) \% (p - 1)$, jednak z pewnych powodów, o 
-których napiszę w dalszej części zdecydowałem się rozpatrzeć przypadki $B$ ujemnego i 
+których napiszę w dalszej części zdecydowałem się rozpatrzyć przypadki $B$ ujemnego i 
 dodatniego osobno. 
 
 Jeżeli $b==0$ przypisuję $a$ wartość $1$ i zwracam wynik. Jeżeli $B$ = 1 nie 
@@ -405,7 +424,7 @@ jeżeli $B$ jest nieparzyste lub $a^B=a^{\lfloor\frac{B}{2} \rfloor} \cdot a^{\l
 Tworzę więc pomocnicze obiekt $a0$ o tej samej wartości pola $value$ co $a$. Rekurencyjnie
 wykonuję $a0 =\textsuperscript{$\wedge$} (B/2)$. Kolejne wykonania $a0 =\textsuperscript{$\wedge$} (B/2)$
 mają drugi argument mniejszy lub równy $\frac{1}{2}$ poprzedniego drugiego argumentu, więc ilość 
-tych wywołań nim drugi argument będzie równy $0$ lub $1$ jest $O(log(B))$. Następnie mnożymy obiekt $a0$ przez
+tych wywołań nim drugi argument będzie równy $0$ lub $1$ jest $O(\log(B))$. Następnie mnożymy obiekt $a0$ przez
 samego siebie przy pomocy operatora $*=$, i teraz aktualna wartość $a0$ wynosi 
 $a^{\lfloor \frac{B}{2}\rfloor} \cdot a^{\lfloor \frac{B}{2}\rfloor}$. Jeżeli $B$
 jest nieparzyste mnożymy przy pomocy $*=$ $a$ przez $a0$, jeżeli zaś jest parzyste 
@@ -619,7 +638,7 @@ std::vector<field>multiplication(std::vector<field> A, std::vector<field> B){
     DFT(A,size,omegaM);
     for(long long i=0;i<size;i++){
         A[i] /= field(size);
-    }
+    } 
     return A;
 }
 \end{lstlisting}
@@ -633,5 +652,6 @@ mnożeń.
 
 Okazuje się, że aby zmienić, wektor $(AB(omegaM^0),AB(omegaM^1),...,AB(omegaM^{size}))$ w wektor kolejnych współczynników $AB$ wystarczy wywołać na nim $DFT$ z drugim argumentem równym $size$ i trzecim 
 będącym równym odwrotności $omegaM$ w $Z_p$, a następnie podzielić w $Z_p$ każdy jego element przez $size$. 
+
 
 \end{document}

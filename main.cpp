@@ -11,11 +11,12 @@
 #include<cassert>
 //#include"field.h"
 #include"fourier.h"
+#include"find_prime.h"
 
 //using namespace std;
 
-std::vector<field> compute(long long l, long long r, std::vector<field>& g, std::vector<field>& f){
-    std::cout<<l<<' '<<r<<std::endl;
+std::vector<field>& compute(long long l, long long r, std::vector<field>& g, std::vector<field>& f){
+    std::cout<<"AA"<<l<<' '<<r<<std::endl;
     if(l < r){
         long long m = (l+r)/2;
         compute(l,m,g,f);
@@ -44,16 +45,16 @@ std::vector<field> mainCompute(long long t, std::vector<field>& f){
 
 
 
-std::vector<field> B(std::vector<field>& s, long long t, std::vector<field> ans){
-    std::vector<field> a(t+1);
-    for(int j=0;j<1000;j++)std::cout<<a[0];
-    for(int i =0; i<ans.size(); i++){
-        for(int j=0;j<1000;j++)std::cout<<i;
-        if(s[i]<=t)a[s[i].getValue()] ++;
+std::vector<field> B(std::vector<field> s, long long t, std::vector<field>& ans){
+    std::vector<field> a(t+1,field(0));
+    int K;
+    for(int i =0; i<s.size(); i++){
+        //std::cin >> K;
+        std::cout << "BB"<< i<<" "<<s[i].getValue()<<endl;
+        if(s[i].getValue()<=t)a[s[i].getValue()] ++;
     }
-    for(int i =0; i<10000;i++)std::cout << i<<std::endl;
     for(long long k = 1; k <= t; k++){
-        std::cout << k<<std::endl;
+        //std::cout << k<<std::endl;
         for(long long j = 1; j <= t/k ; j++){
             field x = field(-1);
             ans[k*j] = ans[k*j] + a[k]*(x^(j-1))/field(j);
@@ -63,8 +64,11 @@ std::vector<field> B(std::vector<field>& s, long long t, std::vector<field> ans)
 }
 
 std::vector<field> JinWu(std::vector<field>& s, long long t){
+    long long p  = find_prime(s.size(), t);
+    field::setP(p);
     std::vector<field> Bans(t+1);
     Bans= B(s,t,Bans) ;
+    std::cout<<"OOOOOOOOOOOOOOOOOOKKKKKKKKKKKKKKKKKKKKKKKK";
     std::vector<field> computeAns = mainCompute(t,Bans);
     return computeAns;
 
@@ -73,9 +77,11 @@ std::vector<field> JinWu(std::vector<field>& s, long long t){
 
 
 int main() {
-    std::vector<field>S(5,0);
-    S[0]=3;
-    S[1]=112;
-    std::cout<<JinWu(S,15)[3]<<true;
+    long long n,t;
+    std::cin>>n>>t;
+    vector<field>S(n);
+    for(int i = 0; i < n; i++)std::cin>>S[i];
+    for(int i = 0; i < n; i++)std::cout<<S[i]<<endl;
+    JinWu(S,t);
     return  0;
 }
