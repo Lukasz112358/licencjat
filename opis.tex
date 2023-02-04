@@ -206,10 +206,7 @@ modulo $x$ rzutowałem ją na zmienną BigInt.
 Na poniższym wykresie prezentuję jak poniższa metoda pozwoliła szacować $\frac{\pi'(x)}{\frac{x}{\ln(x)}}$
 (oś pionowa), w zależności od argumentu $x$(oś pionowa) i parametru $2^k$(kolor).
 
-\begingroup
-\centering
-\includegraphics[width=15cm]{/home/lukasz/CLionProjects/untitled/plot1.png}
-\endgroup
+
 
 Jak widać z wykresu nawet dla bardzo dużych $2^k$ i $x$, wartości $\frac{\pi'(x)}{\frac{x}{\ln(x)}}$ są 
 rzędu wielkości $O(1)$, co więcej dla dość małych wartości $2^k>1$ można zauważyć, że $\frac{\pi'(x)}{\frac{x}{\ln(x)}}$ jest 
@@ -278,6 +275,7 @@ end
 Kod funkcji omówionych w tej sekcji znajduje się w pliku $find\_prime.h$.
 
 \section{Implementacja ciała $Z_p$}
+
 Ogólny szablon, jakie metody należy zaimplementować był 
 mocno inspirowany implementacją klasy dużych liczb całkowitych
 zamieszczony na stronie [ https://www.geeksforgeeks.org/bigint-big-integers-in-c-with-example/ ]
@@ -471,9 +469,10 @@ pliku $field.h$ w dołączonym do pracy repozytorium.
 
 \section{Teorio-liczbowa szybka transformata Furiera}
 
-Dyskretna transformata Furiera służy przyspieszeniu mnożenia wielomianów. Idea algorytmu jest następująca. Chcemy pomnożyć wielomiany(reprezentowane jako wektor współczynników)$A(x)$ i $B(x).$Zamiast liczyć naiwnie wartości współczynników $AB$ najpierw obliczamy wartości wielomianów $A$ i $B$ w punktach których liczba jest większa id stopnia $AB$, 
-a następnie mnożymy je odpowiednio ze sobą  wyznaczając wartości wielomianu $AB$ w tych punktach. Ponieważ liczba punktów
-przekracza stopień $AB$ ich wartości wyznaczają jednoznacznie ten wielomian i jak się okazuje możemy szybko przy użyciu tych informacji wyliczyć współczynniki szukanego wielomianu.
+Dyskretna transformata Furiera służy przyspieszeniu mnożenia wielomianów. 
+Wielomiany możemy reprezentować jako ciąg współczynników lub jako ciąg wartości w ustalonych punktach 
+, których liczba przekracza stopień reprezentowanego wielomianu. Pierwsza reprezentacja jest wygodna
+do wyliczania wartości w dowolnym punkcie z dziedziny, jednak 
 
 Wybór punktów opiera się na prostej obserwacji, że jeżeli $A(x) = a_0x^0+a_1x^1+..+a_{2n-1}x^{2n-1}$
 (jeżeli stopień $A$ ma stopień parzysty przyjmujemy po prostu, że $a_{2n-1}$ jest równe $0$). jest równe
@@ -652,6 +651,65 @@ mnożeń.
 
 Okazuje się, że aby zmienić, wektor $(AB(omegaM^0),AB(omegaM^1),...,AB(omegaM^{size}))$ w wektor kolejnych współczynników $AB$ wystarczy wywołać na nim $DFT$ z drugim argumentem równym $size$ i trzecim 
 będącym równym odwrotności $omegaM$ w $Z_p$, a następnie podzielić w $Z_p$ każdy jego element przez $size$. 
+
+
+
+\section{Implementacja algorytmu Jin i Wu}
+W tej części pracy dla funkcji $F(x)$, której szereg Taylora ma postać $\sum_{i=0}^{\infty}f_ix^i$ jako $F_t$ będziemy
+oznaczać $\sum_{i=0}^{t}f_ix^i$.
+
+Zasadnicza implementacja algorytmyu Jin i Wu składa się z $4$ funkcji. 
+
+Pierwszą z nich jaką omówię jest funkcja \texttt{B}, której zadaniem jest wyliczenie pierwszych 
+$t+1$ współczynników szeregu Taylora $B(x)=\ln(\prod_{i=1}^n(1+x^{s_i}))$.
+
+Funkcja \texttt{B} wyznacza wektor $t+1$ pierszych wyrazów szeregu Taylora w ciele $Z_p$ następującej 
+funkcji:
+\begin{center}
+$B(x)=\ln(\prod_{i=1}^n(1+x^{s_i}))=\sum_{i=1}^n \ln(1+x^{s_i})=\sum_{i=1}^n(\sum_{j=1}^\infty
+\frac{(-1)^{j-1}}{j}x^{s_i j})$.
+\end{center}
+
+Niech $a_k$ będzie oznaczać liczbę elementów $S$ równych $k$.
+
+Przy tak przyjętych oznaczeniach 
+
+\begin{center}
+$B_t(x)=\sum_{i=1}^n (\sum_{j=1}^{\lfloor \frac{t}{s_i} \rfloor}\frac{(-1)^{j-1}}{j}x^{s_ij})
+=\sum_{k=1}^t (\sum_{j=1}^{\lfloor \frac{t}{k} \rfloor}\frac{a_k(-1)^{j-1}}{j}x^{jk})$
+\end{center}
+Spójrzmy na implementację funkcji $B$.
+
+\begin{lstlisting}
+std::vector<field> B(std::vector<field> s, long long t){
+    std::vector<field> a(t+1,field(0));
+    std::vector<field> ans(t+1,field(0));
+    int K;
+    for(int i =0; i<s.size(); i++){
+        if(s[i].getValue()<=t)a[s[i].getValue()] ++;
+    }
+    for(long long k = 1; k <= t; k++){
+        for(long long j = 1; j <= t/k ; j++){
+            field x = field(-1);
+            ans[k*j] = ans[k*j] + a[k]*(x^(j-1))/field(j);
+        }
+    }
+    return ans;
+}
+\end{lstlisting}
+
+Na początku tworzę wektor \texttt{a} którego \texttt{k}-ty element oznacza zdefiniowane wcześniej $a_k$. 
+Reszta kodu jest prostym przetłumaczeniem matematycznej notacji sumy na składnię zawierającą pętle, przy 
+czym pole $ans[i]$ odpowiada współczynnikowi przy $x^i$ w rozwinięciu w szereg Taylora funkcji $B(x)$.
+
+Kolejne dwie funkcjie to \texttt{compute} i \texttt{mainCompute}. 
+
+Ich celem jest wyliczenie $(\exp(B(x)))_t$
+
+
+
+Kożystają one z faktu, że $\exp(B(x))=\prod_{i=1}^{n}(1+x^{s_i})$, 
+
 
 
 \end{document}
