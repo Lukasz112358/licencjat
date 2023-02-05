@@ -652,6 +652,73 @@ mnożeń.
 Okazuje się, że aby zmienić, wektor $(AB(omegaM^0),AB(omegaM^1),...,AB(omegaM^{size}))$ w wektor kolejnych współczynników $AB$ wystarczy wywołać na nim $DFT$ z drugim argumentem równym $size$ i trzecim 
 będącym równym odwrotności $omegaM$ w $Z_p$, a następnie podzielić w $Z_p$ każdy jego element przez $size$. 
 
+\section{Pochodna algebraiczna i jej własności}
+Klasyczna analityczna definicja pochodnej jest to przekształcenie funkcji $f(x)$ w funkcję $f'(x)$ taką, że
+$f'(x)=\lim_{h \to 0}\frac{f(x+h)-f(x)}{h}$. Definicja taka traci jednak cały sens jeżeli chcemy zmienić dziedzinę
+funkcji $f$ i $f'$ z liczb rzeczywistych na dziedzinę gdzie nie możemy zmniejszać $h$ w taki sposób by było 
+dowolnie małe lecz niezerowe. Przykładem takiej dziedziny jest ciało $Z_p$. 
+
+Zaóważmy, że jeżeli funkcja $f$ $\mathbb{R}\to \mathbb{R}$ jest gładka w okolicy $0$, możemy ją utożsamić z jej szeregiem Taylora $\sum_{i=0}^{\infty}f_ix^i$. 
+
+Weźmy liczbę pierwszą $p$. W dalszej części sekcji będę zakładał, że współczynniki szeregu Taylora 
+rozważanej funkcji są postaci 
+$\frac{a_i}{b_i}$, gdzie $a,b \in \mathbb{Z}$ i  $b$ jest niepodzielne przez $p$. Przy takim założeniu napis  
+$\sum_{i=0}^{\infty}\frac{a_i}{b_i}x^i$ zachowuje algebraiczny sens również w ciele reszt $Z_p$, w którym 
+liczbę całkowitą utożsamiamy z jej resztą z dzielenia przez $p$. W języku szeregów Taylora pochodną można 
+zdefiniować jako przekształcenie funkcji $f(x)=\sum_{i=0}^\infty f_ix^i$ w funkcję 
+$f '(x)=\sum_{i=0}^{\infty}(i+1)f_{i+1}x^i$. 
+
+Udowodnię teraz, że tak zdefiniowana pochodna, dla funkcji $f(x)=\sum_{i=0}^{\infty}f_ix^i$ i
+$g(x)=\sum_{i=0}^{\infty}g_ix^i$ zachowuje własności $f'+g'=(f+g)'$, $f'-g'=(f-g)'$, $(fg)'=f'g+fg'$ oraz 
+$f(g)'=f'(g)g'$.
+
+\begin{tcolorbox}
+    \textbf{Lemat:} $f'+g'=(f+g)'$ oraz $f'-g'=(f-g)'$
+    
+    \textbf{Dowód:} $f'+g'=\sum_{1}^{\infty}if_ix^{i-1}+\sum_{1}^{\infty}ig_ix^{i-1}=
+    \sum_{1}^{\infty}i(f_i+g_i)x^{i-1}=(f+g)'$ i analogicznie
+    
+    $f'-g'=\sum_{1}^{\infty}if_ix^{i-1}-\sum_{1}^{\infty}ig_ix^{i-1}=
+    \sum_{1}^{\infty}(f_i-g_i)x^{i-1}=(f-g)'$ 
+\end{tcolorbox}
+
+\begin{tcolorbox}
+    \textbf{Lemat:} $(fg)'=f'g+fg'$.
+    
+    \textbf{Dowód:} $(fg)'=((\sum_{i=0}^{\infty}f_ix^i)(\sum_{i=0}^{\infty}g_ix^i))'=
+    (\sum_{i=0}^{\infty}(\sum_{j=0}^if_jg_{i-j})x^i)'=
+    \sum_{i=1}^{\infty}(\sum_{j=0}^if_jg_{i-j})ix^{i-1}=
+    \sum_{i=0}^{\infty}(\sum_{j=0}^if_jg_{i+1-j})(i+1)x^{i}$ z kolei
+
+    $f'g+fg'=(\sum_{0}^{\infty}(i+1)f_{i+1}x^{i-1})(\sum_{i=0}^{\infty}g_ix^i)+(\sum_{0}^{\infty}(i+1)g_{i+1}x^{i})(\sum_{i=0}^{\infty}f_ix^i)=
+    \sum_{i=0}^\infty(\sum_{j=0}^{i}f_{i+1-j}g_{j}(i+1-j))x^i+
+    \sum_{i=0}^\infty(\sum_{j=0}^{i}g_{i+1-j}f_{j}(i+1-j))x^i=
+    \sum_{i=0}^\infty(\sum_{j=0}^{i}g_{i+1-j}f_{j}(i+1-j+j))x^i=
+    \sum_{i=0}^\infty(\sum_{j=0}^{i}g_{i+1-j}f_{j})(i+1)x^i=(fg)'
+    $
+\end{tcolorbox}
+
+\begin{tcolorbox}
+    \textbf{Lemat:} $(f(g))'=f'(g)g'$.
+    
+    \textbf{Dowód:} Na początek przyjmijmy, że $f(x)=x^k$, gdzie $k$ jest liczbą naturalną. Dla $k=0$ i $k=1$ teza jest 
+    spełniona. Niech teza jest spełniona dla $f(x)=x^l$ dla każdego naturalnego $l$ mniejszego niż $k$.
+    Wtedy
+    $(g^k)'=((g^{k-1})g)'=(g^{k-1})g'+g(g^{k-1})'=(g^{k-1})g'+g((k-1)g^{k-2}g')=
+    (g^{k-1})g'+((k-1)g^{k-1}g')=kg^{k-1}g'$, tak więc na mocy zasady indukcji dla dowolnego $k$ naturalnego jeżeli $f(x)=x^k$ to $(f(g))'=f'(g)g'$ dla dowolnego $g$ postaci $\sum_{1}^{\infty}g_ix^i$. W takim razie dla dowolnego $f$
+    postaci $\sum_{1}^{\infty}g_ix^i$ zachodzi  $(f(g))'=(\sum_{i=0}^{\infty}f_ig^i)'=\sum_{i=0}^{\infty}f_i(g^i)'=
+    \sum_{i=0}^{\infty}f_i ig^{i-1}g'=f'(g)g'$.
+
+    
+    
+    
+    
+    
+    
+    
+    %$f'(g)g'=(\sum_{i=0}^{\infty}f_{i+1}(i+1)g(x)^i)(\sum_{i=0}^{\infty}(i+1)g_{i+1}x^i)$
+    
+\end{tcolorbox}
 
 
 \section{Implementacja algorytmu Jin i Wu}
@@ -704,12 +771,39 @@ czym pole $ans[i]$ odpowiada współczynnikowi przy $x^i$ w rozwinięciu w szere
 
 Kolejne dwie funkcjie to \texttt{compute} i \texttt{mainCompute}. 
 
-Ich celem jest wyliczenie $(\exp(B(x)))_t$
 
 
+Ich celem jest wyliczenie $(\exp(B(x)))_t=(\sum_{i=0}^\infty \frac{B(x)^i}{i!})_t$
 
-Kożystają one z faktu, że $\exp(B(x))=\prod_{i=1}^{n}(1+x^{s_i})$, 
+Algorytm ten bazuje na spostrzeżeniu, że żeby wyliczyć $G_t(x)$,gdzie $G(x)=\exp(F(x))$ i $F(x) =\sum_{i=1}^\infty f_ix^i$,
+jeżeli znamy $G(0)$ wystarczy znaleźć wartości $f_0,f_1,...,f_t$. Co więcej $G_t(F(x))=G_t(F_t(x))$
 
+Niech rozwinięcie w szereg Taylora funkcji $G$ ma postać $\sum^{\infty}_{i=0}g_ix^i$
 
+Zauważmy, że $G'(x)=(\exp(F(x)))'=\exp(F(x))F'(x)=G(x)F'(x)$, tak więc
+$\sum_{i=0}^{\infty}(i+1)g_{i+1}x^{i}=(\sum_{i=0}^{\infty}g_ix^i)(\sum_{i=1}^{\infty}if_{i}x^{i-1})=
+\sum_{i=0}^{\infty}(\sum_{j=1}^{i+1}f_jg_{i+1-j})x^i$
 
+Tak więc $(i+1)g_{i+1}=\sum_{j=1}^{i+1}f_jg_{i+1-j}$, czyli $g_{i+1}=(i+1)^{-1}(\sum_{j=1}^{i+1}f_jg_{i+1-j})$.
+Zauważmy, że $G(0)=g_0$, tak więc mając wyliczone $f_0,f_1,...,f_t$ jesteśmy w stanie wyliczyć $g_1,g_2,...,g_t$, wyliczając je po kolei.
+
+Weźmy liczbę pierwszą $p>t$.
+
+$B(x)=\ln(\prod_{i=0}^n(1+x^{s_i}))=\sum_{i=1}^{n}(\sum_{k=1}^{\infty}\frac{(-1)^{k-1}x^{s_ik}}{k}):=\sum_{i=0}^{\infty}b_ix^i$, więc każda z liczb $b_0,b_1,...,b_n$ da się zapisać jako liczba wymierna postaci $\frac{x}{y}$, gdzie $x,y$ to
+względnie pierwsze liczby naturalne i $y$ nie jest podzielne przez $p$. Jeżeli $x$ i $y$ utożsamimy z resztą dzielenia ich 
+przez $p$ to wartość wyrażenia $\frac{x}{y}$ da się wyliczyć w ciele $Z_p$, a z tego.
+
+Niech $A(x)=\exp(B(x))=\prod_{i=0}^n(1+x^{s_i}):=\sum_{i=0}^{\infty}a_ix^i$.
+
+Wiemy, że $a_{i+1}=(i+1)^{-1}(\sum_{j=1}^{i+1}b_ja_{i+1-j})$, a także $a_0=\prod_{i=0}^n(1+0^{s_i})=1$, więc każda
+z liczb $a_i$, gdzie $i \in \{0,1,2,..,t \}$ da się przedstawić w postaci $\frac{X_i}{Y_i}$, gdzie $X_i,Y_i$ to
+względnie pierwsze liczby naturalne i $Y_i$ nie jest podzielne przez $p$. Jeżeli $X_i$ i $Y_i$ utożsamimy z resztą dzielenia ich 
+przez $p$ to wartość wyrażenia $\frac{X_i}{Y_i}$ da się wyliczyć w ciele $Z_p$ i wartość liczby $a_i$ dla naturalnego $i$
+nie większego niż $t$ jest równa $0$ wtedy i tylko wtedy gdy dla jej postaci $\frac{X_i}{Y_i}$ $p$ dzieli $X_i$. Zauważmy,
+że $A(x)$ jest iloczynem wielomianów o całkowitych współczynnikach, więc też jest wielomianem o całkowitych współczynnikach,
+więc $a_i$ jest wartością całkowitą, która w ciele $Z_p$ jest utożsamiona z $0$ wtedy i tylko wtedy, gdy jest podzielna przez $p$.
+
+Na mocy powyższych rozważań, możemy dalsze obliczenia wykonywać w ciele $Z_p$
+
+P
 \end{document}
