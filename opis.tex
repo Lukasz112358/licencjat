@@ -782,9 +782,9 @@ Niech rozwinięcie w szereg Taylora funkcji $G$ ma postać $\sum^{\infty}_{i=0}g
 
 Zauważmy, że $G'(x)=(\exp(F(x)))'=\exp(F(x))F'(x)=G(x)F'(x)$, tak więc
 $\sum_{i=0}^{\infty}(i+1)g_{i+1}x^{i}=(\sum_{i=0}^{\infty}g_ix^i)(\sum_{i=1}^{\infty}if_{i}x^{i-1})=
-\sum_{i=0}^{\infty}(\sum_{j=1}^{i+1}f_jg_{i+1-j})x^i$
+\sum_{i=0}^{\infty}(\sum_{j=1}^{i+1}jf_jg_{i+1-j})x^i$
 
-Tak więc $(i+1)g_{i+1}=\sum_{j=1}^{i+1}f_jg_{i+1-j}$, czyli $g_{i+1}=(i+1)^{-1}(\sum_{j=1}^{i+1}f_jg_{i+1-j})$.
+Tak więc $(i+1)g_{i+1}=\sum_{j=1}^{i+1}jf_jg_{i+1-j}$, czyli $g_{i+1}=(i+1)^{-1}(\sum_{j=1}^{i+1}jf_jg_{i+1-j})$.
 Zauważmy, że $G(0)=g_0$, tak więc mając wyliczone $f_0,f_1,...,f_t$ jesteśmy w stanie wyliczyć $g_1,g_2,...,g_t$, wyliczając je po kolei.
 
 Weźmy liczbę pierwszą $p>t$.
@@ -803,7 +803,110 @@ nie większego niż $t$ jest równa $0$ wtedy i tylko wtedy gdy dla jej postaci 
 że $A(x)$ jest iloczynem wielomianów o całkowitych współczynnikach, więc też jest wielomianem o całkowitych współczynnikach,
 więc $a_i$ jest wartością całkowitą, która w ciele $Z_p$ jest utożsamiona z $0$ wtedy i tylko wtedy, gdy jest podzielna przez $p$.
 
-Na mocy powyższych rozważań, możemy dalsze obliczenia wykonywać w ciele $Z_p$
+Na mocy powyższych rozważań, możemy dalsze obliczenia wykonywać w ciele $Z_p$, chyba, że explicite zaznaczę inaczej.
 
-P
+
+Procedura \texttt{mainCompute} jako argument przyjmuje wektor \texttt{f} $t+1$ pierwszych współczynników rozwinięcia w 
+szereg Taylora funkcji $B$. Na początku inicjuje wynikowy $t+1$-elementowy wektor \texttt{g} ustawiając wszystkie
+jego komórki poza \texttt{g[0]} na $0$, z kolei \texttt{g[0]} ustawiamy na $1$. Następnie uruchamiamy funkcję 
+\texttt{compute} na argumentach \texttt{0}, \texttt{t}, \texttt{g} i \texttt{f}.
+
+Funkcja \texttt{compute} zapisuje do wektora podanego jako trzeci argument(oczywiście przez referencję, żeby 
+można było go modyfikować) wartości kolejnych współczynników szeregu Taylora funkcji 
+$g(x)=\exp(\sum_{i=0}^tf_ix^i)$, gdzie $t+1$ to długość wektora podanego jako czwarty argument, zaś
+$f_i$ to wartość $i$-tej komórki wektora podanego jako czwarty argument. W dalszej części jako $f_i$ będę 
+oznaczał wartość $i$-tej komórki wektora podanego jako czwarty argument, zaś jako $g_i$ będę 
+$i$-tej komórki wektora podanego jako trzeci argument. Jako $t$ będę oznaczał \texttt{f.size()-1}
+
+Idea funkcji \texttt{compute} bazuje na tym, że aby wyliczyć $g_i=(i+1)^{-1}(\sum_{j=1}^{i+1}jf_jg_{i+1-j})$ dla wszystkich $i \in \{1,2,...,t\}$ należy
+wykonać $O(n^2)$ dodawań składników postaci $(i+1)^{-1}jf_jg_{i+1-j}$ do odpowiednich komórek. Nie każde dodawanie można wykonać w dowolnym
+momencie, ponieważ wartości komórek wektora \texttt{g} ulegają zmianie. Dodawanie uznamy za dozwolone, jeżeli $g_{i+1-j}$ obecne w 
+dodawanym składniku $(i+1)^{-1}f_jg_{i+1-j}$ nie ulega zmianie. 
+
+Zapisana w pseudokodzie funkcja \texttt{compute} ma postać:
+
+\begin{lstlisting}
+procedure compute(l,r,g,f)
+    if l < r
+        m <- floor((l+r)/2) #obliczenia w tej linii wykonujemy w liczbach naturalnych
+        compute(l,m,g,f)
+        for i <- m+1, m+2,...,r
+            for j<-l,l+1,..,m
+                g[i] <- g[i]+(i-j)f[i-j]g[j]/i
+            end for
+        end for
+        compute(m+1,r,g,f)
+    end if
+end procedure
+\end{lstlisting}
+
+Po wykonaniu \texttt{compute(l,r,f,g)} chcemy, żeby wartości $g_l,g_{l+1},...,g_{r}$ były już ustawione na wartości docelowe, zaś
+przed wykonaniem \texttt{compute(l,r,f,g)} chcemy, żeby wszystkie składniki postaci $(i+1)^{-1}f_jg_{i+1-j}$ gdzie $i+1-j<l$ zostały
+już dodane do odpowiednich komórek \texttt{g} o indeksach należących do $\{0,1,...,r\}$. Chcemy też, żeby każda operacja dodawania
+była dozwolona. 
+
+Jeżeli długość \texttt{g} jest równa $0$ to rządania napisane w poprzednim akapicie są spełnione. 
+Załóżmy indukcyjnie, że są spełnione dla \texttt{g} długości $0,1,2,..,t-1$. Niech długość \texttt{g} jest równa $t$.
+
+Wywołanie \texttt{compute(0,t,f,g)} sprowadza się do wywołania \texttt{compute(0,m,f,g)}, gdzie \texttt{m} to wynik wykonanej w
+liczbach całkowitych działania $\lfloor \frac{t}{2}\rfloor$. Po jej wykonaniu z tezy indukcyjnej $g_0,g_2,...,g_m$ mają docelowe
+wartości. Następnie przechodzimy do wykonania pętli
+\begin{lstlisting}
+for i <- m+1, m+2,...,r
+    for j<-l,l+1,..,m
+        g[i] <- g[i]+(i-j)f[i-j]g[j]/i
+    end for
+end for
+\end{lstlisting}
+
+Ponieważ indeks $j$ jest nie większy niż $m$ wszystkie dodawania są dozwolone. 
+Po wykonaniu tej pętli zostają już wykonane wszystkie
+potrzebne dodania wyrazów postaci $g[i]+(i-j)f[i-j]g[j]/i$, gdzie $j$ jest niewiększe niż $m$. 
+Następnie wykonujemy $compute(m+1,r,g,f)$, co przypomina wywołanie $compute(0,r-m-1,f,g)$ z tą modyfikacją, że w momencie 
+gdy wykonalibyśmy linię \texttt{g[i] <- g[i]+(i-j)f[i-j]g[j]/i} każde wystąpienie
+zmiennych \texttt{i} i \texttt{j} zastępujemy odpowiednio zmiennymi \texttt{i+m+1} i \texttt{j+m+1}. Ponieważ zgodnie z tezą
+indukcyjną po wykonaniu \texttt{$compute(0,r-m-1,f,g)$}
+$g_i$ zostaje zwiększone o $(i+1)^{-1}(\sum_{j=1}^{i+1}jf_jg_{i+1-j})$, dla $i \in \{1,2,...,r-m-1\}$ 
+to po wykonaniu \texttt{compute(m+1,r,f,g)} $g_{i+m+1}$  zostaje zwiększone o $(m+1+i+1)^{-1}(\sum_{j=1}^{i+1}jf_{m+1+j}g_{m+1+i+1-j})$, 
+dla $i \in \{1,2,...,r-m-1\}$, więc po wykonaniu $compute(m+1,r,g,f)$ $g_i=(i+1)^{-1}(\sum_{j=1}^{i+1}jf_jg_{i+1-j})$ dla każdego
+$i \in \{0,1,2,3,...,t\}$. 
+
+Nasza implementacja jednak kożysta z jednego usprawnienia. Zauważmy, że iloczyn wielomianów $F(x)=\sum_{k=0}^{r-l}kf_kx^k$ i 
+$G(x)=\sum_{j=0}^{m-l}g_{j+l}x^j$, ma postać 
+$\sum_{i=0}^{r+m-2l}(\sum_{k=0}^{r-l}kf_kg_{i-k+l})x^i$, tak więc w tym iloczynie współczynnik przy potędze $x^{i-l}$ podzielony
+przez $i$ jest równy liczbie o którą zostaje zwiększone $g_i$ po wykonaniu pętli
+\begin{lstlisting}
+for i <- m+1, m+2,...,r
+            for j<-l,l+1,..,m
+                g[i] <- g[i]+(i-j)f[i-j]g[j]/i
+            end for
+end for
+\end{lstlisting}
+
+Wykonanie pętli naiwnie zajmuje czas $O(t^2)$, zaś wykożystanie szybkiej teorio-liczbowej transformaty Fouriera do mnożenia wielomianów,
+w mojej implementacji przyspieszyć wykonanie tej pętli do $O(t\ln(t))$.
+Niech $T(t)$ oznacza czas wykonania \texttt{compute}, gdzie różnica między drugim i pierwszym argumentem wynosi $t+1$.
+Ponieważ $T(t)=2T(\frac{t}{2})+O(t\ln(t))$, to $T(t)=O(t \ln^2(t))$.
+
+Kolejną ostatnią już implementowaną przezemnie funkcją jest \texttt{JinWu}. Przyjmuje ona wektor \texttt{s} elementów zbioru 
+$S$, oraz
+liczbę $t$. Najpierw losuje liczbę pierwszą $p$ która jest wynikiem wykonania funkcji \texttt{find\_prime(s.size(),t)}. Następnie
+wywołując \texttt{field::setP(p)} ustawiam zmienne statyczne klasy \texttt{field} tak, żeby obliczenia w niej wykonywane 
+odpowiadały wykonaniu ich w klasie $Z_p$. Potem do wektora $Bans$ przy pomocy wykonania funkcji $B(s,t)$ zapisuję
+$t+1$ pierwszych współczynników(w $Z_p$) szeregu Taylora funkcji $B(x)=\ln(\prod_{i=0}^{n-1}(1+x^{s_i}))$, gdzie jako $n$ oznaczam długość
+wektora \texttt{s}, zaś jako $s_i$ oznaczam jego $i$-tą komórkę w $Z_p$(będę to oznaczenie stosował również w dalszej części pracy). 
+Następnie do wektora \texttt{computeAns} zapisuję $t+1$ pierwszych współczynników(w $Z_p$) szeregu Taylora funkcji 
+$A(x)=\prod_{i=0}^{n-1}(1+x^{s_i})$ jako wynik procedury \texttt{mainCompute(t,Bans)}. 
+Zauważmy, że ponieważ $A(x)$ jest wielomianem współczynnik
+przy potędze $x^i$ w jego rozwinięciu w szereg Taylora jest po prostu współczynnikiem przy potędze $x^i$ w wielomianie $A(x)$, zaś współczynnik przy potędze $x^i$ w $A(x)$ oznacza ilość sposobów wybrania ciągu indeksów naturalnych $-1<i_1<i_2<...<i_m<n$, 
+takich, że
+$x^{s_{i_1}+s_{i_2}+...+s_{i_m}}=x^i$, czyli ilość podzbiorów $S$ dających sumę $i$. Ponieważ liczby te zapisujemy jako elementy 
+$Z_p$ możliwe, \texttt{computeAns[t]} jest równe $0$ mimo, że istnieją podzbiory $S$ o sumie $t$ jednak ich liczba jest podzielna
+przez $p$. Jednak liczba tych podzbiorów napewno jest niewiększa niż $2^n$, więc ma co najwyżej $n$ różnych czynników pierwszych.
+Eksperymenty w sekcij poświęconej losowaniu liczby pierwszej zostało wykazane, że liczba możliwych do wylosowania wartości $p$
+jest $O(\frac{(n+t)^3}{\log(n+t)})=O((n+t)^2)$, więc prawdopodobieństwo, że $p$ dzieli niezerową liczbę podzbiorów $S$ o sumie $t$
+jest $O(\frac{n}{(n+t)^2})=O(\frac{1}{n+t})$.
+
+
+
 \end{document}

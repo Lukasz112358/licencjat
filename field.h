@@ -1,37 +1,38 @@
 #include<iostream>
 #include<map>
 #include<climits>
+#include<string.h>
 //using namespace std;
 class field{
-    static   long long p;
-    static   long long m;
+    static   __int128 p;
+    static   __int128 m;
     static field almostPrimitiveRoot;
-    static long long odd;
-    static long long degreeOfDegree;
-    long long value;
+    static __int128 odd;
+    static __int128 degreeOfDegree;
+    __int128 value;
 public:
-    static std::map<  long long,   long long> inverse;
+    static std::map< __int128,__int128> inverse;
     static void  setEasyThings();
     static void  setAlmostPrimitiveRoot();
-    void static setM( long long x){
+    void static setM( __int128 x){
         m =x;
     }
-    long long static getP(){
+    __int128 static getP(){
         return p;
     }
-    long long static getM(){
+    __int128 static getM(){
         return m;
     }
     field static getAlmostPrimitiveRoot(){
         return almostPrimitiveRoot;
     }
-    long long static getOdd(){
+    __int128 static getOdd(){
         return odd;
     }
-    long long static getDegreeOfDegree(){
+    __int128 static getDegreeOfDegree(){
         return degreeOfDegree;
     }
-    static void setP( long long x);
+    static void setP( __int128 x);
     static void insertInverse(field a,field b){
         field::inverse[a.value] = b.value;
         field::inverse[b.value] = a.value;
@@ -39,7 +40,7 @@ public:
     field(){
         this->value = 0;
     }
-    field(  long long val){
+    field(  __int128 val){
         this->value = (val+p)%p;
     }
     /*field(int val){
@@ -51,7 +52,7 @@ public:
     field(const field& a){
         this->value = a.value;
     }
-    long long getValue()const{
+    __int128 getValue()const{
         return this->value;
     }
     field &operator=(const field &);
@@ -78,18 +79,73 @@ public:
     friend field &operator/=(field &, const field &);
     friend field operator/(const field &, const field &);
     //Power Function
-    friend field inline &operator ^=(field &,const long long &);
-    friend field inline operator^(field &, const long  &);
+    friend field inline &operator ^=(field &,const __int128 &);
+    friend field inline operator^(field &,  __int128  &);
     //Read and Write
     friend std::ostream &operator<<(std::ostream &,const field &);
     friend std::istream &operator>>(std::istream &, field &);
 };
-long long field::p = 2;
-long long field::m = 1;
-long long field::odd = 1;
+__int128 field::p = 2;
+__int128 field::m = 1;
+__int128 field::odd = 1;
 field field::almostPrimitiveRoot = field(1);
-long long field::degreeOfDegree = 0;
-std::map<  long long,  long long>field::inverse = std::map<  long long,  long long>();
+__int128 field::degreeOfDegree = 0;
+std::map<  __int128,  __int128>field::inverse = std::map<  __int128, __int128>();
+
+std::string toStringOneNumber(__int128 x){
+    if(x % 10 == 0)return "0" ;
+	if(x % 10 == 1)return "1" ;
+	if(x % 10 == 2)return "2" ;
+	if(x % 10 == 3)return "3" ;
+	if(x % 10 == 4)return "4" ;
+	if(x % 10 == 5)return "5" ;
+	if(x % 10 == 6)return "6" ;
+	if(x % 10 == 7)return "7" ;
+	if(x % 10 == 8)return "8" ;
+	return "9" ;
+}
+__int128 charToDigit(char x){
+    if(x == '0')return 0;
+	if(x == '1')return 1;
+	if(x == '2')return 2;
+	if(x == '3')return 3;
+	if(x == '4')return 4;
+	if(x == '5')return 5;
+	if(x == '6')return 6;
+	if(x == '7')return 7;
+	if(x == '8')return 8;
+	return 9 ;
+}
+
+
+
+std::string toString(__int128 x){
+    if(x == 0)return "0";
+	std::string ans = "";
+	bool minus=false;
+	if(x<0){
+		minus=true;
+		x = -x;
+	}
+	while(x != 0){
+		ans = toStringOneNumber(x)+ans;
+		x /=10;
+	}
+	if(minus)ans="-"+ans;
+	return ans;
+}
+__int128 fromString(std::string x){
+	__int128 ans = 0;
+	__int128 multiplier = 1;
+	for(int i = x.size()-1;i>-1;i--){
+		if(x[i]=='-')return -ans;
+		ans+=charToDigit(x[i])*multiplier;
+		multiplier*=10;
+	}
+	return ans;
+}
+
+
 field &field::operator=(const field &a){
     value = a.value;
     return *this;
@@ -154,10 +210,10 @@ bool operator>=(const field & a,const field &b){
 field &operator*=(field &a, const field &b){
     if(b.getValue() <= field::m) a = field(b.getValue()*a.getValue());
     if(b.getValue() > field::m){
-        long long A = a.getValue();
-        long long B = b.getValue();
-        long long ans1 = (((A*field::m)%field::p)*((long long)(B/field::m)))%field::p;
-        long long ans2 = (A*(B%field::m))%field::p;
+        __int128 A = a.getValue();
+        __int128 B = b.getValue();
+        __int128 ans1 = (((A*field::m)%field::p)*((long long)(B/field::m)))%field::p;
+        __int128 ans2 = (A*(B%field::m))%field::p;
         a = field((ans1+ans2)%field::p);
     }
     return a;
@@ -168,8 +224,8 @@ field operator*(const field&a,const field&b){
     temp *= b;
     return temp;
 } 
-field &operator^=(field & a, long long const & b){
-    long long B = (b%(field::p-1));
+field &operator^=(field & a, __int128 const & b){
+    __int128 B = (b%(field::p-1));
     field A(a);
     if(B == 0){
         a  = 1;
@@ -196,14 +252,14 @@ field &operator^=(field & a, long long const & b){
     }
     return a;
 }
-field operator^(field & a, long long b){
+field operator^(field & a, __int128 b){
     field temp(a);
     temp ^= b;
     return temp;
 } 
 field &operator/=(field& a,const field &b){
     field B(b.getValue());
-    a *= (B^(long long)(-1));
+    a *= (B^(__int128)(-1));
     return a;
 }
 field operator/(const field &a,const field &b){
@@ -213,21 +269,21 @@ field operator/(const field &a,const field &b){
     return temp;
 } 
 std::istream &operator>>(std::istream &in,field&a){
-      long long s;
+    std::string s;
     in >> s;
-    a = field(s);
+    a = field(fromString(s));
     return in;
 }
 std::ostream &operator<<(std::ostream &out,const field &a){
-    std::cout << a.value;
+    std::cout << toString(a.value);
     return out;
 }
 
-void field::setP( long long x){
+void field::setP( __int128 x){
     field::inverse.clear();
     field::p = x;
-    long long y = field::p - 1;
-    long long degree = 0;
+    __int128 y = field::p - 1;
+    __int128 degree = 0;
     while(y % 2 == 0){
         degree++;
         y /= 2;
@@ -240,10 +296,16 @@ void field::setP( long long x){
         z ^= ((field::p-1)/2);
         if(z.getValue() != 1){
             z = field(i);
-            field::almostPrimitiveRoot = z^field::odd;
+            field::almostPrimitiveRoot = z^(__int128)field::odd;
             break;
         }
     }
-    field::setM( LONG_MAX / x );    
+    __int128 max = 1;
+    __int128 s = 1;
+    for(int i = 0; i<126; i++){
+        s*=2;
+        max +=s;
+    }
+    field::setM(max  / x );    
 } 
 
