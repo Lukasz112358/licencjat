@@ -1,6 +1,8 @@
 #include<iostream>
 #include<stdio.h>
 #include<time.h>
+#include<bits/stdc++.h>
+#include "field.h"
 using namespace std;
 long long absolutevalue64(long long a){
     if(a < 0)return -a;
@@ -16,19 +18,19 @@ long long randomLongLong(long long mod){
     long long candidate = absolutevalue64(rand()); 
     if(mod<=2147483647)return candidate%mod;
     else{
-        long long candidate2 = absolutevalue64(std::rand()%(mod/2147483648));
+        long long candidate2 = absolutevalue64(((long long)std::rand())%((long long)mod/(long long)2147483648));
         return candidate2*2147483648+candidate;
     } 
     return 0;
 }
 __int128 random128(__int128 mod){
-    long long candidate = randomLongLong(9223372036854775807);
-    if(mod<=9223372036854775807)return candidate%mod;
+    long long candidate = randomLongLong(4611686018427387904);
+    if(mod<=4611686018427387904)return candidate%mod;
     else{
-        long long candidate2 = randomLongLong(9223372036854775807)%(mod/9223372036854775807);
-        return candidate2*9223372036854775807+candidate;
+        __int128 candidate2 = randomLongLong(4611686018427387904)%(mod/4611686018427387904);
+        return candidate2*4611686018427387904+candidate;
     } 
-    return 0;
+    return candidate;
 }
 
 
@@ -40,87 +42,54 @@ __int128 pow2(__int128_t  t){
     return ans;
 }
 
-bool is_prime(__int128_t  x){
-    if(x <= 1) return false;
-    if(x==2) return true;
-    if(x%2 == 0) return false;
-    __int128_t  i = 3;
-    while(i*i <= x){
-        if(x % i == 0){ 
-            return false;
-        }
-        i+=2;
+
+bool MillerRabinOne(__int128 n, __int128 a){
+    if(n==2)return true;
+    if(n<2)return false;
+    if(n%2==0)return false;
+    __int128 d = n -1;
+    __int128 s = 0;
+    field::setPstupid(n);
+    while(d%2==0){
+        d = d/(__int128)2;
+        s ++;
+    }
+    field x(a);
+    x ^= d;
+    field y;
+    for(int i =0; i< s; i++){
+            y = x*x;
+            if(y==1 && x != 1 && x != (n-1)){
+                std::cout<<std::endl<<std::endl;
+                return false;
+            }
+            x = y;     
+    }
+    //std::cout<<std::endl<<std::endl;
+    return (y==1);
+}
+ bool MillerRabin(__int128 n){
+    __int128 limit = n-2;
+    if(limit > 2*std::log(n)*std::log(n))limit = 2*std::log(n)*std::log(n);
+    for(int i =2; i< ((int)limit)+1; i++){
+        if(!MillerRabinOne(n,i))return false;
     }
     return true;
-    
-}
+ }
 
-__int128_t  find_prime(__int128_t  n, __int128_t  t){
+__int128 find_prime(__int128  n, __int128  t){
     srand((unsigned int)time(NULL)) ;
-    __int128_t  twotok  = pow2(t);
-    __int128_t  mod = (t+n)*(n+t)*(n+t);
+    __int128  twotok  = pow2(t);
+    __int128  mod = (t+n)*(n+t)*(n+t);
     while (true){
-        __int128_t  candidate = random128(mod);
+        __int128  candidate = random128(mod);
         if(candidate > t){
             candidate = candidate * twotok + 1;
-            if(is_prime(candidate) == true) return candidate;
+            //std::cout<<toString(candidate)<<endl;
+            if(MillerRabin(candidate)) return candidate;
         }
     }
     return 0;
 }
-std::string toStringOneNumber(__int128 x){
-    if(x % 10 == 0)return "0" ;
-	if(x % 10 == 1)return "1" ;
-	if(x % 10 == 2)return "2" ;
-	if(x % 10 == 3)return "3" ;
-	if(x % 10 == 4)return "4" ;
-	if(x % 10 == 5)return "5" ;
-	if(x % 10 == 6)return "6" ;
-	if(x % 10 == 7)return "7" ;
-	if(x % 10 == 8)return "8" ;
-	return "9" ;
-}
-__int128 charToDigit(char x){
-    if(x == '0')return 0;
-	if(x == '1')return 1;
-	if(x == '2')return 2;
-	if(x == '3')return 3;
-	if(x == '4')return 4;
-	if(x == '5')return 5;
-	if(x == '6')return 6;
-	if(x == '7')return 7;
-	if(x == '8')return 8;
-	return 9 ;
-}
 
 
-
-std::string toString(__int128 x){
-    if(x == 0)return "0";
-	std::string ans = "";
-	bool minus=false;
-	if(x<0){
-		minus=true;
-		x = -x;
-	}
-	while(x != 0){
-		ans = toStringOneNumber(x)+ans;
-		x /=10;
-	}
-	if(minus)ans="-"+ans;
-	return ans;
-}
-__int128 fromString(std::string x){
-	__int128 ans = 0;
-	__int128 multiplier = 1;
-	for(int i = x.size()-1;i>-1;i--){
-		if(x[i]=='-')return -ans;
-		ans+=charToDigit(x[i])*multiplier;
-		multiplier*=10;
-	}
-	return ans;
-}
-
-int main(){
-    std::cout<<toString(find_prime(100000,10000000000));
-}

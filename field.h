@@ -1,3 +1,10 @@
+// printer.h file
+#ifndef FIELD_H_
+#define FIELD_H_
+
+ // printer.h code goes here
+
+
 #include<iostream>
 #include<map>
 #include<climits>
@@ -33,6 +40,7 @@ public:
         return degreeOfDegree;
     }
     static void setP( __int128 x);
+    static void setPstupid(__int128 x);
     static void insertInverse(field a,field b){
         field::inverse[a.value] = b.value;
         field::inverse[b.value] = a.value;
@@ -41,7 +49,8 @@ public:
         this->value = 0;
     }
     field(  __int128 val){
-        this->value = (val+p)%p;
+        if(val >= 0)this->value = val%p;
+        else this->value = (val+p)%p;
     }
     /*field(int val){
         this->value = (val+p)%p;
@@ -208,13 +217,19 @@ bool operator>=(const field & a,const field &b){
     return !(a >= b);
 }
 field &operator*=(field &a, const field &b){
-    if(b.getValue() <= field::m) a = field(b.getValue()*a.getValue());
+    if(b.getValue() <= field::m){
+        a = field(b.getValue()*a.getValue());
+    } 
     if(b.getValue() > field::m){
         __int128 A = a.getValue();
-        __int128 B = b.getValue();
-        __int128 ans1 = (((A*field::m)%field::p)*((long long)(B/field::m)))%field::p;
-        __int128 ans2 = (A*(B%field::m))%field::p;
-        a = field((ans1+ans2)%field::p);
+        __int128 B = b.getValue();//mk+l
+        __int128 k = B/field::m;
+        __int128 l = B%field::m;
+        field ans1 = field(A)*field(field::m);
+        ans1 *= field(k);
+        field ans2(A);
+        ans2*=l;
+        a = ans1 + ans2;
     }
     return a;
 }
@@ -242,7 +257,7 @@ field &operator^=(field & a, __int128 const & b){
         field a1 = a;
         a0^=B/2;
         a1 = a0;
-        if(B%2 == 1)a1*=a;
+        if(B%(__int128)2 == 1)a1*=a;
         a = a0*a1;
         return a;
     }
@@ -300,12 +315,26 @@ void field::setP( __int128 x){
             break;
         }
     }
-    __int128 max = 1;
+    __int128 maximum = 1;
     __int128 s = 1;
     for(int i = 0; i<126; i++){
         s*=2;
-        max +=s;
+        maximum +=s;
     }
-    field::setM(max  / x );    
+    field::setM(maximum  / x );    
 } 
 
+void field::setPstupid(__int128 x){
+    field::inverse.clear();
+    field::p = x;
+    field::odd = 0;
+    field::degreeOfDegree = 0;
+    __int128 maximum = 1;
+    __int128 s = 1;
+    for(int i = 0; i<126; i++){
+        s*=2;
+        maximum +=s;
+    }
+    field::setM(maximum / x );
+}
+#endif
