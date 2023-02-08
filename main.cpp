@@ -17,7 +17,7 @@
 //using namespace std;
 
 std::vector<field>& compute(__int128 l, __int128 r, std::vector<field>& g, std::vector<field>& f){
-    std::cout<<toString(l)<<' '<<toString(r)<<std::endl;
+    //std::cout<<toString(l)<<' '<<toString(r)<<std::endl;
     if(l < r){
         __int128 m = (l+r)/2;
         compute(l,m,g,f);
@@ -68,7 +68,7 @@ std::vector<field> B(std::vector<field> s, __int128 t){
 
 std::vector<bool> JinWu(std::vector<field>& s, __int128 t){
     __int128 p  = find_prime(s.size(), t);
-    //std::cout <<"x"<< toString(p)<<"x"<<std::endl;
+    std::cout <<"x"<< toString(p)<<"x"<<std::endl;
     field::setP(p);
     std::vector<field> Bans(t+1,field(0));
     Bans= B(s,t) ;
@@ -92,6 +92,7 @@ std::bitset<1000000> brutal(vector<__int128>& s){
 
 
 int main() {
+    //std::srand(2);
 
     __int128 n,t;
     std::string sn,st;
@@ -108,15 +109,9 @@ int main() {
     }
     std::vector<bool>ans(t+1,false);
     ans =  JinWu(S,t);
-    std::cout<<"xx"<<std::endl;
+    //std::cout<<"xx"<<std::endl;
     for(int i=0; i<ans.size();i++){
         std::cout<<ans[i]<<std::endl;
     }
-    //std::cout<<"xx"<<ans.size();
-    /*std::bitset<10000000>ans = brutal(x);
-    for(int i=0;i<100;i++){
-        std::cout<<ans[i];
-        if(i%10==9)std::cout<<std::endl;
-    }*/
     return  0;
 }

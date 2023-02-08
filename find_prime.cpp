@@ -68,7 +68,8 @@ bool MillerRabinOne(__int128 n, __int128 a){
     //std::cout<<std::endl<<std::endl;
     return (y==1);
 }
- bool MillerRabin(__int128 n){
+
+bool MillerRabin(__int128 n){
     __int128 limit = n-2;
     if(limit > 2*std::log(n)*std::log(n))limit = 2*std::log(n)*std::log(n);
     for(int i =2; i< ((int)limit)+1; i++){
@@ -78,7 +79,8 @@ bool MillerRabinOne(__int128 n, __int128 a){
  }
 
 __int128 find_prime(__int128  n, __int128  t){
-    srand((unsigned int)time(NULL)) ;
+    //srand((unsigned int)time(NULL)) ;
+    std::setSeed(1);
     __int128  twotok  = pow2(t);
     __int128  mod = (t+n)*(n+t)*(n+t);
     while (true){

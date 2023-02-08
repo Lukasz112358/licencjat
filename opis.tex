@@ -29,11 +29,64 @@
 \maketitle
 
 \begin{abstract}
-Your abstract.
+Problem istnienia podzbioru o sumie $t$ zawierającego się w $n$-elementowym (multi)zbiorze $S \subset \mathbb{N}$, 
+jest jednym z klasycznych problemów algorytmicznych. Problem w ogólności jest problemem $NP$-zupełnym
+jednak jeżeli $t$ jest względnie małe i dysponujemy pamięcią $\Omega(t)$ istnieją algorytmy działające 
+w czasie wielomianowym od długości wejścia, z czego najbardziej znanym jest działający w czasie $O(nt)$
+algorytm oparty na programowaniu dynamicznym.
+
+Celem nieniejszej pracy jest dokumentacja implementacji
+algorytmu opracowanego przez Ce Jin i Hongxun Wu w pracy [odnośnik!!!]. Algorytm ten jest niedeterministyczny,
+jednak dla dużych danych prawdopodobieństwo błędu jest niewielkie. Złożoność czasowa prezentowanego
+algorytmu to $O((t+n)\log^2(t))$, zaś pamięciowa $O(n+t)$.
+
 \end{abstract}
 
 \section{Wstęp}
-Problem sprawdzania czy z $n-$elementowego muiltizbioru $S$ liczb naturalnych jesteśmy w stanie wybrać podzbiór, którego suma elementów jest równa zadanej liczbie $t$ jest jednym z klasycznych problemów algorytmicznych. W nieniejszej pracy zaprezentuję niedeterministyczny algorytm opracowany przez Ce Jin i Hongxun Wu, który kożystając ze sprytnych obserwacji na polu analizy matematycznej i algebry jest w stanie podać wynik w czasie $O(n+t\log^2(t))$, co jest czasem znacznie szybszym niż klasyczny algorytm oparty na programowanie dynamiczne. 
+Problem sprawdzania czy z $n-$elementowego muiltizbioru $S$ liczb naturalnych jesteśmy w stanie wybrać 
+podzbiór, którego suma elementów jest równa zadanej liczbie $t$ jest jednym z klasycznych problemów 
+algorytmicznych. Będziemy go w dalszej części nazywać problem sumy podzbiorów. 
+
+Ma on zastosowanie w licznych praktycznych zagadnieniach na przykład kryptografii
+[Merkle–Hellman knapsack cryptosystem], analizie finansowej 
+[Solving Subset Sum Problems using Binary Optimization with 
+Applications in Auditing and Financial Data Analysis], czy zagadnieniach kombinatorycznych, jako specyficzny
+wariant problemu plecakowego(Problem plecakowy dotyczy wybrania ze zbirou przedmiotów, w którym każdy ma 
+określoną wagę i wartość, podzbioru mającego maksymalną sumaryczną wartość i jednocześnie, którego 
+sumaryczna waga nie przekracza pewnej liczby $t$. Problem sumy podzbiorów odpowiada sytuacji, 
+gdy wartości przedmiotów są wprostproporcjonalne do ich wagi). 
+
+Klasyczna wersja problem, gdzie $t$ jest duże(gdy nie dysponujemy $O(t)$ pamięci) jest problemem 
+$NP$-zupełnym. Najprostszy algorytm rozwiązujący ten problem polega na rozważeniu po kolei wszystkich 
+możliwych podzbiorów. Złożoność tego algorytmu to $O(n2^n)$. Nieco szybszym algorytmem jest algorytm Horowitza
+i Sahaniego który działa w $O(2^{\frac{n}{2}}n/2)$, jednak w przeciwieństwie do algorytmu naiwnego wymagającego
+$O(n)$ pamięci algorytm ten wymaga $O(2^{\frac{n}{2}})$. Algorytm Schroeppela i Shamira wymaga takiego samego
+czasu jak algorytm Horowitza i Sahaniego, jednak potrzebuje $O(2^{\frac{n}{4}})$ pamięci. Probabilistyczny 
+algorytm Howgrave-Grahama i Jouxa pozwolił przyspieszyć rozwiązanie problemu do $O(2^{0.337n})$
+zużywając $O(2^{0.256})$ pamięci. Dalsze jego ulepszenia pozwoliły osiągnąć złożoność czasową równą 
+$O(2^{0.291n})$.
+
+Znacznie mniej czasu wymagają instancje problemu sumy podzbiorów gdzie $t$ jest względnie małe i dysponujemy
+$O(t)$ pamięci. Oparty o programowanie dynamiczne klasyczny algorytm wymaga $O(nt)$ czasu i $O(n+t)$ pamięci.
+Używam go do sprawdzenia poprawności implementacji algorytmu Ce Jin i Hongxun Wu. Najszybszym znanym algorytmem 
+dla problemu sumy podbiorów z małym $t$ jest algorytm Konstantinos Koiliaris i Chao Xu. 
+
+Algorytm który prezentuję w nieniejszej pracy został opracowany przez Ce Jin i Honguxun Wu. Działa on w czasie 
+$O(n+t\log^2(t))$ i wymaga $O(n+t)$ pamięci. Jest to algorytm probabilistyczny z prawdopodobieństwem błędu $O(\frac{1}{n+t})$.
+Moja implementacja składa się z 4 modułów: klasy field odpowiadającej symulacji 
+działań w ciele $Z_p$ reszt z dzielenia przez liczbę pierwszą $p$, moduł losujący liczbę $p$ kożystający z testu Millera-Rabina,
+moduł zawierający implementację teorio-liczbowej szybkiej transformaty Fouriera(jest to pewna nieortodoksja względem pracy
+Ce Jin i Honguxun Wu, ponieważ proponowali oni szybką transformatę Fouriera, jednak początkowe próby jej implementacji
+powodowały problemy związane z niedokładnością operacji zmiennoprzecinkowych) oraz implementacja algorytmu właściwego.
+
+Moja implementacja jest napisana w języku \texttt{C++} i kożysta ze zmiennych całkowitych 128-bitowych więc kompilacja może nie 
+powieść się na niektórych systemach i kompilatorach w szczególności na systemach 32-bitowych. Dokładne wymagania opiszę
+w dalszej części pracy.
+
+W nieniejszej pracy zaprezentuję niedeterministyczny algorytm opracowany przez Ce Jin 
+i Hongxun Wu, który kożystając ze sprytnych obserwacji na polu analizy matematycznej i algebry jest w 
+stanie podać wynik w czasie $O(n+t\log^2(t))$, co jest czasem znacznie szybszym niż klasyczny algorytm 
+oparty na programowanie dynamiczne. 
 
 
 
@@ -41,7 +94,8 @@ Problem sprawdzania czy z $n-$elementowego muiltizbioru $S$ liczb naturalnych je
 Specyfikacja problemu $SubsetSum$, który będziemy rozwiązywać jest następująca:
 
 \begin{tcolorbox}
-    \textbf{Wejście:} Liczba naturalna $n$ , liczba naturalna $t$, zbiór $S$ reprezentowany jako ciąg $n$ liczb naturalnych.
+    \textbf{Wejście:} Liczba naturalna $n$ , liczba naturalna $t$, zbiór $S$ reprezentowany jako ciąg $n$ liczb naturalnych(po wczytaniu 
+    przechowywanych w wektoerze \texttt{S}).
     
     \textbf{Wyjście:} \texttt{true} jeżeli istnieje $S' \subseteq S$ którego suma elementów jest równa $t$ lub \texttt{false} w przeciwnym przypadku.
 \end{tcolorbox}
@@ -54,102 +108,118 @@ Lub alternatywnie
     istnieje $S' \subseteq S$ którego suma elementów jest równa $t$.
 \end{tcolorbox}
 
-Na wejściu otrzymujemy multizbiór liczb naturalnych $S=\{s_1,s_2,...,s_n\}$, oraz 
-liczbę naturalną $t$. Chcemy odpowiedzieć na pytanie czy jest możliwe wybranie 
-$S' \subseteq S$ taki, że suma jego elementów jest równa $t$, przy czym wskazanie tego 
-podzbioru nie jest konieczne, a wystarczy nam jedynie odpowiedź Tak lub Nie. 
 
+Klasyczny algorytym opiera się na modyfikacji $t+1$-elementowej tablicy \texttt{DP} o komórkach przyjmujących wartości bool-owskie i 
+opiera się na programowaniu dynamicznym. Początkowo wszystkie komórki \texttt{DP} są ustawione na \texttt{false}, oprócz komórki 
+$0$-owej, która
+jest ustawiona na \texttt{true}.
 
-Klasyczny algorytym polega na stworzeniu t-elementowej tablicy przechowującej wartości 
-$0$ i $1$(dlatego najoptymalniej jest użyć do tego bitsetu). 
-
-\begin{algorithm}
-\caption{}
-\begin{algorithmic}
-    \STATE $create\ a\ (t+1)-element\ DP\ array\ with\ initial\ value\ of\ F$
-    \STATE $DP[0] = T$
-    \FOR{$i$ from $1$ to $n$}
-    \FOR{$k$ from $s_i$ to $t$}
-    \STATE $DP[i] = DP[i] \lor DP[k-s_i] $
-    \ENDFOR
-    \IF{DP[t]}
-    \STATE return T
-    \ENDIF
-    \ENDFOR
-    \STATE return F
-\end{algorithmic}
-\end{algorithm}
+Dokładny algorytm przedstawia poniższy pseudokod(odpowiada on drugiej specyfikacji problemu sumy podzbiorów. Jeżeli chcielibyśmy
+odpowiedź na 1 jego wersję wystarczy zwrócić \texttt{DP[t]}, przy czym można ją zwrócić wtedy od razu gdy przyjmie wartość \texttt{true}).
+\begin{lstlisting}
+    zainicjuj n-elementowe DP i oldDP
+    for i <-1,2,...,t+1
+        oldDP[i] = false
+    end for 
+    DPold[0] = true
+    for i<-0,1,...,n-1
+        for j <- S[i],S[i]+1,...,t
+            DP[j] = oldDP[j] or oldDP[j-S[i]]
+        end for
+        oldDP = DP
+    end for
+    return DP
+\end{lstlisting}
 
 Dowód poprawności tego algorytmu jest prostym dowodem indukcyjnym, w którym teza indukcyjna
-jest tezą mocniejszą i brzmi ona tak: po wykonaniu $i$-tej iteracji pętli z iteratorem $i$ $DP[m]=T$ 
+brzmi: po wykonaniu $i$-tej iteracji pętli z iteratorem \texttt{i}
+ \texttt{DP[m]=true}
 wtedy i tylko wtedy
-gdy można wybrać podzbiór zbioru $\{S_1,S_2,...,S_i\}$ taki, że suma jego elemetów wynosi 
-$m$(oczywiście dla $k \in \{0,1,...,t\}$). 
+gdy można wybrać podzbiór zbioru
+$\{S\left[0\right],S\left[1\right],..,S\left[i\right]\}$
+taki, że suma jego elemetów wynosi 
+
+ $m$(oczywiście dla $k \in \{0,1,...,t\}$). 
 \begin{itemize}
     \item Dla $i = 0$ teza jest oczywista.
     \item Załóżmy, że teza jest prawdziwa dla $i-1$. Jeżeli istnieje podzbiór
-    zbioru $\{s_1,s_2,...,s_i\}$ taki, że suma jego elementów wynosi $k$ to jest to 
-    albo podzbiór zbioru $\{s_1,s_2,...,s_{i-1}\}$ i z tezy indukcyjnej $DP[k]=T$
+    zbioru $\{S \left[ 0 \right],S\left[ 1 \right],..,S\left[ i \right]\}$ taki, że suma jego elementów wynosi $k$ to jest to 
+    albo podzbiór zbioru $\{{S\left[0\right],S\left[1\right],..,S\left[i-1\right]\}}$ i z tezy indukcyjnej $DP[k]=ture$
     jeszcze przed wykonaniem $i$-tej iteracji, albo jest to podzbiór zawierający element
-    $s_i$, którego pozostałe elementy należące do $\{s_1,s_2,...,s_{i-1}\}$ sumują się 
-    do $k-s_i$, więc z tezy indukcyjnej $DP[k-s_i] = T$. Ponieważ $DP[k]$ po wykonaniu $i$-tej iteracji
-    przyjmuje wartość $DP[i] \lor DP[k-s_i] $ teza indukcyjna jest prawdziwa.
-  \end{itemize}
-Ponieważ komórki $DP$ przyjmują tylko wartości $T$ i $F$ do reprezentacji jej najoptymalniej
-użyć bitsetu a kolejne iteracje pętli zewnętrznej wykonać poleceniem $DP |= (DP >> s_i)$.
+    $S\left[i \right]$, którego pozostałe elementy należące do 
+    $\{S \left[ 0 \right] ,S \left[ 1 \right],..,S \left[ i-1 \right] \}$
+     sumują się 
+    do \texttt{k-S[i]}, więc z tezy indukcyjnej \texttt{DP[k-S[i]]= true} . Ponieważ \texttt{DP[k]} po wykonaniu $i$-tej iteracji
+    przyjmuje wartość \texttt{DP[i] or DP[k-S[i]]} teza indukcyjna jest prawdziwa.
+
+\end{itemize}
+Ponieważ komórki \texttt{DP} przyjmują tylko wartości \texttt{true} i \texttt{false} do reprezentacji jej najoptymalniej
+użyć bitsetu a kolejne iteracje pętli zewnętrznej wykonać poleceniem \texttt{DP |= (DP >> S[i])}.
 
 Pętla zewnętrzna wykona się $O(n)$ razy i każda iteracja zajmie $O(t)$ czasu tak więc
 czas działania całego algorytmu zajmie $O(nt)$ i $O(t+n)$ pamięci.
+
+
+
 \section{Idea algorytmu Ce Jin i Hongxun Wu}
 
-Specyfikacja naszego problemu jest następująca. Na wejściu otrzymujemy liczbę $n$ będącą wielkością
-zbioru $S$, $n$ liczb naturalnych będących elementami zbioru $S$ oraz nieujemną liczbę naturalną
-$t$. Jeżelli wśród podzbirów $S$ istnieje taki, którego suma elemenów jest równa $t$ zwracamy 
-prawdę, jeżeli zaś taki zbiór nie istnieje zwracamy fałsz.
 
-Algorytm Ce Jin i Hongxun Wu bazuje na dość trywialnej obserwacji, że dla danego zbioru
-$\{S_1,...,S_n\} \subset \mathbb{N}$ istnieje jego podzbiór sumujący się do $t \in \mathbb{N}$ wtedy 
+Algorytm Ce Jin i Hongxun Wu bazuje na dość prostej obserwacji, że dla danego zbioru
+$S=\{s_1,s_2,...,s_n\} \subset \mathbb{N}$ istnieje jego podzbiór sumujący się do $t \in \mathbb{N}$ wtedy 
 i tylko wtedy gdy, współczynnik przy $x^t$ w  wielomianie $A(x) :=\prod_{i = 1}^{n}(1+x^{s_i})$ jest 
-niezerowy. Zamiast liczyć ten współczynnik wprost najpierw obliczymy $B(x):=\ln(\prod_{i = 1}^{n}(1+x^{s_i}))$, 
+niezerowy. Istotnie jeżeli ten współczynnik jest niezerowy, to istnieje ciąg indeksów $0<i_1<i_2<...<i_k<n+1$ taki, że 
+
+$$\prod_{j=1}^{k}x^{s_{i_j}}=x^{\sum_{j=1}^ks_{i_j}}=x^t$$, więc ciąg ten odpowiada indeksom elementów które należy wybrać
+by uzyskaźć podzbiór zbioru $S$ o sumie elementów równej $t$.
+Zamiast liczyć ten współczynnik wprost najpierw obliczymy $B(x):=\ln(\prod_{i = 1}^{n}(1+x^{s_i}))$, 
 zaś następnie $\exp(B(x)) = A(x)$. 
 
 Co to jednak znaczy, że obliczymy te funkcje? Będziemy wyliczać rozwinięcia jej w szereg Taylora.
 Współczynnik przy $x^t$ w rozwinięciu w szereg Taylora $\exp(B(x))$ istotnie jest współczynnikiem
-przy $x^t$ w $A(x)$. Wynika to bezpośrednio z jednoznaczności rozwinięcia w szereg potęgowy. 
+przy $x^t$ w $A(x)$. Wynika to bezpośrednio z jednoznaczności rozwinięcia w szereg potęgowy i tego, że $A(x)$ jest wielomianem. 
 
-W dalszej części pracy będę stosował schemat notacji $F_t(x)$ jako oznaczenie rozwinięcia w szereg Taylora 
+W dalszej części sekcji będę stosował schemat notacji $F_t(x)$ jako oznaczenie rozwinięcia w szereg Taylora 
 $t$-pierwszych wyrazów funkcji $F$, tak więc $\exp_t(x) = \sum_{i=0}^t\frac{x^i}{i!}$, zaś 
-$\ln_t(\prod)=\sum_{i=0}^t\frac{(-1)^{i-1}x^i}{n}$ 
+$\ln_t(1+x^a)=\sum_{i=0}^t\frac{(-1)^{i-1}x^{ai}}{n}$ 
 
 Aby znaleźć odpowiedź na omawiany w tej pracy problem wystarczy oczywiście ustalić jedynie 
-wartość $t$ pierwszych wyrazów rozwinięcia w szereg Taylora funkcji $\exp(B(x))$. 
-Niestety obliczenia potrzebne do znalezienia tych współczynników mogą wymagać użycia bardzo dużych liczb długości $O(t)$. 
-Obliczenia na nich mogą być więc czasochłonne. Ce Jin i Hongxun Wu skożystali z faktu, że
-nie jest jedynie obiektem, który można zdefiniować analitycznie jako przekształcenie funkcji 
+wartość $t$ pierwszych wyrazów rozwinięcia w szereg Taylora funkcji $\exp(B(x))$.
+
+Niestety obliczenia potrzebne do znalezienia tych współczynników mogą wymagać użycia bardzo dużych liczb długości $O(n)$. 
+Obliczenia na nich mogą być więc czasochłonne. 
+
+Ce Jin i Hongxun Wu skożystali z faktu, że
+pochodna nie jest jedynie obiektem, który można zdefiniować analitycznie jako przekształcenie funkcji 
 $f(x)$ w funkcję zwracającą dla argumentu $x$ wartość $\lim_{h \to 0}\frac{f(x+h)-f(x)}{h}$, ale 
 i przekształcenie czysto algebraiczne, które przekształca szereg $\sum_{i=0}^{\infty}f_i x^i$ w
 $\sum_{i=1}^{\infty}if_{i}ix^{i-1}$. 
 
-Tak zdefiniowana pochodna zachowuje algebraiczne właściwości($f'+g'=(f+g)'$,$(fg)'=f'g+g'f$,
-$(f(g))'=f'(g)g'$) bez względu na to do jakiego ciała należą współczynniki tych szeregów. 
+Tak zdefiniowana pochodna zachowuje pewnealgebraiczne właściwości($f'+g'=(f+g)'$,$(fg)'=f'g+g'f$,
+$(f(g))'=f'(g)g'$ ) bez względu na to do jakiego ciała należą współczynniki tych szeregów, tak więc również pojęcie szeregu
+Taylora z pewnymi ograniczeniami   możemy rozpatrywać w innych ciałach niż $\mathbb{R}$. W naszym przypadku będzie to ciało 
+$Z_p$ reszt z dzielenia przez $p$, gdzie $p$ jest losową liczbą pierwszą na tyle dużą, że prawdopodobieństwo fałszywego zakwalifikowania
+jakiejś liczby jako $0$ jest niewielkie, jednak na tyle małą, że obliczenia na elementach $Z_p$ wykonują się względnie szybko.
 
-Okazuje się, że w naszym algorytmie wystarczy rozpatrywać jedynie rozpatrywać rozwinięcia używanych 
-funkcji jedynie do $t$-tego wyrazu i jeżeli weźmiemy liczbę pierwszą $p>t$ to w tym przypadku
-oznacza to brak konieczności dzielenia przez liczby podzielne przez $p$, tak więc ciałem, w 
-którym możemy rozpatrywać współczynniki naszych szeregów jest ciało reszt modulo $p$ dla jakiejś losowo wybranej $p>t$. Dodawanie liczb $a$ i $b$ w takim ciele przypomina dodawanie w liczbach całkowitych jednak zamiast zwracać "cały" wynik dodawania w liczbach całkowitych
-zwracamy tylko jego resztę z dzielenia przez $p$. Mnożenie i odemowanie wykonuje się 
-analogicznie, z kolei dzielenie przez liczbę $d$ polega na pomnożeniu przez odwrotność
-$d$ w ciele $Z_p$.
+%Okazuje się, że w naszym algorytmie wystarczy rozpatrywać jedynie rozpatrywać rozwinięcia używanych 
+%funkcji jedynie do $t$-tego wyrazu i jeżeli weźmiemy liczbę pierwszą $p>t$ to w tym przypadku
+%oznacza to brak konieczności dzielenia przez liczby podzielne przez $p$, tak więc ciałem, w 
+%którym możemy rozpatrywać współczynniki naszych szeregów jest ciało reszt modulo $p$ dla jakiejś losowo wybranej $p>t$. Dodawanie liczb $a$ i $b$ w takim ciele przypomina dodawanie w liczbach całkowitych jednak zamiast zwracać "cały" wynik dodawania w liczbach całkowitych
+%zwracamy tylko jego resztę z dzielenia przez $p$. Mnożenie i odemowanie wykonuje się 
+%analogicznie, z kolei dzielenie przez liczbę $d$ polega na pomnożeniu przez odwrotność
+%$d$ w ciele $Z_p$.
 
-W naszym algorytmie co prawda udało się uniknąć dzielenia, przez liczby podzielne przez $p$,
-jednak wciąż jest możliwe uzyskanie liczb podzielnych przez $p$ na drodze dodawania i mnożenia, co może sprawić, że błędnie zinterpretujemy niektóre liczby jako $0$. W szczególności możliwe jest błędne zidentyfikowanie jako $0$ $t$-tego współczynnika wielomianu 
-$A(x)$ co w bezpośredni sposób może wpłynąć na poprawność zwracanej odpowiedzi. Okazuje się
-jednak, że prawdopodobieństwo takiego błędu w algorytmie Ce Jin i Honguxun Wu jest $O(n+t)^{-1}$. Ja użyłem w swojej implementacji nieco innej metody losowania tej liczby, jednak jak
-eksperymentalnie sprawdziłem można zastosować dla tego sposobu analogiczny sposób szacowania prawdopodobieństwa błędu, jaki zastosowali Ce Jin i Honguxun Wu o czym więcej będę pisał w dalszej części pracy.
+%W naszym algorytmie co prawda udało się uniknąć dzielenia, przez liczby podzielne przez $p$,
+%jednak wciąż jest możliwe uzyskanie liczb podzielnych przez $p$ na drodze dodawania i mnożenia, co może sprawić, że błędnie zinterpretujemy niektóre liczby jako $0$. W szczególności możliwe jest błędne zidentyfikowanie jako $0$ $t$-tego współczynnika wielomianu 
+%$A(x)$ co w bezpośredni sposób może wpłynąć na poprawność zwracanej odpowiedzi. Okazuje się
+%jednak, że prawdopodobieństwo takiego błędu w algorytmie Ce Jin i Honguxun Wu jest $O(n+t)^{-1}$. Ja użyłem w swojej implementacji nieco innej metody losowania tej liczby, jednak jak
+%eksperymentalnie sprawdziłem można zastosować dla tego sposobu analogiczny sposób szacowania prawdopodobieństwa błędu, jaki zastosowali Ce Jin i Honguxun Wu o czym więcej będę pisał w dalszej części pracy.
 
-Ważną optymalizacją w liczeniu współczynników rozwinięcia $\exp(B(x))$ było zastąpienie jednej podwójnej pętli, której wykonanie w sposób naiwny zajmowałoby pesymistycznie $O(t^2)$ czasu pomnożeniem dwóch wielomianów stopnia co najwyżej $O(t)$, co można wykonać szybką 
-transformatą Furiera. Aby uniknąć problemów z utratą dokładności w obliczeniach na liczbach 
-zmienno przecinkowych zastosowałem Teorio-liczbową szybką transformatę Furiera, w której współczynniki rozpatrywałem w ciele wylosowanej już na potrzeby wcześniej omawianych obliczeń 
+Ważną optymalizacją w liczeniu współczynników rozwinięcia $\exp(B(x))$ było zastąpienie jednej podwójnej pętli, 
+której wykonanie w sposób naiwny zajmowałoby pesymistycznie $O(t^2)$ czasu pomnożeniem dwóch wielomianów stopnia co 
+najwyżej $O(t)$ współczynnikach, co można wykonać szybką 
+transformatą Furiera w czasie $O(\log(t)t)$. Aby uniknąć problemów z utratą dokładności w obliczeniach na liczbach 
+zmiennoprzecinkowych zastosowałem Teorio-liczbową szybką transformatę Furiera, w której współczynniki rozpatrywałem w ciele 
+wylosowanej już na potrzeby wcześniej omawianych obliczeń 
 liczby $p$.
 
 Ogólnie implementację algorytmu można podzielić na 5 zasadniczych części
@@ -161,118 +231,8 @@ Ogólnie implementację algorytmu można podzielić na 5 zasadniczych części
   \item Implementacja kodu testującego, w tym algorytmu naiwnego.
 \end{itemize}
 
-\section{Szukanie liczby pierwszej}
-W pracy Jin i Wu liczba pierwsza którą losujemy ma tylko jedno zastosowanie. Jest nim
-wyznaczenie ciała w którym będziemy wykonywać nasze obliczenia. Losowanie to odbywa się 
-zpośród liczb na przedziale $[t+1,(n+t)^3]$. Dowód oszacowania prawdopodobieństwa, 
-że liczba ta nie dzieli $t$-tego współczynnika $A(x)$ jako $O(n+t^{-1})$ kożysta z tego, że
-na badanym przedziale liczb pierwszych jest $\Omega((n+t)^2)$, co wynika z twierdzenia o 
-liczbach pierwszych mówiącym, że $\lim_{x \to \infty} \frac{\pi(x)}{\frac{x}{\ln(x))}}=1$, gdzie $\pi(x)$ to liczba liczb pierwszych niewiększych od $x$.
-
-Różnica, między moją implementacją, a algorytmem opisanym przez Ce Jin i Hongxun Wu jest 
-jednak taka, że nie używałem klasycznej wersji szybkiej transformaty Furiera, opartej na
-liczbach zespolonych, a teorio-liczbowej szybkiej transformaty Furiera wykonującej obliczenia
-w ciele $Z_p$. Tak więc w tym ciele $Z_p$ musi istnieć pierwiastek z 1 stopnia $r$ gdzie
-$r$ jest postaci $2^k$, dla pewnej liczby naturalnej $k$, oraz $r$ jest większe lub równe 
-stopniowi wielomianu, który powstanie po pomnożeniu wielomianów, które mnożymy naszą 
-transformatą powiększonego o $1$. Mnożone wielomiany są stopnia co najwyżej $t$, tak więc
-możemy przyjąć, że $2^k$ to najmniejsza potęga $2$ o całkowitym wykładniku większa niż 
-$2t+2$, zaś $p$ ma postać $r2^k+1$. Istotnie dla każdej liczby pierwszej $p$ istnieje jej pierwiastek pierwotny $a$,
-którego stopień jest równy $p-1$, czyli w tym przypadku $r2^k$, zaś stopień tego pierwiastka podniesiony
-do potęgi $r$ wynosi $2^k$.
-
-Intuicjyjnie można przypuszczać, że ponieważ rozmieszczenie liczb pierwszych jest trudne 
-do opisania prostym wzorem, to podobny procent liczb postaci $r2^k+1$ gdzie $r$ jest liczbą
-naturalną z przedziału $[t+1,(n+t)^3]$ jest pierwszy, co po prostu, procent liczb 
-pierwszych na przedziale $[t+1,(n+t)^3]$. Dla uproszczenia możemy badać przedział $[0,(n+t)^3]$, ponieważ $t+1$ jest względnie małe w stosunku do $(n+t)^3$. 
-Ostatecznie nasza hipoteza jest taka, że jeżeli $\pi'(x)$ to liczba liczb pierwszych postaci $r2^k+1$ , gdzie $r$ jest
-liczbą naturalną niewiększą od $x$. To $lim_{x \to \infty}\frac{\pi'(x)}{\frac{x}{\ln(x)}}$
-jest równe $1$.
-
-W przeciwieństwie do większości pozostałego kodu, który przygotowałem, ze względu na jednoczesne łatwe wykonywanie wykresów, oraz szybkość działania eksperymentalne weryfikowanie
-tej hipotezy przeprowadziłem w języku Julia i przy użyciu programu Jupyter Notebook.
-
-Oczywiście eksperymentalne wyznaczenie $\pi'(x)$ dla dużych $x$-ów byłoby bardzo czasochłonne więc wartość $\frac{\pi'(x)}{x}$ szaacowałem przy pomocy funkcji, która najpierw losowała $100000$
-liczb typu $UInt64$ modulo $x$, mnożyłem, przez $2^k$ i dodawałem $1$, zaś następnie sprawdzałem przy pomocy funkcji
-$isprime$ należącej do pakietu $Primes$ czy otrzymana 
-tak liczba jest pierwsza i jeśli odpowiedź była pozytywna inkrementowałem zmienną $ans$, której 
-początkowa wartość wynosiła $0$. Następnie zwracałem  $\frac{ans}{100000}$, czyli liczbę
-stosunek wylosowanych liczb pierwszych do ilości losowań. Wartość $\pi'(x)$ wyliczałem dla $x$
-postaci $100000000000000k+1$, gdzie $k \in \{0,1,..99\}$, oraz gdzie parametr $2^k$ jest równy
-$1,2,4,8,16,64,256,1024,2^{20},2^{30}$ i $2^{50}$. Żeby uniknąć problemów z tym, że liczby
-przekraczać będą limity zmiennej całkowitej $64$-bitowej bez znaku odrazu po wyliczeniu losowanej liczby
-modulo $x$ rzutowałem ją na zmienną BigInt. 
-
-Na poniższym wykresie prezentuję jak poniższa metoda pozwoliła szacować $\frac{\pi'(x)}{\frac{x}{\ln(x)}}$
-(oś pionowa), w zależności od argumentu $x$(oś pionowa) i parametru $2^k$(kolor).
 
 
-
-Jak widać z wykresu nawet dla bardzo dużych $2^k$ i $x$, wartości $\frac{\pi'(x)}{\frac{x}{\ln(x)}}$ są 
-rzędu wielkości $O(1)$, co więcej dla dość małych wartości $2^k>1$ można zauważyć, że $\frac{\pi'(x)}{\frac{x}{\ln(x)}}$ jest 
-większe niż $1$ i zbliżone do $2$. Zgadza się to z intuicją, że jeżeli wybieramy jedynie liczby nieparzyste,
-to prawdopodobieństwo natrafienia na liczbę złożoną jest około $2$ razy mniejsze, bo "odpadają" nam 
-liczby parzyste, które poza $2$ są zawsze złożone. Być może jeszcze zwiększając zakres $x$ okazałoby się, że 
-że dla $2^k=2^{50}$ również badana wartość zaczęłaby się zbliżać do $2$, jednak otrzymane szacowania i tak
-są już dla nas satysfakcjonujące, tym bardziej, że mnożenie wielomianów rozmiarów rzędu $2^{50}$ nawet przy pomocy
-szybkiej transformaty Furiera i tak dla zdecydowanej większości współczesnych komputerów jest zadaniem niemożliwym
-do wykonania w czasie, który można by nazwać "rozsądnym" a sama pamięć potrzebna do przechowania
-tak dużej ilości współczynników byłaby rzędu petabajtów. 
-
-Plik typu ipynb w którym przechchowuję kod użyty w omawianych wyżej eksperymentach znajduje się
-w dołączonym do pracy repozytorium i nosi nazwę "primeExperiment.ipynb".
-
-
-Omówię teraz już samą implementację modułu szukającego liczby pierwszej. Wszystkie wymienione niżej funkcje zostały 
-zaimplementowane w języku C++.
-
-Składa się on z kilku funkcji, z których zdecydowanie najprostsza jest $absolutevalue$ która
-zwraca po prostu wartość bezwzględną liczby którą przyjmuje jako argument. Służy ona po prostu
-łatwemu pozbyciu się problemu z tym, że niektóre liczby losowane przez używaną w dalszej
-części kodu funkcję $rand()$ liczby mogą być ujemne, podczas gdy iteresują nas tylko liczby dodatnie. 
-Druga bardzo prosta funkcja to funkcja $pow2$ która dla przyjmowanej jako argument liczby $t$ 
-zwraca najmniejszą potęgę $2$ z wykładnikiem naturalnym, która jest większa niż $t$. Jest to po prostu
-mnożenie przez $2$ zmiennej $ans$ której początkowa wartość jest równa $1$ dopóki nie będzie 
-większa niż $t$. Musimy wykonać co najwyżej $63$ mnożenia, co jest na tyle szybkie, że nie ma 
-potrzeby stosowania jakiś bardziej zaawansowanych algorytmów jak na przykład 
-używających algorytm szybkiego potęgowania.
-
-Funkcja $randomLongLong$ służy losowaniu liczby 64-bitowej niewiększej niż podana jako argument 
-liczba $mod$. Należąca do standardu C++ funkcja $rand$ zwraca liczby 32-bitowe, co może nie być dla nas
-wystarczające. Jeżeli $mod<2^{31}$ zwracam po prostu resztę z dzielenia przez $mod$ wartości bezwzględnej
-wyniku wywołania $rand()$. Jeżeli zaś jest ona większa niż $2^{31}$ najpierw pobieramy jej 31 
-najmniej znaczących bitów z wylsowanej liczby $candidate1$, zaś następnie losujemy liczbę 
-całkowitą $candidate2$ z przedziału $[0,\frac{mod}{2^{31}}]$.
-Potem łączymy obie liczby wyliczając wartość $candidate2 \cdot 2^{31}+candidate1$ co jest faktycznie 
-losową liczbą z zadanego przedziału.
-
-Kolejną nieco bardziej złożoną funkcją jest funkcja $isprime$ sprawdzającą czy podana jako argument 
-liczba $x$ jest pierwsza. Jeżeli $x \leq 1$ oczywiście zwracamy fałsz. Jeżeli zaś jest równe $2$ zwracamy
-prawdę. Jeżeli jest liczną parzystą większą niż $2$ zwracamy fałsz. Następnie zmienną $i$ o początkowej wartości $3$ 
-iterujemy się po kolejnych licznach nieparzystych dopóki zachodzi warunek $i \cdot i \leq x$.
-Jeżeli $i$ dzieli $x$ przerywamy iterację i zwracamy fałsz. Jeżeli zaś zakończymy omawianą pętlę przed zwróceniem fałszu
-zwracamy prawdę. Istotnie liczba nieparzysta złożona musiałaby mieć dzielnik nieparzysty mniejszy lub równy jej
-pierwiastkowi kwadratowemu. Niepokoić może fakt, że musimy w pesymistycznym przypadku wykonać $O(\sqrt{x})$ iteracji.
-W praktyce jednak nawet jeżeli $x$ jest bardzo duże, zbliżone do górnego zakresu zmiennych typu $long$ $long$ 
-wykonanie tej funkcji zajmuje najwyżej kilka sekund, a ponieważ zdecydowana większość liczb złożonych ma 
-dość mały najmniejszy dzielnik pierwszy to, w praktyce o ile liczba podana na wejście nie jest pierwsza, dla nawet bardzo dużych $x$ szybko przerwiemy wykonanie omawianej pętli i nie będzie konieczności czekać nawet tych kilku sekund.
-
-Kolejną już ostatnią funkcją w tym module jest funkcja $find\_prime$. Przyjmuje ona jako argumenty liczbę $n$ i $t$, zaś następnie zwraca liczbę pierwszą postaci $r2^k+1$, gdzie $r$ jest liczbą naturalną z przedziału $[t+1,(n+t)^3]$. Na początku przy pomocy funkcji $pow2$ wyznaczam $2^k$. Następnie losuję potencjalne liczby $r$ modulo $(n+t)^3$, przy pomocy
-funkcji $randomLongLong$. Jeżeli wylosuję liczbę niewiększą niż $t$ losuję jeszcze raz. Dla zwłaszcza dużych $n$ i $t$
-prawdopodobieństwo tego jest znikome, a nawet jeśli się zdaży, to czas powtórzenia losowania jest znikomy. Następnie mnożę
-wylosowane $r$ z wyznaczonym $2^k$ i dodaję do wyniku $1$. Kolejnym krokiem jest dla tak uzyskanej liczby sprawdzenie, czy 
-jest pierwsza przy pomocy funkcji $isprime$. Niepokoić może, koniczność wykonywanie niewiadomej ilości losowań i sprawdzeń, pierwszości wylosowanych liczb. Warto jednak zauważyć, że oczekiwana liczba losowań wynosi $O(\log(n+t))$ i większość przypadków sprawdzania złożoności liczb złożony zachodzi bardzo szybko, bo bardzo szybko w funkcji $isprime$ znajdujemy jej dzielnik pierwszy(na przedziale $[0,N]$ dla dużych $N$ zaledwie nieco ponad $0.08$ liczb ma dzielnik pierwszy większy niż 1000000 co szybko może sprawdzić poniższy krótki skrypt w Julii:
-\begin{lstlisting}
-zans=1
-for 3 in 1:1000000
-    if isprime(i)
-        ans *=(i-1)
-        ans /= i
-    end 
-    println(ans)
-end
-\end{lstlisting}
-Kod funkcji omówionych w tej sekcji znajduje się w pliku $find\_prime.h$.
 
 \section{Implementacja ciała $Z_p$}
 
@@ -281,19 +241,80 @@ mocno inspirowany implementacją klasy dużych liczb całkowitych
 zamieszczony na stronie [ https://www.geeksforgeeks.org/bigint-big-integers-in-c-with-example/ ]
 
 
-Ponieważ praktycznie wszystkie(poza rzeczami typu zwiększanie iteratora) będziemy wykonywać na elmentach ciała
-$Z_p$ w którym istnieją operatory działań arytmetycznych, aby uniknąć ciągłych konieczności pobierania ekxlicite
-wartości modulo $p$ z wyników działań najwygodniejszym podejściem byłoby zaprogramowanie klasy $field$ której instancje
+Ponieważ znaczną część obliczeń mój program będzie wykonywać na elmentach ciała
+$Z_p$ w którym istnieją działania arytmetycznych, aby uniknąć konieczności ciągłych operacji pobierania explicite
+wartości modulo $p$ z wyników działań najwygodniejszym podejściem byłoby zaprogramowanie klasy \texttt{field} której instancje
 reprezentują elementy ciała $Z_p$ zaś przeciążone operatory odpowiadają działaniom w $Z_p$ i pisząc bardziej 
 wysokopoziomowe funkcje nie musimy już się troszczyć o to, by jakkolwiek "nromalizować" wyniki. 
 
-Jednym z pól naszen klasy jest zmienna typu $long$ $long$ i nazwie $p$. Jest to po prostu wartość liczby $p$ 
-modulo którą wykonujemy obliczenia. Metoda $setP$ ustawia wartość
-$p$ na przyjętą jako argument wartość zmiennej $x$ tylu 
-$long$ $long$. Ustawia również zmienną $m$ na wartość $(LONG\_MAX / p)$, jednak jej
-zastosowanie omówię w dalszej części pracy. Zmienna $p$ jest zawsze taka 
-sama dla wszystkich instancji klasy możemy uczynić ją zmienną statyczną(podobnie jak dokładniej 
-omawianą w dalszej części m).
+
+Klasa ma kilka pól statycznych. Jednym z nich jest liczbna \texttt{p} \texttt{\textunderscore \textunderscore int128}
+będąca liczbą pierwszą modulo którą będziemy wykonywać nasze obliczenia. Liczba \texttt{m} typu 
+\texttt{\textunderscore \textunderscore int128}, która ma zastosowanie przy wykonywaniu działania mnożenia w sposób
+chroniący nas przed przepełnieniem zmiennej co zostanie omówione w dalszej części. 
+
+Liczbę \texttt{p} można zapisać jako $2^kr+1$, gdzie $r$ jest liczbą nieparzystą zaś $k$ liczbą naturalną.
+W zmiennej statycznej typu \texttt{\textunderscore \textunderscore int128} i nazwie \texttt{odd} przechowujemy
+wartość owego $r$, zaś w statycznej zmiennej \texttt{degreeOfDegree} typu
+\texttt{\textunderscore \textunderscore int128} przechowujemy wartość owego $r$.
+
+Dla każdej liczby pierwszej $p$ istnieje pierwiastek pierwotny, czyli taka liczba, że $r$, że nie istnieje 
+dodatnia liczba naturalna $w$ mniejsza niż $p-1$ taka, że $r^w \equiv 1 (\mod p)$ (oczywiście z małego twierdzenia
+Fermata $r^{p-1} \equiv 1 (\mod p)$). W dalszej części pracy stopniem liczby będę oznaczał najmniejszy wykładnik
+naturalny do którego należy ją podnieść, aby uzyskać $1$ w ciele $Z_p$. Stopień pierwiastka pierwotnego wynosi 
+oczywiście $p-1$. Bardzo często będziemy chcieli szybko wyliczyć liczbę mającą stopień będący potęgą $2$ o 
+wykładniku naturalnym $k$. Najprościej taką liczbę uzyskać jako rezultat potęgowania pierwiastka pierwotnego,
+najpierw do potęgi, której wykładnik jest równy wartości zmiennej statycznej \texttt{odd}, a następnie
+wykonaniu \texttt{degreeOfDegree-k}  podniesień wyniku do kwadratu. Wygodnie byłoby nie musieć za każdym razem
+wykonywać potęgowania do potęgi \texttt{odd}, dlatego w zmiennej statycznej \texttt{almostPrimitiveRoot}
+typu \texttt{\textunderscore \textunderscore int128} przechowóję wartość będącą wynikiem podniesienia pierwiastka
+pierwotnego do potęgi \texttt{odd}.
+
+Ostatnim polem statycznym klasy \texttt{field} jest struktura typu 
+\texttt{std::map<\textunderscore \textunderscore int128 , \textunderscore \textunderscore int128 >} i nazwie 
+inverse przechowująca odwrotności elementów ciała. Będzie ona dynamicznie powiększana w trakcie wykonania 
+programu i służy ominięcie konieczności wykonywania dużej ilości powtórzeń kosztownej operacji liczenia odwrotności
+elementu. 
+
+
+
+Metoda \texttt{setP} ustawia wartość
+\texttt{p} na przyjętą jako argument wartość zmiennej \texttt{x} typu 
+\texttt{\textunderscore \textunderscore int128}. 
+Ustawia ona również zmienną \texttt{m} na wartość $\lfloor \frac{2^{127}-1}{p} \rfloor$.
+Czyści tablicę \texttt{inverse}(wcześniej wyliczone odwrotności elementów
+po zmianie ciała przestają być dłużej odwrotnościami tych samych elementów).
+Wykonując poniższy kod znajduję wartość pól \texttt{almostPrimitiveRoot}(w zmiennej \texttt{degree}) oraz 
+\texttt{degreeOfDegree}(w zmiennej \texttt{y}) i następnie przypisujemy je odpowiednim polom.
+\texttt{odd}
+\begin{lstlisting}
+__int128 y = field::p - 1;
+__int128 degree = 0;
+while(y \% 2 == 0){
+    degree++;
+    y /= 2;
+}
+\end{lstlisting} 
+
+Następnie szukamy wartości pola \texttt{almostPrimitiveRoot}. 
+Przy zazłożeniu prawdziwości hipotezy Riemanna pierwiastek pierwotny modulo $p$ jest
+stosunkowo mały wielkości $O(\log^6(p))$ [ŹROOOOOOOOOOOOOOODŁOOOOOOOOOOOOO!!!!!!!!!!], 
+tak więc kandydatów możemy szukać sprawdzając kolejne liczby naturalne zaczynając od 2. 
+Tak naprawdę nie potrzebujemy wyznaczyć pierwiastka pierwotnego, ale jedynie liczbę stopnia ale jedynie liczbę
+$r$ dla której nie zachodzi $r^{2^{degreeOfDegree-1}} \equiv 1 (\mod p)$. Sprawdzenie dla liczby $r$ czy nie zachodzi 
+$r^{2^\frac{p-1}{2}} \equiv 1 (\mod p)$ jest mocniejszym warunkiem i dla uproszczenia kodu on zostaje sprawdzony. Następnie
+jeżeli wspomniany warunek zachodzi do zmiennej \texttt{almostPrimitiveRoot} zapisujemy $r^{odd}$.
+
+W module zajmującym losowaniem liczb pierwszych istnieje miejsce w którym wykonujemy operacje modularne modulo liczb
+które nie muszą być pierwsze jednak nie wykonujemy modulo je dzielenia. Wygodnie byłoby móc użyć metod klasy 
+\texttt{field}. Aby uniknąć potencjalnych niespodziewanych zachowań programu np podczas wyznaczania wartości pola 
+\texttt{almostPrimitiveRoot} podczas wywołania funkcji \texttt{setP} na 
+argumencie niebędącym liczbą pierwszą utworzyłem funkcję \texttt{setPstupid}, która ustawia przyjmuje argument
+\texttt{x} typu \texttt{\textunderscore \textunderscore int128} i ustawia na niego wartość
+pola \texttt{p}, wartość pola \texttt{m} ustawia podobnie jak w funkcji \texttt{setP} na  
+$\lfloor \frac{2^{127}-1}{p} \rfloor$, pozostałe pola statyczne zaś ustawia na \texttt{0} i czyści tablicę odwrotności.
+
+
 
 Pole, które przechowuje wartość pojedynczego obiektu nazwałem value. Oczywiście
 pole to już nie może być statyczne.
@@ -460,6 +481,121 @@ $a.value$ na strumień $out$ i zwraca ten strumień.
 
 Omówiony w powyższej sekcji kod został napisany w języku $C++$ i znajduje się w 
 pliku $field.h$ w dołączonym do pracy repozytorium.
+
+
+\section{Szukanie liczby pierwszej}
+W pracy Jin i Wu liczba pierwsza którą losujemy ma tylko jedno zastosowanie. Jest nim
+wyznaczenie ciała w którym będziemy wykonywać nasze obliczenia. Losowanie to odbywa się 
+zpośród liczb na przedziale $[t+1,(n+t)^3]$. Dowód oszacowania prawdopodobieństwa, 
+że liczba ta nie dzieli $t$-tego współczynnika $A(x)$ jako $O(n+t^{-1})$ kożysta z tego, że
+na badanym przedziale liczb pierwszych jest $\Omega((n+t)^2)$, co wynika z twierdzenia o 
+liczbach pierwszych mówiącym, że $\lim_{x \to \infty} \frac{\pi(x)}{\frac{x}{\ln(x))}}=1$, gdzie $\pi(x)$ to liczba liczb pierwszych niewiększych od $x$.
+
+Różnica, między moją implementacją, a algorytmem opisanym przez Ce Jin i Hongxun Wu jest 
+jednak taka, że nie używałem klasycznej wersji szybkiej transformaty Furiera, opartej na
+liczbach zespolonych, a teorio-liczbowej szybkiej transformaty Furiera wykonującej obliczenia
+w ciele $Z_p$. Tak więc w tym ciele $Z_p$ musi istnieć pierwiastek z 1 stopnia $r$ gdzie
+$r$ jest postaci $2^k$, dla pewnej liczby naturalnej $k$, oraz $r$ jest większe lub równe 
+stopniowi wielomianu, który powstanie po pomnożeniu wielomianów, które mnożymy naszą 
+transformatą powiększonego o $1$. Mnożone wielomiany są stopnia co najwyżej $t$, tak więc
+możemy przyjąć, że $2^k$ to najmniejsza potęga $2$ o całkowitym wykładniku większa niż 
+$2t+2$, zaś $p$ ma postać $r2^k+1$. Istotnie dla każdej liczby pierwszej $p$ istnieje jej pierwiastek pierwotny $a$,
+którego stopień jest równy $p-1$, czyli w tym przypadku $r2^k$, zaś stopień tego pierwiastka podniesiony
+do potęgi $r$ wynosi $2^k$.
+
+Intuicjyjnie można przypuszczać, że ponieważ rozmieszczenie liczb pierwszych jest trudne 
+do opisania prostym wzorem, to podobny procent liczb postaci $r2^k+1$ gdzie $r$ jest liczbą
+naturalną z przedziału $[t+1,(n+t)^3]$ jest pierwszy, co po prostu, procent liczb 
+pierwszych na przedziale $[t+1,(n+t)^3]$. Dla uproszczenia możemy badać przedział $[0,(n+t)^3]$, ponieważ $t+1$ jest względnie małe w stosunku do $(n+t)^3$. 
+Ostatecznie nasza hipoteza jest taka, że jeżeli $\pi'(x)$ to liczba liczb pierwszych postaci $r2^k+1$ , gdzie $r$ jest
+liczbą naturalną niewiększą od $x$. To $lim_{x \to \infty}\frac{\pi'(x)}{\frac{x}{\ln(x)}}$
+jest równe $1$.
+
+W przeciwieństwie do większości pozostałego kodu, który przygotowałem, ze względu na jednoczesne łatwe wykonywanie wykresów, oraz szybkość działania eksperymentalne weryfikowanie
+tej hipotezy przeprowadziłem w języku Julia i przy użyciu programu Jupyter Notebook.
+
+Oczywiście eksperymentalne wyznaczenie $\pi'(x)$ dla dużych $x$-ów byłoby bardzo czasochłonne więc wartość $\frac{\pi'(x)}{x}$ szaacowałem przy pomocy funkcji, która najpierw losowała $100000$
+liczb typu $UInt64$ modulo $x$, mnożyłem, przez $2^k$ i dodawałem $1$, zaś następnie sprawdzałem przy pomocy funkcji
+$isprime$ należącej do pakietu $Primes$ czy otrzymana 
+tak liczba jest pierwsza i jeśli odpowiedź była pozytywna inkrementowałem zmienną $ans$, której 
+początkowa wartość wynosiła $0$. Następnie zwracałem  $\frac{ans}{100000}$, czyli liczbę
+stosunek wylosowanych liczb pierwszych do ilości losowań. Wartość $\pi'(x)$ wyliczałem dla $x$
+postaci $100000000000000k+1$, gdzie $k \in \{0,1,..99\}$, oraz gdzie parametr $2^k$ jest równy
+$1,2,4,8,16,64,256,1024,2^{20},2^{30}$ i $2^{50}$. Żeby uniknąć problemów z tym, że liczby
+przekraczać będą limity zmiennej całkowitej $64$-bitowej bez znaku odrazu po wyliczeniu losowanej liczby
+modulo $x$ rzutowałem ją na zmienną BigInt. 
+
+Na poniższym wykresie prezentuję jak poniższa metoda pozwoliła szacować $\frac{\pi'(x)}{\frac{x}{\ln(x)}}$
+(oś pionowa), w zależności od argumentu $x$(oś pionowa) i parametru $2^k$(kolor).
+
+
+
+Jak widać z wykresu nawet dla bardzo dużych $2^k$ i $x$, wartości $\frac{\pi'(x)}{\frac{x}{\ln(x)}}$ są 
+rzędu wielkości $O(1)$, co więcej dla dość małych wartości $2^k>1$ można zauważyć, że $\frac{\pi'(x)}{\frac{x}{\ln(x)}}$ jest 
+większe niż $1$ i zbliżone do $2$. Zgadza się to z intuicją, że jeżeli wybieramy jedynie liczby nieparzyste,
+to prawdopodobieństwo natrafienia na liczbę złożoną jest około $2$ razy mniejsze, bo "odpadają" nam 
+liczby parzyste, które poza $2$ są zawsze złożone. Być może jeszcze zwiększając zakres $x$ okazałoby się, że 
+że dla $2^k=2^{50}$ również badana wartość zaczęłaby się zbliżać do $2$, jednak otrzymane szacowania i tak
+są już dla nas satysfakcjonujące, tym bardziej, że mnożenie wielomianów rozmiarów rzędu $2^{50}$ nawet przy pomocy
+szybkiej transformaty Furiera i tak dla zdecydowanej większości współczesnych komputerów jest zadaniem niemożliwym
+do wykonania w czasie, który można by nazwać "rozsądnym" a sama pamięć potrzebna do przechowania
+tak dużej ilości współczynników byłaby rzędu petabajtów. 
+
+Plik typu ipynb w którym przechchowuję kod użyty w omawianych wyżej eksperymentach znajduje się
+w dołączonym do pracy repozytorium i nosi nazwę "primeExperiment.ipynb".
+
+
+Omówię teraz już samą implementację modułu szukającego liczby pierwszej. Wszystkie wymienione niżej funkcje zostały 
+zaimplementowane w języku C++.
+
+Składa się on z kilku funkcji, z których zdecydowanie najprostsza jest $absolutevalue$ która
+zwraca po prostu wartość bezwzględną liczby którą przyjmuje jako argument. Służy ona po prostu
+łatwemu pozbyciu się problemu z tym, że niektóre liczby losowane przez używaną w dalszej
+części kodu funkcję $rand()$ liczby mogą być ujemne, podczas gdy iteresują nas tylko liczby dodatnie. 
+Druga bardzo prosta funkcja to funkcja $pow2$ która dla przyjmowanej jako argument liczby $t$ 
+zwraca najmniejszą potęgę $2$ z wykładnikiem naturalnym, która jest większa niż $t$. Jest to po prostu
+mnożenie przez $2$ zmiennej $ans$ której początkowa wartość jest równa $1$ dopóki nie będzie 
+większa niż $t$. Musimy wykonać co najwyżej $63$ mnożenia, co jest na tyle szybkie, że nie ma 
+potrzeby stosowania jakiś bardziej zaawansowanych algorytmów jak na przykład 
+używających algorytm szybkiego potęgowania.
+
+Funkcja $randomLongLong$ służy losowaniu liczby 64-bitowej niewiększej niż podana jako argument 
+liczba $mod$. Należąca do standardu C++ funkcja $rand$ zwraca liczby 32-bitowe, co może nie być dla nas
+wystarczające. Jeżeli $mod<2^{31}$ zwracam po prostu resztę z dzielenia przez $mod$ wartości bezwzględnej
+wyniku wywołania $rand()$. Jeżeli zaś jest ona większa niż $2^{31}$ najpierw pobieramy jej 31 
+najmniej znaczących bitów z wylsowanej liczby $candidate1$, zaś następnie losujemy liczbę 
+całkowitą $candidate2$ z przedziału $[0,\frac{mod}{2^{31}}]$.
+Potem łączymy obie liczby wyliczając wartość $candidate2 \cdot 2^{31}+candidate1$ co jest faktycznie 
+losową liczbą z zadanego przedziału.
+
+Kolejną nieco bardziej złożoną funkcją jest funkcja $isprime$ sprawdzającą czy podana jako argument 
+liczba $x$ jest pierwsza. Jeżeli $x \leq 1$ oczywiście zwracamy fałsz. Jeżeli zaś jest równe $2$ zwracamy
+prawdę. Jeżeli jest liczną parzystą większą niż $2$ zwracamy fałsz. Następnie zmienną $i$ o początkowej wartości $3$ 
+iterujemy się po kolejnych licznach nieparzystych dopóki zachodzi warunek $i \cdot i \leq x$.
+Jeżeli $i$ dzieli $x$ przerywamy iterację i zwracamy fałsz. Jeżeli zaś zakończymy omawianą pętlę przed zwróceniem fałszu
+zwracamy prawdę. Istotnie liczba nieparzysta złożona musiałaby mieć dzielnik nieparzysty mniejszy lub równy jej
+pierwiastkowi kwadratowemu. Niepokoić może fakt, że musimy w pesymistycznym przypadku wykonać $O(\sqrt{x})$ iteracji.
+W praktyce jednak nawet jeżeli $x$ jest bardzo duże, zbliżone do górnego zakresu zmiennych typu $long$ $long$ 
+wykonanie tej funkcji zajmuje najwyżej kilka sekund, a ponieważ zdecydowana większość liczb złożonych ma 
+dość mały najmniejszy dzielnik pierwszy to, w praktyce o ile liczba podana na wejście nie jest pierwsza, dla nawet bardzo dużych $x$ szybko przerwiemy wykonanie omawianej pętli i nie będzie konieczności czekać nawet tych kilku sekund.
+
+Kolejną już ostatnią funkcją w tym module jest funkcja $find\_prime$. Przyjmuje ona jako argumenty liczbę $n$ i $t$, zaś następnie zwraca liczbę pierwszą postaci $r2^k+1$, gdzie $r$ jest liczbą naturalną z przedziału $[t+1,(n+t)^3]$. Na początku przy pomocy funkcji $pow2$ wyznaczam $2^k$. Następnie losuję potencjalne liczby $r$ modulo $(n+t)^3$, przy pomocy
+funkcji $randomLongLong$. Jeżeli wylosuję liczbę niewiększą niż $t$ losuję jeszcze raz. Dla zwłaszcza dużych $n$ i $t$
+prawdopodobieństwo tego jest znikome, a nawet jeśli się zdaży, to czas powtórzenia losowania jest znikomy. Następnie mnożę
+wylosowane $r$ z wyznaczonym $2^k$ i dodaję do wyniku $1$. Kolejnym krokiem jest dla tak uzyskanej liczby sprawdzenie, czy 
+jest pierwsza przy pomocy funkcji $isprime$. Niepokoić może, koniczność wykonywanie niewiadomej ilości losowań i sprawdzeń, pierwszości wylosowanych liczb. Warto jednak zauważyć, że oczekiwana liczba losowań wynosi $O(\log(n+t))$ i większość przypadków sprawdzania złożoności liczb złożony zachodzi bardzo szybko, bo bardzo szybko w funkcji $isprime$ znajdujemy jej dzielnik pierwszy(na przedziale $[0,N]$ dla dużych $N$ zaledwie nieco ponad $0.08$ liczb ma dzielnik pierwszy większy niż 1000000 co szybko może sprawdzić poniższy krótki skrypt w Julii:
+\begin{lstlisting}
+zans=1
+for 3 in 1:1000000
+    if isprime(i)
+        ans *=(i-1)
+        ans /= i
+    end 
+    println(ans)
+end
+\end{lstlisting}
+Kod funkcji omówionych w tej sekcji znajduje się w pliku $find\_prime.h$.
+
 
 
 
@@ -732,19 +868,19 @@ $t+1$ współczynników szeregu Taylora $B(x)=\ln(\prod_{i=1}^n(1+x^{s_i}))$.
 
 Funkcja \texttt{B} wyznacza wektor $t+1$ pierszych wyrazów szeregu Taylora w ciele $Z_p$ następującej 
 funkcji:
-\begin{center}
-$B(x)=\ln(\prod_{i=1}^n(1+x^{s_i}))=\sum_{i=1}^n \ln(1+x^{s_i})=\sum_{i=1}^n(\sum_{j=1}^\infty
-\frac{(-1)^{j-1}}{j}x^{s_i j})$.
-\end{center}
+$$
+B(x)=\ln(\prod_{i=1}^n(1+x^{s_i}))=\sum_{i=1}^n \ln(1+x^{s_i})=\sum_{i=1}^n(\sum_{j=1}^\infty
+\frac{(-1)^{j-1}}{j}x^{s_i j})
+$$
 
 Niech $a_k$ będzie oznaczać liczbę elementów $S$ równych $k$.
 
 Przy tak przyjętych oznaczeniach 
 
-\begin{center}
-$B_t(x)=\sum_{i=1}^n (\sum_{j=1}^{\lfloor \frac{t}{s_i} \rfloor}\frac{(-1)^{j-1}}{j}x^{s_ij})
-=\sum_{k=1}^t (\sum_{j=1}^{\lfloor \frac{t}{k} \rfloor}\frac{a_k(-1)^{j-1}}{j}x^{jk})$
-\end{center}
+$$
+B_t(x)=\sum_{i=1}^n (\sum_{j=1}^{\lfloor \frac{t}{s_i} \rfloor}\frac{(-1)^{j-1}}{j}x^{s_ij})
+=\sum_{k=1}^t (\sum_{j=1}^{\lfloor \frac{t}{k} \rfloor}\frac{a_k(-1)^{j-1}}{j}x^{jk})$$
+
 Spójrzmy na implementację funkcji $B$.
 
 \begin{lstlisting}

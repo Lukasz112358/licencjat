@@ -21,9 +21,6 @@ public:
     static std::map< __int128,__int128> inverse;
     static void  setEasyThings();
     static void  setAlmostPrimitiveRoot();
-    void static setM( __int128 x){
-        m =x;
-    }
     __int128 static getP(){
         return p;
     }
@@ -146,7 +143,7 @@ std::string toString(__int128 x){
 __int128 fromString(std::string x){
 	__int128 ans = 0;
 	__int128 multiplier = 1;
-	for(int i = x.size()-1;i>-1;i--){
+	for(int i = (int)x.size()-1;i>-1;i--){
 		if(x[i]=='-')return -ans;
 		ans+=charToDigit(x[i])*multiplier;
 		multiplier*=10;
@@ -241,24 +238,28 @@ field operator*(const field&a,const field&b){
 } 
 field &operator^=(field & a, __int128 const & b){
     __int128 B = (b%(field::p-1));
+    if(field::odd == 0)B=b; 
     field A(a);
     if(B == 0){
         a  = 1;
     }
     if(B == -1){
         if(a == 0)throw("Arithmetic Error: Division By 0");
-        if(field::inverse[a.getValue()] == 0){
+        if(field::inverse.count(a.getValue()) == 0){
             field::insertInverse(a, A^=(( long long)(field::p-2)));
         }
         a = field(field::inverse[a.getValue()]);
     }
     if(B > 1){
-        field a0 = a;
-        field a1 = a;
-        a0^=B/2;
-        a1 = a0;
-        if(B%(__int128)2 == 1)a1*=a;
-        a = a0*a1;
+        __int128 exponent = B;
+        field multiplier = a;
+        field ans = 1;
+        while(B != 0){
+            if(B % 2 == 1)ans *= multiplier;
+            multiplier *= multiplier;
+            B /=2;
+        }
+        a = ans;
         return a;
     }
     if(B<-1){
@@ -305,13 +306,13 @@ void field::setP( __int128 x){
     }    
     field::odd = y;
     field::degreeOfDegree = degree;
-    field z;
+    field r;
     for(int i = 2; i<field::p;i++){
-        z = field(i);
-        z ^= ((field::p-1)/2);
+        r = field((__int128)i);
+        r ^= ((field::p-1)/2);
         if(z.getValue() != 1){
-            z = field(i);
-            field::almostPrimitiveRoot = z^(__int128)field::odd;
+            r = field(i);
+            field::almostPrimitiveRoot = r^(__int128)field::odd;
             break;
         }
     }
@@ -321,7 +322,7 @@ void field::setP( __int128 x){
         s*=2;
         maximum +=s;
     }
-    field::setM(maximum  / x );    
+    field::m = maximum  / x ;    
 } 
 
 void field::setPstupid(__int128 x){
@@ -335,6 +336,6 @@ void field::setPstupid(__int128 x){
         s*=2;
         maximum +=s;
     }
-    field::setM(maximum / x );
+    field::m = maximum / x ;
 }
 #endif
