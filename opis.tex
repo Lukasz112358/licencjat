@@ -318,166 +318,260 @@ $\lfloor \frac{2^{127}-1}{p} \rfloor$, pozostałe pola statyczne zaś ustawia na
 
 Pole, które przechowuje wartość pojedynczego obiektu nazwałem value. Oczywiście
 pole to już nie może być statyczne.
-Stworzyłem kilka konstruktorów dla klasy $field$. Konstruktor domyślny
-nie przyjmuje żadnego argumentu i ustawia wartość $value$ na $0$. 
-Konstruktor kopiujący ustawia wartość $value$ na wartość $value$ obiektu 
-typu $field$ podanego jako argument. Ostatnie dwa konstruktory
-przyjmują jako argument liczbę całkowitą $val$ odpowiednio typu
-$int$ i $long$ $long$ i ustawiają wartość pola $value$ na resztę z
-dzielenia $val$ przez $p$ jednak ponieważ dla uproszczenia chcemy trzymać
-jako $value$ tylko liczby nieujemne zamiast przypisać polu $value$ wprost
-wartości $val \% p$, przypisujemy jej wartość $((val\%p)+p)\%p$ co jak 
-można łatwo stwierdzić w istocie zawsze przyjmuje wartość dodatnią będącą
-resztą z dzielenia $val$ przez $p$.
+Stworzyłem kilka konstruktorów dla klasy \texttt{field}. Konstruktor domyślny
+nie przyjmuje żadnego argumentu i ustawia wartość \texttt{value} na \texttt{0}.
+Konstruktor kopiujący ustawia wartość \texttt{value} na wartość \texttt{value} obiektu 
+typu \texttt{field} podanego jako argument. 
+
+Ostatni konstruktor przyjmuje liczbę całkowitą \texttt{val} 
+typu \texttt{\textunderscore \textunderscore int128}. Żeby uniknąć nietypowych zachowań programu chcemy, żeby wartości \texttt{value} dla 
+każdego obiektu klasy \texttt{field} były mniejsze niż \texttt{p} i większe niż \texttt{0}.Jeżeli więc wartość \texttt{val}
+jest większa lub równa \texttt{0}  polu \texttt{value} przypisuję
+jej resztę z dzielenia przez \texttt{p}. Jeżeli jest zaś jest ujemna przypisuję mu wynik działania \texttt{((val\%p)+p)\%p}.
+
+%przyjmują jako argument liczbę całkowitą $val$ odpowiednio typu
+%$int$ i $long$ $long$ i ustawiają wartość pola $value$ na resztę z
+%dzielenia $val$ przez $p$ jednak ponieważ dla uproszczenia chcemy trzymać
+%jako $value$ tylko liczby nieujemne zamiast przypisać polu $value$ wprost
+%wartości $val \% p$, przypisujemy jej wartość $((val\%p)+p)\%p$ co jak 
+%można łatwo stwierdzić w istocie zawsze przyjmuje wartość dodatnią będącą
+%resztą z dzielenia $val$ przez $p$.
 
 Przejdę teraz do omówienia kolejnych funkcji i przeciążonych operatorów
 w omawianej klasie.
 
-Funkcja  getValue służy pobraniu wartości zmiennej $value$, która ma 
-ustawioną prywatność na $default$.
+Utworzyłem kilka get-terów, żeby w sposób bardziej kontrolowany odwoływać się do niepublicznych pól. 
+\texttt{getP}, \texttt{getM}, \texttt{getAlmostPrimitiveRoot}, \texttt{getOdd}, \texttt{getDegreeOfDegree}
+służą odpowiednio do pobrania wartości pól \texttt{p}, \texttt{m}, \texttt{almostPrimitiveRoot},
 
-Metody $field$ $inline$ $\&operator++()$, 
-$field$ $inline$ $operator++(int temp)$,
-$field$ $inline$ $\&operator--()$,
-$field$ $inline$ $operator--(int temp)$ to odpowiednio przeciążenia
+Metody \texttt{friend field inline \& operator++()}, 
+\texttt{friend field inline operator++(int temp)},
+\texttt{friend field inline \& operator--()},
+\texttt{friend field inline \& operator++(int temp)} to odpowiednio przeciążenia
 operatora postinkrementacji, preinkrementacji, postdekrementacji i predekrementacj.
 Operator postinkrementacji kożystając z niezmiennika, mówiącego,
-że wartość pola $value$ jest zawsze liczbą całkowitą z
+że wartość pola \texttt{value} jest zawsze liczbą całkowitą z
 przedziału $[0,1,..,p-1]$ który
-zachowują wszystkie funkcje modyfikujące pole $value$ oraz konstruktory
-może przypisać w miejsce $value$ po prostu wartość wyrażenia
-$(value+1)\%field::p$. Ponieważ jeżeli $value=0$ naiwna postdekrementacja
-powoduje uzyskanie wyniku ujemnego zamiast $(value+1)\%field::p$ w przypadku
-postdekrementacji przypisujemy zmiennej $value$ wartość
-wyrażenia $(field::p+value-1)\%field::p$. Dla operatora 
-preinkrementacji najpierw tworzymy zmienną $aux$ w której przechowujemy
+zachowują wszystkie funkcje modyfikujące pole \texttt{value} oraz konstruktory
+może przypisać polu \texttt{value} po prostu wartość wyrażenia
+\texttt{(value+1)\%field::p}. Jeżeli \texttt{value=0} naiwna postdekrementacja
+powoduje uzyskanie wyniku ujemnego dlatego polu \texttt{value} w przypadku postdekrementacji
+zamiast \texttt{(value+1)\%field::p} przypisujemy 
+\texttt{(field::p+value-1)\%field::p}. Dla operatora 
+preinkrementacji najpierw tworzymy zmienną \texttt{aux} w której przechowujemy
 starą wartość obiektu, którą później zwrócimy, a następnie na oryginalnym 
 obiekcie dokonujemy zdefiniowaną wcześniej postinkrementację.
 Operator predekrementacji definiujemy analogicznie jak preinkrementacji.
 
-Następnie definiuję przeciążenia operatorów $+=,+,-=,-$. Operator
-$+=$ przyjmuje przez referencje dwa argumenty typu $field$,
-gdzie pierwszy oznaczam jako $a$, zaś drugi jako $b$. Wartości pola
-$value$ przypisujemy wartość $( a.value + b.value ) \%field::p$ gdzie 
-operator $\%$ służy zachowaniu niezmiennika, by wartości pola $value$
-były mniejsze niż $p$. Z kolei dla operatora $-=$ wartości analogicznego
-pola przypisujemy wartość wyrażenia $(a.value-b.value+field::p)\%field::p$
+Następnie definiuję przeciążenia operatorów 
+\texttt{friend inline field \&operator+=},
+\texttt{friend inline field \&operator+},
+\texttt{friend inline field \&operator-=},
+\texttt{friend inline field \&operator-}. Operator
+\texttt{+=} przyjmuje przez referencję dwa argumenty typu \texttt{field},
+gdzie pierwszy oznaczam jako \texttt{a}, zaś drugi jako \texttt{b}. Wartości pola
+\texttt{value} przypisujemy wartość \texttt{( a.value + b.value ) \%field::p} gdzie 
+operator \texttt{\%} służy zachowaniu niezmiennika, by wartości pola \texttt{value}
+były mniejsze niż \texttt{p}. Z kolei dla operatora \texttt{-=} wartości analogicznego
+pola przypisujemy wartość wyrażenia \texttt{(a.value-b.value+field::p)\%field::p}
 gdzie nieobecne w poprzednim przypadku dodanie $p$ służy niedopuszczeniu
-do sytuacji gdy $value$ stanie się ujemne jeśli $b.value > a.value$.
-W implementacji operatora $+$ tworzymy zmienną tymczasową temp, o wartości
-początkowej pola $value$ takiej samej jak $a.value$, a następnie
-przy pomocy zdefiniowanego wcześniej operatora $+=$ dodajemy do tego obiektu
-obiekt $b$. Analogicznie definiujemy operatora $-$;
+do sytuacji gdy \texttt{value} stanie się ujemne jeśli \texttt{b.value > a.value}.
+W implementacji operatora \texttt{+} tworzymy tymczasowy obiekt \texttt{temp} klasy 
+\texttt{field}, o wartości
+początkowej pola \texttt{value} równej \texttt{a.value}, a następnie
+przy pomocy zdefiniowanego wcześniej operatora \texttt{+=} dodajemy do tego obiektu
+obiekt \texttt{b}. Analogicznie definiujemy operatora \texttt{-}.
 
 Kolejnymi nieco prostszymi operatorami jakie zdefiniowałem to operatory porownójące
-$==,!=,<,<=,>=,>$, które dla argumentów $a$ i $b$ po prostu zwracają wartości boolowskie odpowiednio 
-wyrażeń $a.value == b.value$, $a.value != b.value$, $a.value < b.value$, 
-$a.value <= b.value$, $a.value >= b.value$ i $a.value > b.value$.
+\texttt{friend inline bool operator==}, 
+\texttt{friend inline bool operator!=}, 
+\texttt{friend inline bool operator<},
+\texttt{friend inline bool operator<=}, 
+\texttt{friend inline bool operator>}, 
+\texttt{friend inline bool operator>=} 
+które dla argumentów \texttt{a} i \texttt{b} zwracają wartości boolowskie 
+odpowiednio wyrażeń 
+\texttt{a.value == b.value}, 
+\texttt{a.value != b.value},
+\texttt{a.value < b.value},
+\texttt{a.value <= b.value},
+\texttt{a.value >= b.value}
 
-Nieco bardziej skomplikowana jest implementacja operatora $*=$. Ponieważ liczba 
-$p$ mnoże być rzędu $O((n+t)^3)$ to gdybyśmy postąpili naiwnie i (przyjmując 
-oznaczenie pierwszego argumentu jako $a$, drugiego jako $b$) przypisali odpowiedniemu
-polu wartość wyrażenia $(a.value*b.value)\%field::p$ wynik mnożenia $a.value*b.value$
-byłby rzędu $O((n+t)^6)$, co już dla $n+t$ rzędu $10^3$ mogłoby powodować wychodzenie poza zakres 
-zmiennej $long$ $long$. Oczywiście tak mały zakres liczb mocno wpłynąłby na użyteczność
-zaimplementowanych przezemnie programów. Definiuję więc zmienną $m$, będącą 
-górną wartością $b$, dla którego możemy wykonać mnożenie w sposób naiwny (i następnie 
-wyciągnąć tylko resztę z dzielenia przez $p$) bez obaw o przepełnienie. W 
-przeciwnym wypadku tworzę zmienną pomocniczą $A$ będącą wartością pola value
-obiektu $a$ oraz zmienną $B$ będącą wartością pola value obiektu $b$.
-Zauważmy, że $A \cdot B = A \cdot \lfloor \frac{B}{m} \rfloor \cdot  + A \cdot (B \% m)$
-Wartość $m$ jest zależna od $p$ i dlatego ustawiamy ją podczas operacji $setP$ o czym pisałem w 
-jednym poprzednich akapitów. Najpierw rekurencyjnie używając $*=$ mnożę
-obiekt typu $field$ o wartości zmiennej $value$ równej $A$ przez obiekt $field(B/m)$ i wynik 
-trzymam w obiekcie $ans1$, zaś następnie tworzę obiekt $field ans2 = field(A*(B\%m))$(żeby 
-wartość $value$ dla tak powstałego obiektu była z odpowiedniego zakresu "pilnuje" definicja konstruktora).
-Do zmiennej $a$ zapisuję wynik dodawania tych obiektów.
+Nieco bardziej skomplikowana jest implementacja operatora \texttt{friend field \&operator*=}. Ponieważ liczba 
+\texttt{p} mnoże być rzędu $O(t(n+t)^3)$ gdybyśmy postąpili naiwnie i (przyjmując 
+oznaczenie pierwszego argumentu jako \texttt{a}, drugiego jako \texttt{b}) 
+przypisali polu \texttt{value} wyniku wartość wyrażenia
+\texttt{(a.value*b.value)\%field::p} oznaczałoby to pobranie reszty z dzielenia przez p w 
+wartości wyrażenia \texttt{a.value*b.value}, która 
+byłaby rzędu $O(t^2(n+t)^6)$, co już dla \texttt{t} rzędu $10^5$ mogłoby powodować 
+wychodzenie poza zakres nawet zmiennej typu
+\texttt{\textunderscore \textunderscore int128}. 
+Oczywiście tak mały zakres liczb mocno wpłynąłby na użyteczność
+zaimplementowanych funkcji. Definiuję więc zmienną \texttt{m}, będącą 
+górną wartością \texttt{b}, dla którego możemy wykonać mnożenie w sposób naiwny 
+(i następnie wyciągnąć tylko resztę z dzielenia przez \texttt{p}) bez obaw o przepełnienie.
+W przeciwnym wypadku tworzę zmienną pomocniczą \texttt{A} będącą wartością pola value
+obiektu \texttt{a} oraz zmienną \texttt{B} będącą wartością pola value obiektu 
+\texttt{b}.
+\begin{tcolorbox}
+\begin{center}
+    Na potrzeby dalszej części pracy definiuję operator matematyczny $\%$ który dla lewego 
+    argumentu będącego liczbą naturalną $A$ i prawego będącego liczbą naturalną dodatnią 
+    $B$ zwraca resztę z dzielenia $A$ przez $B$. Jest więc bardzo podobny do operatora 
+    \texttt{\%} w składni C++.
+\end{center}    
+\end{tcolorbox}
+Zauważmy, że $A \cdot B = A \cdot \lfloor \frac{B}{m} \rfloor  + A \cdot (B \% m)$
+Wartość \texttt{m} jest zależna od \texttt{p} i dlatego ustawiamy ją podczas operacji 
+\texttt{setP} o czym pisałem w 
+jednym poprzednich akapitów. Inicjalizuję obiekt typu \texttt{field} ans1 o wartości pola \texttt{value} równej \texttt{A}.
+Następnie mnożę go rekurencyjnie przy pomocy operatora \texttt{*=} przez \texttt{field(fied::m)}, a następnie przez 
+\texttt{field(B/field::m)}. Inicjalizuję też obiekt \texttt{ans2} o początkowej wartości pola \texttt{value}
+równej \texttt{A} i mnożę rekurencyjnie przy pomocy operatora \texttt{*=} przez \text{field(B\%field::m)}. 
+Po tych operacjach wartość pola value obiektu \texttt{ans1} wynosi A $\cdot \lfloor \frac{B}{m} \rfloor$, zaś 
+obiektu \texttt{ans2} $A \cdot (B \% m)$. Do \texttt{a} zapisujemy więc \texttt{ans1+ans2} i zwracamy \texttt{a}.
 
-Kolejnym operatorem jest operator $*$. Argumenty, które otrzymuje
-to obiekty typu $field$ o nazwach $a$ i $b$. Tworzę tymczasową zmienną $temp$
-o tej samej wartości co $a$ i następnie mnożę ją przez $b$ przy pomocy
-zdefiniowanego wcześniej operatora $*=$ i zwracam tak zmodyfikowany obiekt $temp$.
 
-Kolejnym operatorem jest operator potęgowania $\textsuperscript{$\wedge$}=$. Pierwszym argumentem jaki przyjmuje 
-jest obiekt typu $field$ o nazwie $a$ oraz zmienna typu $long$ $long$ o
-nazwie $b$. Zauważmy, że z małego twierdzenia Fermata $a^{p-1} \equiv 1 (\mod p) $, tak więc
-zamiast podnosić $a$ do potęgi $B$ możemy podnieść ją do potęgi $B\%(p-1)$.
-Teoretycznie moglibyśmy rozpatrywać $((b\%(p-1))+p-1) \% (p - 1)$, jednak z pewnych powodów, o 
-których napiszę w dalszej części zdecydowałem się rozpatrzyć przypadki $B$ ujemnego i 
+Kolejnym operatorem jest operator \texttt{friend field operator*}. Argumenty, które otrzymuje
+to obiekty typu \texttt{field} o nazwach \texttt{a} i \texttt{b}. Tworzę tymczasowy obiekt typu \texttt{field} i nazwie \texttt{temp}
+o tej samej wartości pola \texttt{value} co \texttt{a} i następnie mnożę go przez \texttt{b} przy pomocy
+zdefiniowanego wcześniej operatora \texttt{*=} i zwracam tak zmodyfikowany obiekt \texttt{temp}.
+
+Kolejnym operatorem jest operator potęgowania \texttt{friend field inline \&operator}\verb!^!\texttt{=}. 
+Pierwszym argumentem jaki przyjmuje jest obiekt typu \texttt{field} o nazwie \texttt{a} oraz zmienna typu 
+\texttt{\textunderscore \textunderscore int128} o
+nazwie \texttt{b}. Zauważmy, że z małego twierdzenia Fermata(jeżeli $p$ nie dzieli $a$, jeżeli jednak dzieli również własność zachodzi, 
+czego dowód jest trywialny) $a^{k(p-1)+l} \equiv (a^{p-1})^ka^l \equiv 1^ka^l \equiv a^l (\mod p) $ dla dowolnych naturalnych
+$a,k,l$, tak więc
+zamiast podnosić \texttt{b} do potęgi \texttt{b} możemy podnieść ją do potęgi \texttt{B\%(p-1)}.
+Teoretycznie moglibyśmy rozpatrywać \texttt{((b\%(p-1))+p-1) \% (p - 1)}, jednak z pewnych powodów, o 
+których napiszę w dalszej części pracy zdecydowałem się rozpatrzyć przypadki \texttt{b} ujemnego i 
 dodatniego osobno. 
 
-Jeżeli $b==0$ przypisuję $a$ wartość $1$ i zwracam wynik. Jeżeli $B$ = 1 nie 
-nie robię nic, tylko odrazu zwracam $a$. Jeżeli $B==-1$ to jeżeli $a.value==0$ 
-wyrzucam błąd dzielenia przez $0$, jeżeli zaś nie robię następującą procedurę.
-Ponieważ potęgowanie do $-1$ to znalezienie odwrotności $a$ w $Z_p$
-z małego twierdzenia Fermata oznacza to podniesienie $a$ do potęgi 
-$p-2$. Potęgowanie można zaimplementować, by wykonywać się w czasie logarytmicznym
-względem liczby mnożeń, jednak mnożenie ze względu na groźbę przepełnienia
+Należy również pamiętać, że po zaimplementowaniu funkcji \texttt{setPstupid}
+nasza klasa może symulować niektóre działania modulo \texttt{p} dla \texttt{p}
+nie będącego liczbą pierwszą. Oczywiście wtedy małe twierdzenie Fermata
+przestaje pozwalać na ową redukcję \texttt{b} do reszty z dzielenia przez
+\texttt{p-1}, tak więc przypadek ten skorygowałem prostym \texttt{if}-em, sprawdzającym 
+czy wartość pola \texttt{odd} jest równa \texttt{0}, co może się zdarzyć tylko wtedy gdy klasa 
+jest inicjalizowana funkcją \texttt{setPstupid}.
+
+Jeżeli \texttt{b==0} przypisuję \texttt{a} wartość \texttt{1} i zwracam wynik. Jeżeli \texttt{B==1}  nie 
+nie robię nic, tylko odrazu zwracam \texttt{a}. Jeżeli \texttt{B==-1} to jeżeli \texttt{a.value==0} 
+wyrzucam błąd dzielenia przez \texttt{0}, jeżeli zaś nie wykonuję następującą procedurę.
+Ponieważ potęgowanie do \texttt{-1} to znalezienie odwrotności \texttt{a} w $\mathbb{Z}_p$
+z małego twierdzenia Fermata oznacza to podniesienie \texttt{a} do potęgi 
+\texttt{p-2}. Potęgowanie można zaimplementować, by wykonywało się w czasie logarytmicznym
+względem stopnia, jednak mnożenie ze względu na groźbę przepełnienia
 też może w pesymistycznym przypadku zabierać logarytmicznie dużo czasu.
 Znalezienie odwrotności obiektu jest dość podstawową operacją, którą 
-możemy chcieć wykonywać dość często, tak więc czas $O(\log ^2(p))$ może
-nie być zadowalający. Dlatego klasa $field$ posiada jeszcze jedno pole, którym
-jest statyczna mapa o nazwie $inverse$ z wejściami typu $<long$ $long,long$ $long>$, która przypisuje 
-liczbie $x$ liczbę która jest wartością pola $value$ odwrotności $field(x)$. Tablicę tą 
-czyścimy, za każdym razem gdy zmieniamy wartość $p$. Istotnie wtedy odwrotności
+możemy chcieć wykonywać bardzo często, tak więc czas $O(\log ^2(p))$ może
+nie być zadowalający. Dlatego klasa \texttt{field} posiada jeszcze jedno pole, którym
+jest statyczna mapa o nazwie \texttt{inverse} z wejściami typu 
+\texttt{<\texttt{\textunderscore \textunderscore int128},\texttt{\textunderscore \textunderscore int128}>}, która przypisuje 
+liczbie \texttt{x} liczbę która jest wartością odwrotną w ciele $\mathbb{Z}_p$. Mapę tą
+czyścimy, za każdym razem gdy zmieniamy wartość \texttt{p}. Istotnie wtedy odwrotności
 tych samych liczb mogą stać się inne, bo zmienia się ciało w którym są tymi odwrotnościami.
-Operacja $insertInverse$ przyjmuje zmienne typu $field$, które zakładamy
-explicite, że są elementami wzajemnie odwrotnymi i oznaczamy jako $a$ oraz $b$, 
+Operacja \texttt{insertInverse} przyjmuje zmienne typu \texttt{field}, które zakładamy
+explicite, że są elementami wzajemnie odwrotnymi i oznaczamy jako \texttt{a} oraz \texttt{b}, 
 a następnie, jako, że $(a^{-1})^{-1}=a$ wykonujemy od razu 2 przypisania
 \begin{lstlisting}
   field::inverse[a.value] = b.value;
   field::inverse[b.value] = a.value;
 \end{lstlisting}
-Gdy mamy wyliczyć potęgę o wykładniku $-1$ jakiegoś elementu $a$ typu $field$ sprawdzam 
-najpierw czy w mapie odwrotności jest przypisana wartość dla klucza $a.value$(nie jest
-przypisana wtedy i tylko wtedy gdy wartością wyrażenia $field::inverse[a.getValue()] == 0$ jest
-prawda), a następnie jeżeli kluczowi temu przypisana jest wartość ustawiamy $a.value$ na nią i zwracamy $a$, zaś
-jeżeli nie wykonujemy operację $field::insertInverse(a, A\textsuperscript{$\wedge$}=(( long long)(field::p-2)))$
-(gdzie rekurencyjnie wywołujemy operastor $\textsuperscript{$\wedge$}=$ dla wartości nieujemnej)
-i ponownie pobieramy wartość dla klucza $a.value$. Pozwala nam to dla każdego elementu $Z_p$ wyliczyć
+Gdy mamy wyliczyć potęgę o wykładniku \texttt{-1} jakiegoś elementu \texttt{a} typu \texttt{field} sprawdzam 
+najpierw czy w mapie odwrotności jest przypisana wartość dla klucza \texttt{a.value}, 
+a następnie jeżeli kluczowi temu przypisana jest wartość ustawiamy \texttt{a.value} na nią i zwracamy \texttt{a}, zaś
+w przeciwnym przypadku wykonujemy operację 
+\texttt{field::insertInverse(a, A\textsuperscript{$\wedge$}=(( long long)(field::p-2)))}, gdzie \texttt{A} to kopia
+obiektu \texttt{a}.
+(rekurencyjnie wywołujemy operastor \texttt{\textsuperscript{$\wedge$}=} dla wartości nieujemnej)
+i ponownie pobieramy wartość dla klucza \texttt{a.value}. Pozwala nam to dla każdego elementu 
+$\mathbb{Z}_p$ wyliczyć
 jego odwrotność co najwyżej raz, bez względu na ilość wywołań tego wyliczenia w wyżej poziomowym 
 kodzie. 
 
-Kolejnym przypadkiem, który należy rozważyć to gdy $B>1$. Zauważmy, że $a^b=a^{\lfloor\frac{B}{2} \rfloor} \cdot a^{\lfloor\frac{B}{2} \rfloor} \cdot a$
-jeżeli $B$ jest nieparzyste lub $a^B=a^{\lfloor\frac{B}{2} \rfloor} \cdot a^{\lfloor\frac{B}{2} \rfloor}$ jeżeli $B$ jest parzyste.
-Tworzę więc pomocnicze obiekt $a0$ o tej samej wartości pola $value$ co $a$. Rekurencyjnie
-wykonuję $a0 =\textsuperscript{$\wedge$} (B/2)$. Kolejne wykonania $a0 =\textsuperscript{$\wedge$} (B/2)$
-mają drugi argument mniejszy lub równy $\frac{1}{2}$ poprzedniego drugiego argumentu, więc ilość 
-tych wywołań nim drugi argument będzie równy $0$ lub $1$ jest $O(\log(B))$. Następnie mnożymy obiekt $a0$ przez
-samego siebie przy pomocy operatora $*=$, i teraz aktualna wartość $a0$ wynosi 
-$a^{\lfloor \frac{B}{2}\rfloor} \cdot a^{\lfloor \frac{B}{2}\rfloor}$. Jeżeli $B$
-jest nieparzyste mnożymy przy pomocy $*=$ $a$ przez $a0$, jeżeli zaś jest parzyste 
-po prostu przypisujemy obiektowi $a$ wartość obiektu $a0$. W obu przypadkach zwracamy $a$.
+Kolejnym przypadkiem, który należy rozważyć to gdy \texttt{B>1}. Wykonuję wtedy iteracyjną wersję szybkiego potęgowania.
+Tworzę pomocniczy obiekt \texttt{multiplier} będący kopią \texttt{a}, oraz obiekt \texttt{ans} o
+wartości pola \texttt{value} równej 1. Następnie wykonuję pętlę
+\begin{lstlisting}
+while(B != 0){
+    if(B % 2 == 1)ans *= multiplier;
+    multiplier *= multiplier;
+    B /=2;
+}
+\end{lstlisting}
+i następnie kopiuję wartość \texttt{ans} do obiektu \texttt{a} oraz zwracam \texttt{a}.
 
-Kolejnym i już ostatnim przypadkiem jest gdy $B < -1$. W tym przypadku wykożystujemy 
+Kolejnym i już ostatnim przypadkiem jest gdy \texttt{B < -1}. W tym przypadku wykożystujemy 
 fakt, że $a^B=(a^{-1})^{-B}$. Tak więc kolejno wykonujemy zdefiniowane wcześniej 
-podniesienie $a$ do potęgi $-1$ przy pomocy operatora $\textsuperscript{$\wedge$} =$ a następnie znów przy
-pomocy tego samego operatora podnosimy $a$ do potęgi $-B>1$, co też zostało już wcześniej
-zdefiniowane. Po wykonaniu tych obliczeń zwracam $a$.
+podniesienie \texttt{a} do potęgi \texttt{-1} przy pomocy operatora \texttt{\textsuperscript{$\wedge$} =} 
+a następnie znów przy
+pomocy tego samego operatora podnosimy \texttt{a} do potęgi \texttt{-B>1}, co też zostało już 
+wcześniej zdefiniowane. Po wykonaniu tych obliczeń zwracam \texttt{a}.
 
-Kolejnym operatorem jest $\textsuperscript{$\wedge$}$. Pobiera on argument $a$ typu field i $b$ typu $long$ $long$, tworzy
-przy pomocy konstruktóra kopiującego tymczasowy obiekt $temp$ typu $field$ z taką samą wartością pola 
-$value$ co $a$, następnie przy pomocy operatora $\textsuperscript{$\wedge$}=$ podnosi 
-$temp$ do potęgi $B$ i zwraca tak zmodyfikowaną wartość $temp$.
+Kolejnym operatorem jest \texttt{\textsuperscript{$\wedge$}}. Pobiera on argument \texttt{a} typu 
+\texttt{field} i \texttt{b} typu 
+\texttt{\textunderscore \textunderscore int128}, tworzy
+przy pomocy konstruktóra kopiującego tymczasowy obiekt \texttt{temp} typu \texttt{field} z taką 
+samą wartością pola 
+\texttt{value} co \texttt{a}, następnie przy pomocy operatora 
+\texttt{\textsuperscript{$\wedge$}=} podnosi 
+\texttt{temp} do potęgi \texttt{B} i zwraca tak zmodyfikowaną wartość \texttt{temp}.
 
-Kolejnym operatorem będzie operator dzielenia $/=$ przyjmujący dwa argumenty typu 
-$field$ oznaczone odpowiednio jako $a$ i $b$. Dzielenie w ciele modulo nie oznacza
-"klasycznego" dzielenia arytmetycznego, ale pomnożenie przez element odwrotny. Tak więc tworzymy nowy obiekt $B$ będący kopią $b$ i mnożymy $a$ przy pomocy
-operartora $*=$ przez $B\textsuperscript{$\wedge$}(long$ $long)(-1)$. Następnie zwracamy tak zmodyfikowane $a$.
+Kolejnym operatorem będzie operator dzielenia \texttt{\textbackslash=} przyjmujący dwa argumenty typu 
+\texttt{field} oznaczone odpowiednio jako \texttt{a} i \texttt{b}. Dzielenie w ciele modulo nie oznacza
+"klasycznego" dzielenia arytmetycznego, ale pomnożenie przez element odwrotny. 
+Tak więc tworzymy nowy obiekt \texttt{B} będący kopią \texttt{b} i mnożymy \texttt{a} przy pomocy
+operartora \texttt{*=} przez \texttt{B\textsuperscript{$\wedge$}(long$ $long)(-1)}. Następnie zwracamy tak zmodyfikowane \texttt{a}.
 
-Kolejnym operatorem jest $/$. Otrzymuje on dwa argumenty typu $fieled$ o nazwach $a$ i $b$. Tworzę obiekt $temp$ typu field i przypisuję mu wartość $a$, następnie dzielę przez $b$ przy pomocy 
-operatora $/=$ i zwracam $temp$.
+Kolejnym operatorem jest \texttt{\textbackslash}. Otrzymuje on dwa argumenty typu \texttt{fieled} o nazwach \texttt{a} i 
+\texttt{b}. Tworzę obiekt \texttt{temp} typu field i przypisuję mu wartość \texttt{a}, następnie dzielę przez \texttt{b} przy pomocy 
+operatora \texttt{\textbackslash=} i zwracam \texttt{temp}.
 
-Kolejnym operatorem jest operator wczytania ze strumienia wejściowego $>>$.
-Jako argument otrzymuje strumień (obiekt typu
-$std::istream$) oraz obiekt typu $field$ o nazwie $a$.
-Funkcja mu odpowiadająca najpierw wczytuje ze strumienia $in$ wartość tymczasowej zmiennej $s$ typu $long$ $long$
-a, następnie przypisuje obiektowi $a$ wartość $field(s)$. Następnie zwracam strumień $in$.
+Kolwjnymi operatorami są operatory strumieniowe
 
-Kolejnym już ostatnim operatorem jest wypisanie obiektu typu field na strumień wyjściowy
-$<<$. Jako argument pobiera strumień wyjściowy (obiekt typu $std::ostream$) o nazwie $out$ oraz 
-obiekt typu $field$ i nazwie $a$. Funkcja mu odpowiadająca wypisuje po prostu wartość pola 
-$a.value$ na strumień $out$ i zwraca ten strumień. 
+\texttt{std::istream \&operator> > (std::istream \&in,field\&a)} i
+
+\texttt{std::ostream \&operator< <(std::ostream \&out,const field \&a)}.
+
+Wypisanie/wczytanie elementu będzie polegać na wypisaniu/wczytaniu 
+wartości jego pola \texttt{value}. Jednak kompilator \texttt{g++} nie ma zdefiniowanych operatorów strumieniowych 
+dla zmiennych typu \texttt{\textunderscore \textunderscore int128}. Dlatego będę w przypadku operatora \texttt{> >} najpierw
+wczytywał zapis rządanej wartości pola \texttt{value} do zmiennej typu \texttt{std::string}, a następnie przy pomocy funkcji 
+\texttt{fromString} przekształcał ją do zmiennej typu \texttt{\textunderscore \textunderscore int128} i zwracał podany 
+jako argument strumień \texttt{in}. Z kolei w przypadku operatora \texttt{< <} będę konwertował zmienną typu 
+\texttt{\textunderscore \textunderscore int128} do zmiennej typu \texttt{std::string} i dopiero po konwersji
+wypisywał na podany jako argument strumień \texttt{out} i zwracał ten strumień.
+
+Funkcja \texttt{fromString} używa funkcji \texttt{charToDigit}, która przyjmując znak \texttt{x} typu 
+\texttt{char} będący zapisem jakiejś cyfry w języku "ludzkim" zwraca liczbę typu 
+\texttt{\textunderscore \textunderscore int128} mającą wartość tej cyfry. Funkcja \texttt{fromString} przyjmuje 
+zmienną \texttt{x} typu \texttt{std::string} jako argument a następnie przechodząc w pętli od tyłu
+po znakach tego słowa
+dodaje do zmiennej wynikowej \texttt{ans} kolejne potęgi \texttt{10} o wykładniku naturalnym pomnożone przez wartość
+wyniku funkcji \texttt{charToDigit} na rozpatrywanym znaku. Jeżeli zaś napotka na znak \texttt{-} mnoży \texttt{ans}
+przez \texttt{-1}.
+
+Zmienna \texttt{fromString} kożysta z funkcji \texttt{toStringOneNumber}, która zakładam, 
+że przyjmuje liczbę typu \texttt{\textunderscore \textunderscore int128}
+i zwraca jej zapis jej reszty z dzielenia przez \texttt{10} w formnie zmiennej typu \texttt{string}.
+Funkcja \texttt{toString} 
+przyjmuje wartość \texttt{x} typu \texttt{\textunderscore \textunderscore int128}
+Jeżeli \texttt{x==0} zwraca \texttt{"0"}. Jeżeli \texttt{x} jest ujemne zapamiętuje to w zmiennej
+\texttt{minus} typu \texttt{bool} i następnie mnoży w miejscu \texttt{x} przez \texttt{-1}. 
+Funkcja inicjalizuje zmienną wynikową \texttt{ans} na słowo puste, a następnie wykonuje pętlę
+\begin{lstlisting}
+    while(B != 0){
+        if(B \% 2 == 1)ans *= multiplier;
+        multiplier *= multiplier;
+        B /=2;
+    }
+\end{lstlisting}
+W przypadku gdy zmienna \texttt{minus} została ustawiona na \texttt{true} dodaję z przodu wyniku słowo \texttt{"\textminus"}.
+Po wykonaniu omówionych operacji zwracam wynik. 
+
+
 
 Omówiony w powyższej sekcji kod został napisany w języku $C++$ i znajduje się w 
 pliku $field.h$ w dołączonym do pracy repozytorium.
@@ -485,11 +579,25 @@ pliku $field.h$ w dołączonym do pracy repozytorium.
 
 \section{Szukanie liczby pierwszej}
 W pracy Jin i Wu liczba pierwsza którą losujemy ma tylko jedno zastosowanie. Jest nim
-wyznaczenie ciała w którym będziemy wykonywać nasze obliczenia. Losowanie to odbywa się 
-zpośród liczb na przedziale $[t+1,(n+t)^3]$. Dowód oszacowania prawdopodobieństwa, 
-że liczba ta nie dzieli $t$-tego współczynnika $A(x)$ jako $O(n+t^{-1})$ kożysta z tego, że
-na badanym przedziale liczb pierwszych jest $\Omega((n+t)^2)$, co wynika z twierdzenia o 
-liczbach pierwszych mówiącym, że $\lim_{x \to \infty} \frac{\pi(x)}{\frac{x}{\ln(x))}}=1$, gdzie $\pi(x)$ to liczba liczb pierwszych niewiększych od $x$.
+wyznaczenie ciała w którym będziemy wykonywać nasze obliczenia. Losowanie jej odbywa się 
+zpośród liczb na przedziale $[t+1,(n+t)^3]$. 
+
+\begin{tcolorbox}
+    %\begin{center}
+        \textbf{Definicja:} $\pi(x)$ jest funkcją $\mathbb{N}\to\mathbb{N}$ przypisująca argumentowi $x$ liczbę 
+        liczb pierwszych niewiększych niż $x$.
+    %\end{center}    
+\end{tcolorbox}
+
+Twierdzeniem o liczbach pierwszych mówi, że: [ŹROOOOOOOOOOOOOOODŁOOOOOOOOOOOOO] 
+$$\lim_{x \to \infty} \frac{\pi(x)}{\frac{x}{\ln(x)}}=1$$
+
+Tak więc liczb pierwszych na przedziale $[t+1,(n+t)^3]$ jest $O((n+t)^2)$. Celem naszego algorytmu jest sprawdzenie
+czy dla danego multizbioru $\{x_1,x_2,...,x_n\} \equiv \mathbb{N}$ i liczby $t$ współczynnik przy $x^t$ w wielomianie 
+$\prod_{i=1}^{t}(1+x^{s_j})$ jest dodatni. Ponieważ obliczenia wykonujemy w ciele $\mathbb{Z}_p$ jeżeli 
+ów współczynnik byłby podzielny przez $p$ fałszywie uznalibyśmy go za zerowy. Jednak współczynnik ten będzie 
+niewiększy od $2^n$, tak więc ma najwyżej $O(n)$ dzielników pierwszych, więc prawdopodobieństwo, że wylosowana
+liczba dzieli ten współczynnik jest $O(\frac{1}{n+t})$
 
 Różnica, między moją implementacją, a algorytmem opisanym przez Ce Jin i Hongxun Wu jest 
 jednak taka, że nie używałem klasycznej wersji szybkiej transformaty Furiera, opartej na
