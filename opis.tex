@@ -592,7 +592,7 @@ zpośród liczb na przedziale $[t+1,(n+t)^3]$.
 Twierdzeniem o liczbach pierwszych mówi, że: [ŹROOOOOOOOOOOOOOODŁOOOOOOOOOOOOO] 
 $$\lim_{x \to \infty} \frac{\pi(x)}{\frac{x}{\ln(x)}}=1$$
 
-Tak więc liczb pierwszych na przedziale $[t+1,(n+t)^3]$ jest $O((n+t)^2)$. Celem naszego algorytmu jest sprawdzenie
+Tak więc liczb pierwszych na przedziale $[t+1,(n+t)^3]$ jest $\Omega((n+t)^2)$. Celem naszego algorytmu jest sprawdzenie
 czy dla danego multizbioru $\{x_1,x_2,...,x_n\} \equiv \mathbb{N}$ i liczby $t$ współczynnik przy $x^t$ w wielomianie 
 $\prod_{i=1}^{t}(1+x^{s_j})$ jest dodatni. Ponieważ obliczenia wykonujemy w ciele $\mathbb{Z}_p$ jeżeli 
 ów współczynnik byłby podzielny przez $p$ fałszywie uznalibyśmy go za zerowy. Jednak współczynnik ten będzie 
@@ -600,81 +600,77 @@ niewiększy od $2^n$, tak więc ma najwyżej $O(n)$ dzielników pierwszych, wię
 liczba dzieli ten współczynnik jest $O(\frac{1}{n+t})$
 
 Różnica, między moją implementacją, a algorytmem opisanym przez Ce Jin i Hongxun Wu jest 
-jednak taka, że nie używałem klasycznej wersji szybkiej transformaty Furiera, opartej na
+jednak taka, że nie używałem klasycznej wersji szybkiej transformaty Fouriera, opartej na
 liczbach zespolonych, a teorio-liczbowej szybkiej transformaty Furiera wykonującej obliczenia
-w ciele $Z_p$. Tak więc w tym ciele $Z_p$ musi istnieć pierwiastek z 1 stopnia $r$ gdzie
-$r$ jest postaci $2^k$, dla pewnej liczby naturalnej $k$, oraz $r$ jest większe lub równe 
-stopniowi wielomianu, który powstanie po pomnożeniu wielomianów, które mnożymy naszą 
-transformatą powiększonego o $1$. Mnożone wielomiany są stopnia co najwyżej $t$, tak więc
+w ciele $\mathbb{Z}_p$. Ponieważ w tym ciele $\mathbb{Z}_p$ musi istnieć pierwiastek z 1 stopnia $r$ gdzie
+$r$ jest postaci $2^k$, dla pewnej liczby naturalnej $k$, oraz $r$ jest większe niż 
+stopnień wielomianu, który powstanie po pomnożeniu wielomianów, do których mnożenia używamy naszą 
+transformatę. Mnożone wielomiany są stopnia co najwyżej $t$, tak więc
 możemy przyjąć, że $2^k$ to najmniejsza potęga $2$ o całkowitym wykładniku większa niż 
-$2t+2$, zaś $p$ ma postać $r2^k+1$. Istotnie dla każdej liczby pierwszej $p$ istnieje jej pierwiastek pierwotny $a$,
-którego stopień jest równy $p-1$, czyli w tym przypadku $r2^k$, zaś stopień tego pierwiastka podniesiony
-do potęgi $r$ wynosi $2^k$.
+$2t$, zaś $p$ ma postać $r2^k+1$. Istotnie dla każdej liczby pierwszej $p$ istnieje jej pierwiastek pierwotny $a$,
+którego stopień jest równy $p-1$, czyli w tym przypadku $r2^k$, zaś stopień $a^r$ jest równy $2^k$.
+
 
 Intuicjyjnie można przypuszczać, że ponieważ rozmieszczenie liczb pierwszych jest trudne 
 do opisania prostym wzorem, to podobny procent liczb postaci $r2^k+1$ gdzie $r$ jest liczbą
 naturalną z przedziału $[t+1,(n+t)^3]$ jest pierwszy, co po prostu, procent liczb 
-pierwszych na przedziale $[t+1,(n+t)^3]$. Dla uproszczenia możemy badać przedział $[0,(n+t)^3]$, ponieważ $t+1$ jest względnie małe w stosunku do $(n+t)^3$. 
-Ostatecznie nasza hipoteza jest taka, że jeżeli $\pi'(x)$ to liczba liczb pierwszych postaci $r2^k+1$ , gdzie $r$ jest
-liczbą naturalną niewiększą od $x$. To $lim_{x \to \infty}\frac{\pi'(x)}{\frac{x}{\ln(x)}}$
-jest równe $1$.
+pierwszych na przedziale $[t+1,(n+t)^3]$. 
+
+\begin{tcolorbox}
+    \textbf{Definicja}: $\pi'(x,t)$ to funkcja $(\mathbb{N} \times \mathbb{N}) \to \mathbb{N}$, ktora dla argumentów $x$ i
+    $t$ zwraca liczbę liczb pierwszych postaci $r2^k+1$, gdzie $2^k$ to najmniejsza potęga $2$ o wykładniku naturalnym
+    większa niż $2t$, zaś $r$ jest liczbą naturalną mniejszą lub równą $x$
+\end{tcolorbox}
+
+Losowanie liczby pierwszej $p$ o rządanych właściwościach będzie polegać najpierw na wylosowaniu liczby naturalnej $r$
+z przedziału $[(n+t),(n+t)^3]$, a następnie wyliczeniu liczby $k2^r+1$, gdzie $2^k$ to najmniejsza potęga $2$ o wykładniku naturalnym większa niż $2t$ i sprawdzeniu, czy tak wyliczona liczba jest pierwsza.
+
+Dla danych $t$ i $n$ tym sposobem możemy wylosować $\pi'((n+t)^3,x)-\pi'(n+t,x)$ różnych liczb pierwszych. Jeżeli 
+więc $\pi'((n+t)^3,x)-\pi'(n+t,x)$ jest conajmniej $\Omega((n+t)^2)$ to szacowanie prawdopodobieństwa błędu analogiczne do szacowania 
+Jin i Wu zachodzi. Oczywiście wyliczenie dokładnej wartości $\pi'((n+t)^3,x)-\pi'(n+t,x)$ dla dużych $n$ i $t$ jest trudne 
+dlatego oszacowałem je poprzez losowanie \texttt{1000000} liczb z przedziału $[(n+t),(n+t)^3]$, pomnożeniu przez $2^k$, gdzie $2^k$ to najmniejsza potęga $2$ o wykładniku naturalnym
+większa niż $2t$ i dodaniu $1$, oraz zliczeniu w zmiennej \texttt{ans} ile tak wylosowanych liczb jest pierwsze. 
+$\frac{ans}{1000000}((n+t)^3-(n+t)+1) \approx \pi'(n,t)$.
+
+Poniższa heat-mapa ukazuje tak przybliżoną wartość $\log_2(\frac{\pi'(n,t)}{(n+t)^2})$, w zależności od $\log_2(n)$ i $\log_2(t)$. Jak widać zdecydowanie liczba liczb pierwszych możliwych do uzyskania w omówiony sposób
+jest $\Omega((n+t)^2)$.
 
 W przeciwieństwie do większości pozostałego kodu, który przygotowałem, ze względu na jednoczesne łatwe wykonywanie wykresów, oraz szybkość działania eksperymentalne weryfikowanie
-tej hipotezy przeprowadziłem w języku Julia i przy użyciu programu Jupyter Notebook.
+tej hipotezy przeprowadziłem w języku Julia. Kod użyty do testowania znajduje się  w pliku \texttt{PrimesExperiment.jl}.
 
-Oczywiście eksperymentalne wyznaczenie $\pi'(x)$ dla dużych $x$-ów byłoby bardzo czasochłonne więc wartość $\frac{\pi'(x)}{x}$ szaacowałem przy pomocy funkcji, która najpierw losowała $100000$
-liczb typu $UInt64$ modulo $x$, mnożyłem, przez $2^k$ i dodawałem $1$, zaś następnie sprawdzałem przy pomocy funkcji
-$isprime$ należącej do pakietu $Primes$ czy otrzymana 
-tak liczba jest pierwsza i jeśli odpowiedź była pozytywna inkrementowałem zmienną $ans$, której 
-początkowa wartość wynosiła $0$. Następnie zwracałem  $\frac{ans}{100000}$, czyli liczbę
-stosunek wylosowanych liczb pierwszych do ilości losowań. Wartość $\pi'(x)$ wyliczałem dla $x$
-postaci $100000000000000k+1$, gdzie $k \in \{0,1,..99\}$, oraz gdzie parametr $2^k$ jest równy
-$1,2,4,8,16,64,256,1024,2^{20},2^{30}$ i $2^{50}$. Żeby uniknąć problemów z tym, że liczby
-przekraczać będą limity zmiennej całkowitej $64$-bitowej bez znaku odrazu po wyliczeniu losowanej liczby
-modulo $x$ rzutowałem ją na zmienną BigInt. 
+Omówię teraz już samą implementację modułu szukającego liczby pierwszej. Wszystkie wymienione niżej funkcje zostały  zaimplementowane w języku C++ i znajdują się w pliku \texttt{FindPrimes.cpp}.
 
-Na poniższym wykresie prezentuję jak poniższa metoda pozwoliła szacować $\frac{\pi'(x)}{\frac{x}{\ln(x)}}$
-(oś pionowa), w zależności od argumentu $x$(oś pionowa) i parametru $2^k$(kolor).
-
-
-
-Jak widać z wykresu nawet dla bardzo dużych $2^k$ i $x$, wartości $\frac{\pi'(x)}{\frac{x}{\ln(x)}}$ są 
-rzędu wielkości $O(1)$, co więcej dla dość małych wartości $2^k>1$ można zauważyć, że $\frac{\pi'(x)}{\frac{x}{\ln(x)}}$ jest 
-większe niż $1$ i zbliżone do $2$. Zgadza się to z intuicją, że jeżeli wybieramy jedynie liczby nieparzyste,
-to prawdopodobieństwo natrafienia na liczbę złożoną jest około $2$ razy mniejsze, bo "odpadają" nam 
-liczby parzyste, które poza $2$ są zawsze złożone. Być może jeszcze zwiększając zakres $x$ okazałoby się, że 
-że dla $2^k=2^{50}$ również badana wartość zaczęłaby się zbliżać do $2$, jednak otrzymane szacowania i tak
-są już dla nas satysfakcjonujące, tym bardziej, że mnożenie wielomianów rozmiarów rzędu $2^{50}$ nawet przy pomocy
-szybkiej transformaty Furiera i tak dla zdecydowanej większości współczesnych komputerów jest zadaniem niemożliwym
-do wykonania w czasie, który można by nazwać "rozsądnym" a sama pamięć potrzebna do przechowania
-tak dużej ilości współczynników byłaby rzędu petabajtów. 
-
-Plik typu ipynb w którym przechchowuję kod użyty w omawianych wyżej eksperymentach znajduje się
-w dołączonym do pracy repozytorium i nosi nazwę "primeExperiment.ipynb".
-
-
-Omówię teraz już samą implementację modułu szukającego liczby pierwszej. Wszystkie wymienione niżej funkcje zostały 
-zaimplementowane w języku C++.
-
-Składa się on z kilku funkcji, z których zdecydowanie najprostsza jest $absolutevalue$ która
-zwraca po prostu wartość bezwzględną liczby którą przyjmuje jako argument. Służy ona po prostu
-łatwemu pozbyciu się problemu z tym, że niektóre liczby losowane przez używaną w dalszej
-części kodu funkcję $rand()$ liczby mogą być ujemne, podczas gdy iteresują nas tylko liczby dodatnie. 
-Druga bardzo prosta funkcja to funkcja $pow2$ która dla przyjmowanej jako argument liczby $t$ 
-zwraca najmniejszą potęgę $2$ z wykładnikiem naturalnym, która jest większa niż $t$. Jest to po prostu
-mnożenie przez $2$ zmiennej $ans$ której początkowa wartość jest równa $1$ dopóki nie będzie 
-większa niż $t$. Musimy wykonać co najwyżej $63$ mnożenia, co jest na tyle szybkie, że nie ma 
+Moduł losujący składa się z kilku funkcji, z których zdecydowanie najprostszą jest \texttt{pow2} która dla przyjmowanej jako argument liczby \texttt{t}
+zwraca najmniejszą potęgę \texttt{2} z wykładnikiem naturalnym, która jest większa niż \texttt{2t}. Polega ona na
+mnożeniu przez \texttt{2} zmiennej \texttt{ans} której początkowa wartość jest równa \texttt{1} dopóki nie będzie 
+większa niż \texttt{2*t}. Musimy wykonać co najwyżej kilkadziesiąt mnożeń, co jest na tyle szybkie, że nie ma 
 potrzeby stosowania jakiś bardziej zaawansowanych algorytmów jak na przykład 
-używających algorytm szybkiego potęgowania.
+używających algorytmu szybkiego potęgowania.
 
-Funkcja $randomLongLong$ służy losowaniu liczby 64-bitowej niewiększej niż podana jako argument 
-liczba $mod$. Należąca do standardu C++ funkcja $rand$ zwraca liczby 32-bitowe, co może nie być dla nas
-wystarczające. Jeżeli $mod<2^{31}$ zwracam po prostu resztę z dzielenia przez $mod$ wartości bezwzględnej
-wyniku wywołania $rand()$. Jeżeli zaś jest ona większa niż $2^{31}$ najpierw pobieramy jej 31 
-najmniej znaczących bitów z wylsowanej liczby $candidate1$, zaś następnie losujemy liczbę 
-całkowitą $candidate2$ z przedziału $[0,\frac{mod}{2^{31}}]$.
-Potem łączymy obie liczby wyliczając wartość $candidate2 \cdot 2^{31}+candidate1$ co jest faktycznie 
-losową liczbą z zadanego przedziału.
+Funkcja \texttt{randomLongLong} służy losowaniu liczby dodatniej 64-bitowej niewiększej niż podana jako argument 
+liczba \texttt{mod}. Należąca do standardu C++ funkcja \texttt{rand} zwraca liczby 32-bitowe, co może nie być dla nas
+wystarczające. Jeżeli \texttt{mod} mieści się w zakresie zmiennej typu \texttt{int} zwracam po prostu resztę z dzielenia przez \texttt{mod} wartości bezwzględnej
+wyniku wywołania \texttt{rand()}. Jeżeli zaś jest większe niż $2^{31}-1$ \texttt{31} ostatnich bitów wyniku zapisujemy w zmiennej \texttt{candidate} jako resztę z dzielenia przez $2^{30}$ wartości bezwzględnej wyniku wywołania funkcji \texttt{rand()},
+a następnie losuję bity wiodące jako wynik  operacji \texttt{std::abs(((long long)std::rand())\%((long long)mod/(long long)1073741824))} i zapisuję je w zmiennej \texttt{candidate2}. Może się zdażyć, że niektóre liczby mniejsze niż 
+\texttt{mod} będą nieosiągalne, jednak jest z pewnością mniej niż $\frac{mod}{2}$, więc nie będzie to wpływać na 
+asymptotyczną złożoność prawdopodobieństwa błędu. 
+
+Podobną konstrukcję ma funkcja \texttt{random128} służąca do losowania dodatniej liczby typu
+\texttt{\textunderscore \textunderscore int128},
+jednak rolę jaką w funkcji \texttt{randomLongLong} pełnią funkcja \texttt{rand} i liczby $2^{31}-1$i $2^{30}$ w kodzie \texttt{random128} pełnią odpowiednio
+ funkcja \texttt{randomLongLong} i $2^{63}-1$ i $2^{62}$.
+
+Sprawdzenie czy wylosowana liczba jest pierwsza wykonuję przy pomocy testu Millera-Rabina. 
+
+Jego idea jest następująca: każdą liczbę pierwszą $p$ większą niż $2$ da się jednoznacznnie zapisać w postaci $d2^s+1$
+gdzie $d$ jest nieparzyste, zaś $s$ naturalne. Dla dowolnej liczby
+$n \in \{2,3,...,p-1\}$ z małego twierdzenia Fermata $p$ dzieli
+
+$$ n^{p-1}-1=n^{d2^s}-1=(n^d)^{2^s}-1=((n^d)^{2^{s-1}}+1)((n^d)^{2^{s-1}}-1)=$$
+
+
+$$((n^d)^{2^0}-1)((n^d)^{2^0}+1)((n^d)^{2^1}+1)((n^d)^{2^2}+1)...((n^d)^{2^{s-1}}+1) $$
+
 
 Kolejną nieco bardziej złożoną funkcją jest funkcja $isprime$ sprawdzającą czy podana jako argument 
 liczba $x$ jest pierwsza. Jeżeli $x \leq 1$ oczywiście zwracamy fałsz. Jeżeli zaś jest równe $2$ zwracamy
