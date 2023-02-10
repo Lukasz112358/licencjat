@@ -656,21 +656,82 @@ a następnie losuję bity wiodące jako wynik  operacji \texttt{std::abs(((long 
 asymptotyczną złożoność prawdopodobieństwa błędu. 
 
 Podobną konstrukcję ma funkcja \texttt{random128} służąca do losowania dodatniej liczby typu
-\texttt{\textunderscore \textunderscore int128},
-jednak rolę jaką w funkcji \texttt{randomLongLong} pełnią funkcja \texttt{rand} i liczby $2^{31}-1$i $2^{30}$ w kodzie \texttt{random128} pełnią odpowiednio
- funkcja \texttt{randomLongLong} i $2^{63}-1$ i $2^{62}$.
+\texttt{\textunderscore \textunderscore int128} z przedziału $[0,1,...,mod]$, gdzie \texttt{mod}
+to liczba typu \texttt{\textunderscore \textunderscore int128} podana jako argument. 
+Rolę jaką w funkcji \texttt{randomLongLong} pełnią funkcja \texttt{rand} i liczby $2^{31}-1$i $2^{30}$ w kodzie \texttt{random128} pełnią odpowiednio
+funkcja \texttt{randomLongLong} i liczby $2^{63}-1$ i $2^{62}$. Nie musimy też w funkcji również troszczyć
+się o wyciąganie wartości bezwzględnej bo funkcja \texttt{randomLongLong} zwraca tylko
 
 Sprawdzenie czy wylosowana liczba jest pierwsza wykonuję przy pomocy testu Millera-Rabina. 
 
-Jego idea jest następująca: każdą liczbę pierwszą $p$ większą niż $2$ da się jednoznacznnie zapisać w postaci $d2^s+1$
+Jego idea jest następująca: każdą liczbę pierwszą $p$ większą niż $2$ da się jednoznacznnie zapisać w 
+postaci $d2^s+1$
 gdzie $d$ jest nieparzyste, zaś $s$ naturalne. Dla dowolnej liczby
-$n \in \{2,3,...,p-1\}$ z małego twierdzenia Fermata $p$ dzieli
+$a \in \{2,3,...,p-1\}$ z małego twierdzenia Fermata $p$ dzieli
 
-$$ n^{p-1}-1=n^{d2^s}-1=(n^d)^{2^s}-1=((n^d)^{2^{s-1}}+1)((n^d)^{2^{s-1}}-1)=$$
+$$ a^{p-1}-1=a^{d2^s}-1=(a^d)^{2^s}-1=((a^d)^{2^{s-1}}+1)((a^d)^{2^{s-1}}-1)=$$
 
 
-$$((n^d)^{2^0}-1)((n^d)^{2^0}+1)((n^d)^{2^1}+1)((n^d)^{2^2}+1)...((n^d)^{2^{s-1}}+1) $$
+$$((a^d)^{2^0}-1)((a^d)^{2^0}+1)((a^d)^{2^1}+1)((a^d)^{2^2}+1)...((a^d)^{2^{s-1}}+1) $$
 
+Tak więc z wyboru $a$ wiemy, że któraś z liczb  $((a^d)^{2^0}+1),((a^d)^{2^1}+1),...,((a^d)^{2^{s-1}}+1)$
+jest podzielna przez $p$, czyli dla pewnego $i \in \{0,1,2,...,s-1\}$ zachodzi 
+
+$$(a^d)^{2 ^i} + 1\equiv 0 (\mod p)$$
+czyli równoważnie 
+$$(a^d)^{2 ^i} + 1\equiv n-1 (\mod p)$$
+
+Test Millera-Rabina opiera się na następującej obserwacji:
+\begin{tcolorbox}
+\textbf{Obserwacja 1:}Dla większej niż $2$ liczby $n=2^sd+1$, gdzie $s$ jest naturalne, zaś $d$ naturalne nieparzyste i liczby $
+a \in \{2,3,...,n-1\}$
+jeżeli istnieje liczba $i \in \{0,1,2,..,s-1\}$ taka, że $(a^d)^{2^i} \equiv n-1 (\mod p)$ to $n$
+prawdopodobnie jest pierwsza. Jeżeli takie $i$ nie istnieje $n$ liczbą pierwszą nie jest na pewno.
+\end{tcolorbox}
+
+prawdopodobieństwo błędu można minimalizować wybierając kilka liczb $a$. 
+\begin{tcolorbox}
+    \textbf{Fakt 1:}Jeżeli hipoteza Riemanna jest 
+    prawdziwa wystarczające okazuje się sprawdzenie sprawdzenie $a$ z mniejsze lub równe 
+    $\max(n-2,2\ln^2(n))$.[ŹROOOOOOOOOOOOOOODŁOOOOOOOOOOOOO]
+    
+\end{tcolorbox}
+
+Moja implementacja testu Millera Rabina składa z dwóch funkcji. 
+
+Pierwsza z nich to \texttt{MillerRabinOne} mająca za zadanie sprawdzić warunek z \textbf{Obserwacji 1} dla określonych
+\texttt{n} i \texttt{a} zwracając \texttt{false} gdy wiemy, że liczba nie jest pierwsza.
+Na początku rozważam przypadki gdy \texttt{n} i \texttt{a} nie spełniają początkowych założeń dla których
+\textbf{Hipoteza 1} była formułowana przy pomocy następujących zapytań warunkowych:
+\begin{lstlisting}
+    if(n == 2) return true;
+    if(n < 2) return false;
+    if(n \% 2==0) return false;
+    if(a \% n == 1) return true;
+    if(a > n) return true;
+\end{lstlisting}
+
+Jeżeli warunki początkowe są spełnione przy pomocy funkcji \texttt{field::setPstupid} ustawiam wartości pól statycznych klasy 
+\texttt{field} tak, żeby symulowała
+ona obliczenia w pierścieniu $\mathbb{Z}_n$. Oczywiście nie wszystkie działania zdefiniowane
+w klasie \texttt{field} działają w pierścieniu $\mathbb{Z}_n$(na przykład dzielenie). Jednak
+możemy to zignorować po prostu ograniczając się do działań dodawania, odejmowania, mnożenia i potęgowania
+z wykładnikiem naturalnym.
+
+Wyznaczam \texttt{d} i \texttt{s} zgodnie z oznaczeniami z \textbf{Hipotezy 1}.
+
+Następnie tworzę obiekt \texttt{x} klasy \texttt{field} z wartością pola \texttt{value} równą \texttt{a}.
+Podnoszę \texttt{x} do potęgi \texttt{d} przy pomocy operatora \verb!^!\texttt{=} zdefiniowanego w module definiującym klasę \texttt{field}.
+Następnie \texttt{s}-krotnie podnoszę w miejscu \texttt{x} do kwadratu przed każdym kolejnym podniesieniem sprawdzając, czy \texttt{x==n-1} 
+co oznaczałoby, że liczba \texttt{n} jest "raczej pierwsza" i zwracamy wtedy \texttt{true} lub \texttt{x==1} co oznaczałoby, że \texttt{x} po kolejnych podniesieniach do kwadratu
+będzie równe \texttt{1}, więc \texttt{n} nie jest pierwsza i zwracamy \texttt{false}. Jeżeli żaden z tych warunków nigdy nie zaszedł 
+po \texttt{s-1} podniesieniach do kwadratu zwracamy \texttt{false}.
+
+Kolejną funkcją jest \texttt{MillerRabin}, która przyjmuje liczbę \texttt{n} typu \texttt{\texttt{\textunderscore \textunderscore int128}} i 
+wywołuje funkcję \texttt{MillerRabinOne} z \texttt{n} jako pierwszym argumentem oraz drugim będącym kolejnymi liczbami ze zbioru
+$\{2,3,...,\min(n-2, 2\ln^2(n))\}$ i jeżeli, któreś z tych wywołań zwróci \texttt{false} funkcja \texttt{MillerRabin} również 
+zwraca \texttt{false}. Jeżeli jednak tak nie będzie to na podstawie \textbf{Faktu 1} zwracamy \texttt{true} oznaczające, że 
+\texttt{n} z bardzo małym prawdopodobieństwem błędu jest pierwsza. 
 
 Kolejną nieco bardziej złożoną funkcją jest funkcja $isprime$ sprawdzającą czy podana jako argument 
 liczba $x$ jest pierwsza. Jeżeli $x \leq 1$ oczywiście zwracamy fałsz. Jeżeli zaś jest równe $2$ zwracamy
