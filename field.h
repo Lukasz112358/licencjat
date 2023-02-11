@@ -238,7 +238,7 @@ field operator*(const field&a,const field&b){
     return temp;
 } 
 field &operator^=(field & a, __int128 const & b){
-    std::cout<<"wwwwwwwwwwwwwwww"<<a<<" "<<toString(b)<<std::endl;
+    //std::cout<<"wwwwwwwwwwwwwwww"<<a<<" "<<toString(b)<<std::endl;
     __int128 B = (b%(field::p-1));
     if(field::odd == 0)B=b; 
     field A(a);
@@ -248,12 +248,12 @@ field &operator^=(field & a, __int128 const & b){
     if(B == -1){
         if(a == 0)throw("Arithmetic Error: Division By 0");
         if(field::inverse.count(a.getValue()) == 0){
-            field::insertInverse(a, A^=(( long long)(field::p-2)));
+            field::insertInverse(a, A^=(field::p-2));
         }
         a = field(field::inverse[a.getValue()]);
     }
     if(B > 1){
-        std::cout<<toString(B)<<std::endl;
+        //std::cout<<toString(B)<<std::endl;
         field multiplier = a;
         field ans = 1;
         while(B != 0){
@@ -277,10 +277,10 @@ field operator^(field & a, __int128 b){
 } 
 field &operator/=(field& a,const field &b){
     field B(b.getValue());
-    std::cout<<"ccccccccccccc"<<std::endl;
+    //std::cout<<"ccccccccccccc"<<std::endl;
     //a *= (B^(__int128)(-1));
     field z = (B^(__int128)(-1));
-    std::cout<<"ccccccccccccc"<<std::endl;
+    //std::cout<<"ccccccccccccc"<<std::endl;
     a*=z;
     return a;
 }

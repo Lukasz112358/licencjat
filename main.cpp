@@ -61,7 +61,7 @@ std::vector<field> B(std::vector<field> s, __int128 t){
             //std::cout<<toString(k*j)<<std::endl;
             field x(-1);
             //for(int z = 0; z<1000; z++)std::cout<<z<<std::endl;
-            std::cout<<toString(j)<<"qqqqqqqqqqqqqqq"<<a[k]*(x^(j-1))<<" "<<toString(field::getP())<<std::endl;
+            //std::cout<<toString(j)<<"qqqqqqqqqqqqqqq"<<a[k]*(x^(j-1))<<" "<<toString(field::getP())<<std::endl;
             ans[k*j] = ans[k*j] + a[k]*(x^(j-1))/field(j);
         }
     }
@@ -94,10 +94,7 @@ std::bitset<1000000> brutal(vector<__int128>& s){
 
 
 int main() {
-    field::setP(fromString("1712074363474540585025537"));
-    field q(0);
-    q/=field(1);
-    /*
+    
     //std::srand(2);
     
     __int128 n,t;
@@ -120,6 +117,6 @@ int main() {
     for(int i=0; i<ans.size();i++){
         std::cout<<ans[i]<<std::endl;
     }
-    */
+   
     return  0;
 }
