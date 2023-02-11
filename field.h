@@ -10,6 +10,59 @@
 #include<climits>
 #include<string.h>
 //using namespace std;
+std::string toStringOneNumber(__int128 x){
+    if(x % 10 == 0)return "0" ;
+	if(x % 10 == 1)return "1" ;
+	if(x % 10 == 2)return "2" ;
+	if(x % 10 == 3)return "3" ;
+	if(x % 10 == 4)return "4" ;
+	if(x % 10 == 5)return "5" ;
+	if(x % 10 == 6)return "6" ;
+	if(x % 10 == 7)return "7" ;
+	if(x % 10 == 8)return "8" ;
+	return "9" ;
+}
+__int128 charToDigit(char x){
+    if(x == '0')return 0;
+	if(x == '1')return 1;
+	if(x == '2')return 2;
+	if(x == '3')return 3;
+	if(x == '4')return 4;
+	if(x == '5')return 5;
+	if(x == '6')return 6;
+	if(x == '7')return 7;
+	if(x == '8')return 8;
+	return 9 ;
+}
+
+
+
+std::string toString(__int128 x){
+    if(x == 0)return "0";
+	std::string ans = "";
+	bool minus=false;
+	if(x<0){
+		minus=true;
+		x = -x;
+	}
+	while(x != 0){
+		ans = toStringOneNumber(x)+ans;
+		x /=10;
+	}
+	if(minus)ans="-"+ans;
+	return ans;
+}
+__int128 fromString(std::string x){
+	__int128 ans = 0;
+	__int128 multiplier = 1;
+	for(int i = (int)x.size()-1;i>-1;i--){
+		if(x[i]=='-')return -ans;
+		ans+=charToDigit(x[i])*multiplier;
+		multiplier*=10;
+	}
+	return ans;
+}
+
 class field{
     static   __int128 p;
     static   __int128 m;
@@ -98,58 +151,6 @@ field field::almostPrimitiveRoot = field(1);
 __int128 field::degreeOfDegree = 0;
 std::map<  __int128,  __int128>field::inverse = std::map<  __int128, __int128>();
 
-std::string toStringOneNumber(__int128 x){
-    if(x % 10 == 0)return "0" ;
-	if(x % 10 == 1)return "1" ;
-	if(x % 10 == 2)return "2" ;
-	if(x % 10 == 3)return "3" ;
-	if(x % 10 == 4)return "4" ;
-	if(x % 10 == 5)return "5" ;
-	if(x % 10 == 6)return "6" ;
-	if(x % 10 == 7)return "7" ;
-	if(x % 10 == 8)return "8" ;
-	return "9" ;
-}
-__int128 charToDigit(char x){
-    if(x == '0')return 0;
-	if(x == '1')return 1;
-	if(x == '2')return 2;
-	if(x == '3')return 3;
-	if(x == '4')return 4;
-	if(x == '5')return 5;
-	if(x == '6')return 6;
-	if(x == '7')return 7;
-	if(x == '8')return 8;
-	return 9 ;
-}
-
-
-
-std::string toString(__int128 x){
-    if(x == 0)return "0";
-	std::string ans = "";
-	bool minus=false;
-	if(x<0){
-		minus=true;
-		x = -x;
-	}
-	while(x != 0){
-		ans = toStringOneNumber(x)+ans;
-		x /=10;
-	}
-	if(minus)ans="-"+ans;
-	return ans;
-}
-__int128 fromString(std::string x){
-	__int128 ans = 0;
-	__int128 multiplier = 1;
-	for(int i = (int)x.size()-1;i>-1;i--){
-		if(x[i]=='-')return -ans;
-		ans+=charToDigit(x[i])*multiplier;
-		multiplier*=10;
-	}
-	return ans;
-}
 
 
 field &field::operator=(const field &a){
@@ -217,7 +218,7 @@ field &operator*=(field &a, const field &b){
     if(b.getValue() <= field::m){
         a = field(b.getValue()*a.getValue());
     } 
-    if(b.getValue() > field::m){
+    else if(b.getValue() > field::m){
         __int128 A = a.getValue();
         __int128 B = b.getValue();//mk+l
         __int128 k = B/field::m;
@@ -237,6 +238,7 @@ field operator*(const field&a,const field&b){
     return temp;
 } 
 field &operator^=(field & a, __int128 const & b){
+    std::cout<<"wwwwwwwwwwwwwwww"<<a<<" "<<toString(b)<<std::endl;
     __int128 B = (b%(field::p-1));
     if(field::odd == 0)B=b; 
     field A(a);
@@ -251,13 +253,13 @@ field &operator^=(field & a, __int128 const & b){
         a = field(field::inverse[a.getValue()]);
     }
     if(B > 1){
-        __int128 exponent = B;
+        std::cout<<toString(B)<<std::endl;
         field multiplier = a;
         field ans = 1;
         while(B != 0){
             if(B % 2 == 1)ans *= multiplier;
             multiplier *= multiplier;
-            B /=2;
+            B = B>> 1;
         }
         a = ans;
         return a;
@@ -275,7 +277,11 @@ field operator^(field & a, __int128 b){
 } 
 field &operator/=(field& a,const field &b){
     field B(b.getValue());
-    a *= (B^(__int128)(-1));
+    std::cout<<"ccccccccccccc"<<std::endl;
+    //a *= (B^(__int128)(-1));
+    field z = (B^(__int128)(-1));
+    std::cout<<"ccccccccccccc"<<std::endl;
+    a*=z;
     return a;
 }
 field operator/(const field &a,const field &b){
@@ -303,18 +309,6 @@ void field::setP( __int128 x){
     while(y % 2 == 0){
         degree++;
         y /= 2;
-    }    
-    field::odd = y;
-    field::degreeOfDegree = degree;
-    field r;
-    for(int i = 2; i<field::p;i++){
-        r = field((__int128)i);
-        r ^= ((field::p-1)/2);
-        if(z.getValue() != 1){
-            r = field(i);
-            field::almostPrimitiveRoot = r^(__int128)field::odd;
-            break;
-        }
     }
     __int128 maximum = 1;
     __int128 s = 1;
@@ -323,6 +317,23 @@ void field::setP( __int128 x){
         maximum +=s;
     }
     field::m = maximum  / x ;    
+    field::odd = y;
+    field::degreeOfDegree = degree;
+    field r;
+    for(__int128 i = 2; i<field::p;i++){
+        //std::cout<<  toString(i) << "   aaaaa"<<std::endl;
+        r = field(i);
+        //std::cout << toString((field::p-1)/2) << std::endl;
+        //int X;
+        //std::cin >> X;
+        r ^= ((field::p-1)/2);
+        if(r.getValue() != 1){
+            r = field(i);
+            field::almostPrimitiveRoot = r^(__int128)field::odd;
+            break;
+        }
+    }
+    
 } 
 
 void field::setPstupid(__int128 x){

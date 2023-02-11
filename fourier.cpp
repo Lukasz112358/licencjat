@@ -28,18 +28,18 @@ std::string binary(__int128 x){
 }
 
 
-__int128 reverseBits(__int128 x, __int128 n) {
+__int128 reverseBits(long long x, long long k) {
     x = ((x & 0x5555555555555555) << 1)  | ((x & 0xAAAAAAAAAAAAAAAA) >> 1);  
     x = ((x & 0x3333333333333333) << 2)  | ((x & 0xCCCCCCCCCCCCCCCC) >> 2);
     x = ((x & 0x0F0F0F0F0F0F0F0F) << 4)  | ((x & 0xF0F0F0F0F0F0F0F0) >> 4);
     x = ((x & 0x00FF00FF00FF00FF) << 8)  | ((x & 0xFF00FF00FF00FF00) >> 8);
     x = ((x & 0x0000FFFF0000FFFF) << 16) | ((x & 0xFFFF0000FFFF0000) >> 16);
     x = ((x & 0x00000000FFFFFFFF) << 32) | ((x & 0xFFFFFFFF00000000) >> 32);
-    x = ((unsigned __int128)x)>>(64-n);
+    x = ((unsigned __int128)x)>>(64-k);
     return x;
 }
 
-void setToDo(std::vector<field>&coefficients, __int128 size){
+void setToDo(std::vector<field>&coefficients, long long size){
     //std::cout << std::endl <<std::endl;
     __int128 length = coefficients.size();
     __int128 log = 0;

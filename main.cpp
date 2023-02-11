@@ -17,7 +17,7 @@
 //using namespace std;
 
 std::vector<field>& compute(__int128 l, __int128 r, std::vector<field>& g, std::vector<field>& f){
-    //std::cout<<toString(l)<<' '<<toString(r)<<std::endl;
+    std::cout<<toString(l)<<' '<<toString(r)<<std::endl;
     if(l < r){
         __int128 m = (l+r)/2;
         compute(l,m,g,f);
@@ -57,9 +57,11 @@ std::vector<field> B(std::vector<field> s, __int128 t){
     for(__int128 k = 1; k <= t; k++){
         std::cout<<toString(k)<<std::endl;
         for(__int128 j = 1; j <= t/k ; j++){
-            if(j%100==0)std::cout<<toString(j)<<std::endl;
+            //std::cout<<toString(j)<<std::endl;
             //std::cout<<toString(k*j)<<std::endl;
-            field x = field(-1);
+            field x(-1);
+            //for(int z = 0; z<1000; z++)std::cout<<z<<std::endl;
+            std::cout<<toString(j)<<"qqqqqqqqqqqqqqq"<<a[k]*(x^(j-1))<<" "<<toString(field::getP())<<std::endl;
             ans[k*j] = ans[k*j] + a[k]*(x^(j-1))/field(j);
         }
     }
@@ -92,8 +94,12 @@ std::bitset<1000000> brutal(vector<__int128>& s){
 
 
 int main() {
+    field::setP(fromString("1712074363474540585025537"));
+    field q(0);
+    q/=field(1);
+    /*
     //std::srand(2);
-
+    
     __int128 n,t;
     std::string sn,st;
     std::cin>>sn>>st;
@@ -101,6 +107,7 @@ int main() {
     t = fromString(st);
     __int128 p  = find_prime(n, t);
     field::setP(p);
+
     vector<field>S(n,0);
     std::string s;
     for(int i = 0; i < n; i++){
@@ -113,5 +120,6 @@ int main() {
     for(int i=0; i<ans.size();i++){
         std::cout<<ans[i]<<std::endl;
     }
+    */
     return  0;
 }
