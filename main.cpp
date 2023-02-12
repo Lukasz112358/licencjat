@@ -17,21 +17,27 @@
 //using namespace std;
 
 std::vector<field>& compute(__int128 l, __int128 r, std::vector<field>& g, std::vector<field>& f){
-    std::cout<<toString(l)<<' '<<toString(r)<<std::endl;
-    if(l < r){
+    if((l-r)>20)std::cout<<toString(l)<<' '<<toString(r);
+    
+    if((l < r )&& (g[42069]==0)){
         __int128 m = (l+r)/2;
         compute(l,m,g,f);
-        std::vector<field>F(r-l+1);
-        std::vector<field>G(m-l+1);
+        std::vector<field>F(r-l+1,field(0));
+        std::vector<field>G(m-l+1,field(0));
         for(int i = 0; i < r-l+1; i++){
             F[i] = i*f[i];
         }
         for(int i = 0; i < m-l+1; i++){
             G[i] = g[i+l];
         }
-        std::vector<field>H = multiplication(F,G);
+        __int128 size = 1;
+        while(size < (__int128)((G.size() + F.size()) -1 )){
+            size *= 2;
+        }
+        std::vector<field>H(size,field(0));
+        H= multiplication(F,G);
         for(int i=(int)(m+1);i<r+1;i++){
-            g[i]= g[i]+(H[i-l]/i);
+            g[i]+=(H[i-l]/field(i));
         }
         compute(m+1,r,g,f);
     }
@@ -55,14 +61,16 @@ std::vector<field> B(std::vector<field> s, __int128 t){
         if(s[i].getValue()<=t)a[s[i].getValue()] ++;
     }
     for(__int128 k = 1; k <= t; k++){
-        std::cout<<toString(k)<<std::endl;
+        if(k%20 == 2)std::cout<<toString(k)<<std::endl;
         for(__int128 j = 1; j <= t/k ; j++){
             //std::cout<<toString(j)<<std::endl;
             //std::cout<<toString(k*j)<<std::endl;
-            field x(-1);
+            field x(1);
+            if((j-1)%2==1) x *=(-1);
+            //field x(-1);
             //for(int z = 0; z<1000; z++)std::cout<<z<<std::endl;
             //std::cout<<toString(j)<<"qqqqqqqqqqqqqqq"<<a[k]*(x^(j-1))<<" "<<toString(field::getP())<<std::endl;
-            ans[k*j] = ans[k*j] + a[k]*(x^(j-1))/field(j);
+            ans[k*j] = ans[k*j] + a[k]*x/field(j);
         }
     }
     return ans;
@@ -74,25 +82,34 @@ std::vector<bool> JinWu(std::vector<field>& s, __int128 t){
     field::setP(p);
     std::vector<field> Bans(t+1,field(0));
     Bans= B(s,t) ;
-    std::vector<field> computeAns = mainCompute(Bans);
+    //for(int i = 0; i< Bans.size();i++)std::cout<<Bans[i]<<std::endl;
+    std::vector<field> computeAns(t+1,field(0));
+    computeAns = mainCompute(Bans);
     std::vector<bool>ans(t+1,false);
     for(int i =0; i< t+1; i++){
+        std::cout<<computeAns[i]<<std::endl;
         if(computeAns[i].getValue() != 0)ans[i]=true;
     }
     return ans;
 
 }
 
-std::bitset<1000000> brutal(vector<__int128>& s){
-    std::bitset<1000000>ans;
-    ans[0]=true;
+
+
+std::vector<bool> brutalSum(std::vector<field>  s,long long t){    
+    std::bitset<10000000>ans = std::bitset<10000000>();
+    ans.set(0,1);
     for(int i = 0; i < s.size(); i++){
-        ans = ans|(ans<<s[i]);
+        std::cout<<i<<std::endl;
+        ans=ans|(ans<<((long long)s[i].getValue()));
     }
-    return ans;    
+    
+    std::vector<bool> answer(t+1,0);
+    for(int i =0; i< t+1;i++){
+        answer[i] = (ans.test(i) == 1);
+    }
+    return answer;
 }
-
-
 int main() {
     
     //std::srand(2);
@@ -117,6 +134,13 @@ int main() {
     for(int i=0; i<ans.size();i++){
         std::cout<<ans[i]<<std::endl;
     }
-   
+    std::vector<bool>ans2(t+1,false);
+    ans2 = brutalSum(S,t);
+    std::cout<<endl;
+    for(int i = 0; i< t+1; i++){
+        if(i%200==199)std::cout<<endl;
+        std::cout<<(ans2[i]==ans[i]);
+
+    }
     return  0;
 }

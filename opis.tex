@@ -35,7 +35,7 @@ jednak jeżeli $t$ jest względnie małe i dysponujemy pamięcią $\Omega(t)$ is
 w czasie wielomianowym od długości wejścia, z czego najbardziej znanym jest działający w czasie $O(nt)$
 algorytm oparty na programowaniu dynamicznym.
 
-Celem nieniejszej pracy jest dokumentacja implementacji
+Celem niniejszej pracy jest dokumentacja implementacji
 algorytmu opracowanego przez Ce Jin i Hongxun Wu w pracy [odnośnik!!!]. Algorytm ten jest niedeterministyczny,
 jednak dla dużych danych prawdopodobieństwo błędu jest niewielkie. Złożoność czasowa prezentowanego
 algorytmu to $O((t+n)\log^2(t))$, zaś pamięciowa $O(n+t)$.
@@ -43,7 +43,7 @@ algorytmu to $O((t+n)\log^2(t))$, zaś pamięciowa $O(n+t)$.
 \end{abstract}
 
 \section{Wstęp}
-Problem sprawdzania czy z $n-$elementowego muiltizbioru $S$ liczb naturalnych jesteśmy w stanie wybrać 
+Problem sprawdzania czy z $n-$elementowego multizbioru $S$ liczb naturalnych jesteśmy w stanie wybrać 
 podzbiór, którego suma elementów jest równa zadanej liczbie $t$ jest jednym z klasycznych problemów 
 algorytmicznych. Będziemy go w dalszej części nazywać problem sumy podzbiorów. 
 
@@ -51,10 +51,10 @@ Ma on zastosowanie w licznych praktycznych zagadnieniach na przykład kryptograf
 [Merkle–Hellman knapsack cryptosystem], analizie finansowej 
 [Solving Subset Sum Problems using Binary Optimization with 
 Applications in Auditing and Financial Data Analysis], czy zagadnieniach kombinatorycznych, jako specyficzny
-wariant problemu plecakowego(Problem plecakowy dotyczy wybrania ze zbirou przedmiotów, w którym każdy ma 
+wariant problemu plecakowego(Problem plecakowy dotyczy wybrania ze zbioru przedmiotów, w którym każdy ma 
 określoną wagę i wartość, podzbioru mającego maksymalną sumaryczną wartość i jednocześnie, którego 
 sumaryczna waga nie przekracza pewnej liczby $t$. Problem sumy podzbiorów odpowiada sytuacji, 
-gdy wartości przedmiotów są wprostproporcjonalne do ich wagi). 
+gdy wartości przedmiotów są wprost proporcjonalne do ich wagi). 
 
 Klasyczna wersja problem, gdzie $t$ jest duże(gdy nie dysponujemy $O(t)$ pamięci) jest problemem 
 $NP$-zupełnym. Najprostszy algorytm rozwiązujący ten problem polega na rozważeniu po kolei wszystkich 
@@ -69,22 +69,22 @@ $O(2^{0.291n})$.
 Znacznie mniej czasu wymagają instancje problemu sumy podzbiorów gdzie $t$ jest względnie małe i dysponujemy
 $O(t)$ pamięci. Oparty o programowanie dynamiczne klasyczny algorytm wymaga $O(nt)$ czasu i $O(n+t)$ pamięci.
 Używam go do sprawdzenia poprawności implementacji algorytmu Ce Jin i Hongxun Wu. Najszybszym znanym algorytmem 
-dla problemu sumy podbiorów z małym $t$ jest algorytm Konstantinos Koiliaris i Chao Xu. 
+dla problemu sumy podzbiorów z małym $t$ jest algorytm Konstantinos Koiliaris i Chao Xu. 
 
-Algorytm który prezentuję w nieniejszej pracy został opracowany przez Ce Jin i Honguxun Wu. Działa on w czasie 
+Algorytm który prezentuję w niniejszej pracy został opracowany przez Ce Jin i Honguxun Wu. Działa on w czasie 
 $O(n+t\log^2(t))$ i wymaga $O(n+t)$ pamięci. Jest to algorytm probabilistyczny z prawdopodobieństwem błędu $O(\frac{1}{n+t})$.
 Moja implementacja składa się z 4 modułów: klasy field odpowiadającej symulacji 
-działań w ciele $Z_p$ reszt z dzielenia przez liczbę pierwszą $p$, moduł losujący liczbę $p$ kożystający z testu Millera-Rabina,
+działań w ciele $Z_p$ reszt z dzielenia przez liczbę pierwszą $p$, moduł losujący liczbę $p$ korzystający z testu Millera-Rabina,
 moduł zawierający implementację teorio-liczbowej szybkiej transformaty Fouriera(jest to pewna nieortodoksja względem pracy
 Ce Jin i Honguxun Wu, ponieważ proponowali oni szybką transformatę Fouriera, jednak początkowe próby jej implementacji
 powodowały problemy związane z niedokładnością operacji zmiennoprzecinkowych) oraz implementacja algorytmu właściwego.
 
-Moja implementacja jest napisana w języku \texttt{C++} i kożysta ze zmiennych całkowitych 128-bitowych więc kompilacja może nie 
+Moja implementacja jest napisana w języku \texttt{C++} i Koszysta ze zmiennych całkowitych 128-bitowych więc kompilacja może nie 
 powieść się na niektórych systemach i kompilatorach w szczególności na systemach 32-bitowych. Dokładne wymagania opiszę
 w dalszej części pracy.
 
-W nieniejszej pracy zaprezentuję niedeterministyczny algorytm opracowany przez Ce Jin 
-i Hongxun Wu, który kożystając ze sprytnych obserwacji na polu analizy matematycznej i algebry jest w 
+W niniejszej pracy zaprezentuję niedeterministyczny algorytm opracowany przez Ce Jin 
+i Hongxun Wu, który korzystając ze sprytnych obserwacji na polu analizy matematycznej i algebry jest w 
 stanie podać wynik w czasie $O(n+t\log^2(t))$, co jest czasem znacznie szybszym niż klasyczny algorytm 
 oparty na programowanie dynamiczne. 
 
@@ -95,7 +95,7 @@ Specyfikacja problemu $SubsetSum$, który będziemy rozwiązywać jest następuj
 
 \begin{tcolorbox}
     \textbf{Wejście:} Liczba naturalna $n$ , liczba naturalna $t$, zbiór $S$ reprezentowany jako ciąg $n$ liczb naturalnych(po wczytaniu 
-    przechowywanych w wektoerze \texttt{S}).
+    przechowywanych w wektorze \texttt{S}).
     
     \textbf{Wyjście:} \texttt{true} jeżeli istnieje $S' \subseteq S$ którego suma elementów jest równa $t$ lub \texttt{false} w przeciwnym przypadku.
 \end{tcolorbox}
@@ -109,7 +109,7 @@ Lub alternatywnie
 \end{tcolorbox}
 
 
-Klasyczny algorytym opiera się na modyfikacji $t+1$-elementowej tablicy \texttt{DP} o komórkach przyjmujących wartości bool-owskie i 
+Klasyczny algorytm opiera się na modyfikacji $t+1$-elementowej tablicy \texttt{DP} o komórkach przyjmujących wartości bool-owskie i 
 opiera się na programowaniu dynamicznym. Początkowo wszystkie komórki \texttt{DP} są ustawione na \texttt{false}, oprócz komórki 
 $0$-owej, która
 jest ustawiona na \texttt{true}.
@@ -137,7 +137,7 @@ brzmi: po wykonaniu $i$-tej iteracji pętli z iteratorem \texttt{i}
 wtedy i tylko wtedy
 gdy można wybrać podzbiór zbioru
 $\{S\left[0\right],S\left[1\right],..,S\left[i\right]\}$
-taki, że suma jego elemetów wynosi 
+taki, że suma jego elementów wynosi 
 
  $m$(oczywiście dla $k \in \{0,1,...,t\}$). 
 \begin{itemize}
@@ -170,7 +170,7 @@ i tylko wtedy gdy, współczynnik przy $x^t$ w  wielomianie $A(x) :=\prod_{i = 1
 niezerowy. Istotnie jeżeli ten współczynnik jest niezerowy, to istnieje ciąg indeksów $0<i_1<i_2<...<i_k<n+1$ taki, że 
 
 $$\prod_{j=1}^{k}x^{s_{i_j}}=x^{\sum_{j=1}^ks_{i_j}}=x^t$$, więc ciąg ten odpowiada indeksom elementów które należy wybrać
-by uzyskaźć podzbiór zbioru $S$ o sumie elementów równej $t$.
+by uzyskać podzbiór zbioru $S$ o sumie elementów równej $t$.
 Zamiast liczyć ten współczynnik wprost najpierw obliczymy $B(x):=\ln(\prod_{i = 1}^{n}(1+x^{s_i}))$, 
 zaś następnie $\exp(B(x)) = A(x)$. 
 
@@ -188,13 +188,13 @@ wartość $t$ pierwszych wyrazów rozwinięcia w szereg Taylora funkcji $\exp(B(
 Niestety obliczenia potrzebne do znalezienia tych współczynników mogą wymagać użycia bardzo dużych liczb długości $O(n)$. 
 Obliczenia na nich mogą być więc czasochłonne. 
 
-Ce Jin i Hongxun Wu skożystali z faktu, że
+Ce Jin i Hongxun Wu skorzystali z faktu, że
 pochodna nie jest jedynie obiektem, który można zdefiniować analitycznie jako przekształcenie funkcji 
 $f(x)$ w funkcję zwracającą dla argumentu $x$ wartość $\lim_{h \to 0}\frac{f(x+h)-f(x)}{h}$, ale 
 i przekształcenie czysto algebraiczne, które przekształca szereg $\sum_{i=0}^{\infty}f_i x^i$ w
 $\sum_{i=1}^{\infty}if_{i}ix^{i-1}$. 
 
-Tak zdefiniowana pochodna zachowuje pewnealgebraiczne właściwości($f'+g'=(f+g)'$,$(fg)'=f'g+g'f$,
+Tak zdefiniowana pochodna zachowuje pewne algebraiczne właściwości($f'+g'=(f+g)'$,$(fg)'=f'g+g'f$,
 $(f(g))'=f'(g)g'$ ) bez względu na to do jakiego ciała należą współczynniki tych szeregów, tak więc również pojęcie szeregu
 Taylora z pewnymi ograniczeniami   możemy rozpatrywać w innych ciałach niż $\mathbb{R}$. W naszym przypadku będzie to ciało 
 $Z_p$ reszt z dzielenia przez $p$, gdzie $p$ jest losową liczbą pierwszą na tyle dużą, że prawdopodobieństwo fałszywego zakwalifikowania
@@ -224,7 +224,7 @@ liczby $p$.
 
 Ogólnie implementację algorytmu można podzielić na 5 zasadniczych części
 \begin{itemize}
-  \item Implementacja funkcji losującą liczbę pierwszą $p$ o porządanych własnościach
+  \item Implementacja funkcji losującą liczbę pierwszą $p$ o pożądanych własnościach
   \item Implementacja klasy odpowiadającej za wykonywanie obliczeń w ciele $Z_p$
   \item Implementacja Teorio-liczbowej szybkiej transformaty Furiera w ciele $Z_p$
   \item Implementacja algorytmu właściwego
@@ -241,14 +241,14 @@ mocno inspirowany implementacją klasy dużych liczb całkowitych
 zamieszczony na stronie [ https://www.geeksforgeeks.org/bigint-big-integers-in-c-with-example/ ]
 
 
-Ponieważ znaczną część obliczeń mój program będzie wykonywać na elmentach ciała
+Ponieważ znaczną część obliczeń mój program będzie wykonywać na elementach ciała
 $Z_p$ w którym istnieją działania arytmetycznych, aby uniknąć konieczności ciągłych operacji pobierania explicite
 wartości modulo $p$ z wyników działań najwygodniejszym podejściem byłoby zaprogramowanie klasy \texttt{field} której instancje
 reprezentują elementy ciała $Z_p$ zaś przeciążone operatory odpowiadają działaniom w $Z_p$ i pisząc bardziej 
-wysokopoziomowe funkcje nie musimy już się troszczyć o to, by jakkolwiek "nromalizować" wyniki. 
+wysokopoziomowe funkcje nie musimy już się troszczyć o to, by jakkolwiek "normalizować" wyniki. 
 
 
-Klasa ma kilka pól statycznych. Jednym z nich jest liczbna \texttt{p} \texttt{\textunderscore \textunderscore int128}
+Klasa ma kilka pól statycznych. Jednym z nich jest liczba \texttt{p} \texttt{\textunderscore \textunderscore int128}
 będąca liczbą pierwszą modulo którą będziemy wykonywać nasze obliczenia. Liczba \texttt{m} typu 
 \texttt{\textunderscore \textunderscore int128}, która ma zastosowanie przy wykonywaniu działania mnożenia w sposób
 chroniący nas przed przepełnieniem zmiennej co zostanie omówione w dalszej części. 
@@ -267,7 +267,7 @@ wykładniku naturalnym $k$. Najprościej taką liczbę uzyskać jako rezultat po
 najpierw do potęgi, której wykładnik jest równy wartości zmiennej statycznej \texttt{odd}, a następnie
 wykonaniu \texttt{degreeOfDegree-k}  podniesień wyniku do kwadratu. Wygodnie byłoby nie musieć za każdym razem
 wykonywać potęgowania do potęgi \texttt{odd}, dlatego w zmiennej statycznej \texttt{almostPrimitiveRoot}
-typu \texttt{\textunderscore \textunderscore int128} przechowóję wartość będącą wynikiem podniesienia pierwiastka
+typu \texttt{\textunderscore \textunderscore int128} przechowuję wartość będącą wynikiem podniesienia pierwiastka
 pierwotnego do potęgi \texttt{odd}.
 
 Ostatnim polem statycznym klasy \texttt{field} jest struktura typu 
@@ -297,7 +297,7 @@ while(y \% 2 == 0){
 \end{lstlisting} 
 
 Następnie szukamy wartości pola \texttt{almostPrimitiveRoot}. 
-Przy zazłożeniu prawdziwości hipotezy Riemanna pierwiastek pierwotny modulo $p$ jest
+Przy założeniu prawdziwości hipotezy Riemanna pierwiastek pierwotny modulo $p$ jest
 stosunkowo mały wielkości $O(\log^6(p))$ [ŹROOOOOOOOOOOOOOODŁOOOOOOOOOOOOO!!!!!!!!!!], 
 tak więc kandydatów możemy szukać sprawdzając kolejne liczby naturalne zaczynając od 2. 
 Tak naprawdę nie potrzebujemy wyznaczyć pierwiastka pierwotnego, ale jedynie liczbę stopnia ale jedynie liczbę
