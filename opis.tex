@@ -30,13 +30,13 @@
 
 \begin{abstract}
 Problem istnienia podzbioru o sumie $t$ zawierającego się w $n$-elementowym (multi)zbiorze $S \subset \mathbb{N}$, 
-jest jednym z klasycznych problemów algorytmicznych. Problem w ogólności jest problemem $NP$-zupełnym
+jest jednym z klasycznych problemów algorytmicznych. Problem w ogólności jest problemem $NP$-zupełnym ~\cite{agarwal2011encrypting}
 jednak jeżeli $t$ jest względnie małe i dysponujemy pamięcią $\Omega(t)$ istnieją algorytmy działające 
 w czasie wielomianowym od długości wejścia, z czego najbardziej znanym jest działający w czasie $O(nt)$ 
 algorytm oparty na programowaniu dynamicznym.
 
 Celem niniejszej pracy jest dokumentacja implementacji
-algorytmu opracowanego przez Ce Jin i Hongxun Wu w pracy[odnośnik!!!]. Algorytm ten jest niedeterministyczny,
+algorytmu opracowanego przez Ce Jin i Hongxun Wu w pracy ~\cite{jin2018simple}. Algorytm ten jest niedeterministyczny,
 jednak dla dużych danych prawdopodobieństwo błędu jest niewielkie. Złożoność czasowa prezentowanego
 algorytmu to $O((t+n)\log^2(t))$, zaś pamięciowa $O(n+t)$.
 
@@ -48,28 +48,27 @@ podzbiór, którego suma elementów jest równa zadanej liczbie $t$ jest jednym 
 algorytmicznych. Będziemy go w dalszej części nazywać \textbf{problem sumy podzbioru}. 
 
 Ma on zastosowanie w licznych praktycznych zagadnieniach na przykład kryptografii
-[Merkle–Hellman knapsack cryptosystem], analizie finansowej 
-[Solving Subset Sum Problems using Binary Optimization with 
-Applications in Auditing and Financial Data Analysis], czy zagadnieniach kombinatorycznych, jako specyficzny
+~\cite{agarwal2011encrypting}, analizie finansowej 
+~\cite{biesner2022solving}, czy zagadnieniach kombinatorycznych, jako specyficzny
 wariant problemu plecakowego (Problem plecakowy dotyczy możliwości wybrania ze zbioru przedmiotów, z których każdy ma 
 określoną wagę i wartość, podzbioru mającego maksymalną sumaryczną wartość i jednocześnie, którego 
 sumaryczna waga nie przekracza pewnej liczby $t$. Problem sumy podzbiorów odpowiada sytuacji, 
 gdy wartości przedmiotów są wprost proporcjonalne do ich wagi). 
 
 Klasyczna wersja problem, gdzie $t$ jest duże (gdy nie dysponujemy $O(t)$ pamięci) jest problemem 
-$NP$-zupełnym. Najprostszy algorytm rozwiązujący ten problem polega na rozważeniu po kolei wszystkich 
+$NP$-zupełnym ~\cite{sasamoto2001statistical}. Najprostszy algorytm rozwiązujący ten problem polega na rozważeniu po kolei wszystkich 
 możliwych podzbiorów. Złożoność tego algorytmu to $O(n2^n)$. Nieco szybszym algorytmem jest algorytm Horowitza
-i Sahaniego który działa w $O(2^{\frac{n}{2}}n/2)$, jednak w przeciwieństwie do algorytmu naiwnego wymagającego
-$O(n)$ pamięci algorytm ten wymaga $O(2^{\frac{n}{2}})$. Algorytm Schroeppela i Shamira wymaga takiego samego
+i Sahaniego ~\cite{horowitz1974computing} który działa w $O(2^{\frac{n}{2}}n/2)$, jednak w przeciwieństwie do algorytmu naiwnego wymagającego
+$O(n)$ pamięci algorytm ten wymaga $O(2^{\frac{n}{2}})$. Algorytm Schroeppela i Shamira ~\cite{schroeppel1981t} wymaga takiego samego
 czasu jak algorytm Horowitza i Sahaniego, jednak potrzebuje $O(2^{\frac{n}{4}})$ pamięci. Probabilistyczny 
-algorytm Howgrave-Grahama i Jouxa pozwolił przyspieszyć rozwiązanie problemu do $O(2^{0.337n})$
+algorytm Howgrave-Grahama i Jouxa ~\cite{howgrave2010new} pozwolił przyspieszyć rozwiązanie problemu do $O(2^{0.337n})$
 zużywając $O(2^{0.256})$ pamięci. Dalsze jego ulepszenia pozwoliły osiągnąć złożoność czasową równą 
-$O(2^{0.291n})$.
+$O(2^{0.291n})$ ~\cite{becker2011improved}.
 
 Znacznie mniej czasu wymagają instancje problemu sumy podzbiorów gdzie $t$ jest względnie małe i dysponujemy
 $O(t)$ pamięci. Oparty o programowanie dynamiczne klasyczny algorytm wymaga $O(nt)$ czasu i $O(n+t)$ pamięci.
 Używam go do sprawdzenia poprawności implementacji algorytmu Ce Jin i Hongxun Wu. Najszybszym znanym algorytmem 
-dla problemu sumy podzbiorów z małym $t$ jest algorytm Konstantinos Koiliaris i Chao Xu. 
+dla problemu sumy podzbiorów z małym $t$ jest algorytm Konstantinos Koiliaris i Chao Xu ~\cite{bach1997comments}. 
 
 Algorytm który prezentuję w niniejszej pracy został opracowany przez Ce Jin i Honguxun Wu. Działa on w czasie 
 $O(n+t\log^2(t))$ i wymaga $O(n+t)$ pamięci. Jest to algorytm probabilistyczny z prawdopodobieństwem błędu $O(\frac{1}{n+t})$.
@@ -120,7 +119,7 @@ jest ustawiona na \texttt{true}.
 Dokładny algorytm przedstawia poniższy pseudokod (odpowiada on drugiej specyfikacji problemu sumy podzbiorów. Jeżeli chcielibyśmy
 odpowiedź na pierwszą jego wersję wystarczy zwrócić \texttt{DP[t]}, przy czym można ją zwrócić wtedy od razu gdy przyjmie 
 wartość \texttt{true}).
-\begin{lstlisting}
+\begin{verbatim}
     zainicjuj n-elementowe DP i oldDP
     for i <-1,2,...,t+1
         oldDP[i] = false
@@ -133,7 +132,7 @@ wartość \texttt{true}).
         oldDP = DP
     end for
     return DP
-\end{lstlisting}
+\end{verbatim}
 
 Dowód poprawności tego algorytmu jest prostym dowodem indukcyjnym, w którym teza indukcyjna
 brzmi: po wykonaniu $i$-tej iteracji pętli z iteratorem \texttt{i}
@@ -228,8 +227,8 @@ liczby $p$.
 Ogólnie implementację algorytmu można podzielić na 5 zasadniczych części
 \begin{itemize}
   \item Implementacja funkcji losującą liczbę pierwszą $p$ o pożądanych własnościach.
-  \item Implementacja klasy odpowiadającej za wykonywanie obliczeń w ciele $Z_p$.
-  \item Implementacja Teorio-liczbowej szybkiej transformaty Furiera w ciele $Z_p$.
+  \item Implementacja klasy odpowiadającej za wykonywanie obliczeń w ciele $\mathbb{Z}_p$.
+  \item Implementacja Teorio-liczbowej szybkiej transformaty Fouriera w ciele $\mathbb{Z}_p$.
   \item Implementacja algorytmu właściwego.
   \item Implementacja kodu testującego, w tym algorytmu naiwnego.
 \end{itemize}
@@ -237,7 +236,7 @@ Ogólnie implementację algorytmu można podzielić na 5 zasadniczych części
 
 
 
-\section{Implementacja ciała $Z_p$}
+\section{Implementacja ciała $ \mathbb{Z}_p$}
 
 Ogólny szablon, jakie metody należy zaimplementować był 
 mocno inspirowany implementacją klasy dużych liczb całkowitych
@@ -248,7 +247,7 @@ Ponieważ znaczną część obliczeń mój program będzie wykonywać na element
 $\mathbb{Z}_p$ w którym istnieją działania arytmetyczne, aby uniknąć konieczności ciągłych operacji pobierania explicite
 wartości modulo $p$ z wyników działań najwygodniejszym podejściem byłoby zaprogramowanie klasy \texttt{field} której instancje
 reprezentują elementy ciała $\mathbb{Z}_p$ zaś przeciążone operatory odpowiadają działaniom w $\mathbb{Z}_p$ i pisząc bardziej 
-wysokopoziomowy kod nie musimy już się troszczyć o to, by jakkolwiek "normalizować" wyniki. 
+wysokopoziomowy kod nie musimy już się troszczyć o to, by jakkolwiek ,,normalizować'' wyniki. 
 
 
 Klasa ma kilka pól statycznych. Jednym z nich jest liczba \texttt{p} typu \texttt{\textunderscore \textunderscore int128}
@@ -290,21 +289,21 @@ po zmianie ciała przestają być dłużej odwrotnościami tych samych elementó
 Wykonując poniższy kod znajduję wartość pól \texttt{almostPrimitiveRoot} (w zmiennej \texttt{degree}) oraz 
 \texttt{degreeOfDegree}(w zmiennej \texttt{y}) i następnie przypisujemy je odpowiednim polom.
 \texttt{odd}
-\begin{lstlisting}
+\begin{verbatim}
 __int128 y = field::p - 1;
 __int128 degree = 0;
-while(y \% 2 == 0){
+while(y % 2 == 0){
     degree++;
     y /= 2;
 }
-\end{lstlisting} 
+\end{verbatim}
 
 Następnie szukamy wartości pola \texttt{almostPrimitiveRoot}. 
 Przy założeniu prawdziwości hipotezy Riemanna pierwiastek pierwotny modulo $p$ jest
-stosunkowo mały wielkości $O(\log^6(p))$ [ŹROOOOOOOOOOOOOOODŁOOOOOOOOOOOOO!!!!!!!!!!], 
+stosunkowo mały wielkości $O(\log^6(p))$ ~\cite{durnoga2017large}, 
 tak więc kandydatów możemy szukać sprawdzając kolejne liczby naturalne zaczynając od 2. 
 Tak naprawdę nie potrzebujemy wyznaczyć pierwiastka pierwotnego, ale jedynie liczbę jedynie liczbę 
-$r$, że nie zachodzi $r^{2^{degreeOfDegree-1}} \equiv 1 (\mod p)$. Sprawdzenie dla liczby $r$ czy nie zachodzi 
+$r$, że nie zachodzi $r^{2^{d-1}} \equiv 1 \pmod p$ gdzie $d$ to wartość zmiennej \texttt{degreeOfDegree}. Sprawdzenie dla liczby $r$ czy nie zachodzi 
 $r^{2^\frac{p-1}{2}} \equiv 1 (\mod p)$ jest mocniejszym warunkiem i dla uproszczenia kodu on zostaje sprawdzony. Następnie
 jeżeli wspomniany warunek zachodzi do zmiennej \texttt{almostPrimitiveRoot} zapisujemy $r^{odd}$.
 
@@ -429,7 +428,7 @@ Zauważmy, że $A \cdot B = A \cdot \lfloor \frac{B}{m} \rfloor  + A \cdot (B \%
 Wartość \texttt{m} jest zależna od \texttt{p} i dlatego ustawiamy ją podczas operacji 
 \texttt{setP} o czym pisałem w 
 jednym poprzednich akapitów. Inicjalizuję obiekt \texttt{ans1} klasy \texttt{field} o wartości pola \texttt{value} równej \texttt{A}.
-Następnie mnożę go rekurencyjnie przy pomocy operatora \texttt{*=} przez \texttt{field(fied::m)}, a następnie przez 
+Następnie mnożę go rekurencyjnie przy pomocy operatora \texttt{*=} przez \texttt{field(field::m)}, a następnie przez 
 \texttt{field(B/field::m)}. Inicjalizuję też obiekt \texttt{ans2} o początkowej wartości pola \texttt{value}
 równej \texttt{A} i mnożę rekurencyjnie przy pomocy operatora \texttt{*=} przez \text{field(B\%field::m)}. 
 Po tych operacjach wartość pola \texttt{value} obiektu \texttt{ans1} wynosi $A \cdot \lfloor \frac{B}{m} \rfloor$, zaś 
@@ -460,7 +459,7 @@ przestaje pozwalać na ową redukcję \texttt{b} do reszty z dzielenia przez
 czy wartość pola \texttt{odd} jest równa \texttt{0}, co może się zdarzyć tylko wtedy gdy klasa 
 jest inicjalizowana funkcją \texttt{setPstupid}.
 
-Jeżeli \texttt{b==0} przypisuję \texttt{a} wartość \texttt{1} i zwracam wynik. Jeżeli \texttt{b==1} 
+Jeżeli \texttt{b==0}, przypisuję \texttt{a} wartość \texttt{1} i zwracam wynik. Jeżeli \texttt{b==1} 
 nie robię nic, tylko od razu zwracam \texttt{a}. Jeżeli \texttt{b==-1} to jeżeli \texttt{a.value==0} 
 wyrzucam błąd dzielenia przez \texttt{0}, jeżeli zaś nie wykonuję następującą procedurę.
 Ponieważ potęgowanie do \texttt{-1} to znalezienie odwrotności \texttt{a} w $\mathbb{Z}_p$
@@ -479,10 +478,10 @@ tych samych liczb mogą stać się inne, bo zmienia się ciało w którym są ty
 Operacja \texttt{insertInverse} przyjmuje zmienne typu \texttt{field}, które zakładamy
 explicite, że są elementami wzajemnie odwrotnymi i oznaczamy je jako \texttt{a} oraz \texttt{b}, 
 a następnie, jako, że $(a^{-1})^{-1}=a$ wykonujemy od razu 2 przypisania
-\begin{lstlisting}
+\begin{verbatim}
   field::inverse[a.value] = b.value;
   field::inverse[b.value] = a.value;
-\end{lstlisting}
+\end{verbatim}
 Gdy mamy wyliczyć potęgę o wykładniku \texttt{-1} jakiegoś elementu \texttt{a} typu \texttt{field} sprawdzam 
 najpierw czy w mapie odwrotności jest przypisana wartość dla klucza \texttt{a.value}, 
 a następnie jeżeli kluczowi temu przypisana jest wartość ustawiamy \texttt{a.value} na nią i zwracamy \texttt{a}, zaś
@@ -498,13 +497,13 @@ kodzie.
 Kolejnym przypadkiem, który należy rozważyć to gdy \texttt{b>1}. Wykonuję wtedy iteracyjną wersję szybkiego potęgowania.
 Tworzę pomocniczy obiekt \texttt{multiplier} będący kopią \texttt{a} oraz obiekt \texttt{ans} o
 wartości pola \texttt{value} równej 1. Następnie wykonuję pętlę
-\begin{lstlisting}
+\begin{verbatim}
 while(b != 0){
     if(b % 2 == 1)ans *= multiplier;
     multiplier *= multiplier;
     b /=2;
 }
-\end{lstlisting}
+\end{verbatim}
 i następnie kopiuję wartość \texttt{ans} do obiektu \texttt{a} oraz zwracam \texttt{a}.
 
 Kolejnym i już ostatnim przypadkiem jest gdy \texttt{b < -1}. W tym przypadku wykorzystujemy 
@@ -523,13 +522,13 @@ samą wartością pola
 \texttt{\textsuperscript{$\wedge$}=} podnosi 
 \texttt{temp} do potęgi \texttt{B} i zwraca tak zmodyfikowaną wartość \texttt{temp}.
 
-Kolejnym operatorem będzie operator dzielenia \texttt{\textbackslash=} przyjmujący dwa argumenty typu 
+Kolejnym operatorem będzie operator dzielenia \texttt{/=} przyjmujący dwa argumenty typu 
 \texttt{field} oznaczone odpowiednio jako \texttt{a} i \texttt{b}. Dzielenie w ciele modulo nie oznacza
-"klasycznego" dzielenia arytmetycznego, ale pomnożenie przez element odwrotny. 
+,,klasycznego'' dzielenia arytmetycznego, ale pomnożenie przez element odwrotny. 
 Tak więc tworzymy nowy obiekt \texttt{B} będący kopią \texttt{b} i mnożymy \texttt{a} przy pomocy
 operatora \texttt{*=} przez \texttt{B\textsuperscript{$\wedge$}(long$ $long)(-1)}. Następnie zwracamy tak zmodyfikowane \texttt{a}.
 
-Kolejnym operatorem jest \texttt{\textbackslash}. Otrzymuje on dwa argumenty typu \texttt{fieled} o nazwach \texttt{a} i 
+Kolejnym operatorem jest \texttt{/}. Otrzymuje on dwa argumenty typu \texttt{filed} o nazwach \texttt{a} i 
 \texttt{b}. Tworzę obiekt \texttt{temp} typu field i przypisuję mu wartość \texttt{a}, następnie dzielę przez \texttt{b} przy pomocy 
 operatora \texttt{\textbackslash=} i zwracam \texttt{temp}.
 
@@ -549,7 +548,7 @@ jako argument strumień \texttt{in}. Z kolei w przypadku operatora \texttt{<<} b
 wypisywał na podany jako argument strumień \texttt{out} i zwracał ten strumień.
 
 Funkcja \texttt{fromString} używa funkcji \texttt{charToDigit}, która przyjmując znak \texttt{x} typu 
-\texttt{char} będący zapisem jakiejś cyfry w języku "ludzkim" zwraca liczbę typu 
+\texttt{char} będący zapisem jakiejś cyfry w języku ,,ludzkim'' zwraca liczbę typu 
 \texttt{\textunderscore \textunderscore int128} mającą wartość tej cyfry. Funkcja \texttt{fromString} przyjmuje 
 zmienną \texttt{x} typu \texttt{std::string} jako argument a następnie przechodząc w pętli od tyłu
 po znakach tego słowa
@@ -567,7 +566,7 @@ Funkcja inicjalizuję zmienną wynikową \texttt{ans} na słowo puste, a następ
 \begin{lstlisting}
     while(x != 0){
 		ans = toStringOneNumber(x)+ans;
-		x /=10;
+		x/=10;
 	}
 \end{lstlisting}
 W przypadku gdy zmienna \texttt{minus} została ustawiona na \texttt{true} dodaję z przodu wyniku słowo \texttt{"\textminus"}.
@@ -638,21 +637,24 @@ więc $\pi'((n+t)^3,x)-\pi'(t+1,x)$ jest co najmniej $\Omega((n+t)^2)$ to zachod
 Jin i Wu. Wyliczenie dokładnej wartości $\pi'((n+t)^3,x)-\pi'(t+1,x)$ dla dużych $n$ i $t$ jest trudne 
 dlatego oszacowałem je poprzez losowanie \texttt{1000000} liczb z przedziału $[1+t,(n+t)^3]$, pomnożeniu przez $2^k$, gdzie $2^k$ to najmniejsza potęga $2$ o wykładniku naturalnym
 większa niż $2t$ i dodaniu $1$, oraz zliczeniu w zmiennej \texttt{ans} ile tak wylosowanych liczb jest pierwsze. 
-$\frac{ans}{1000000}((n+t)^3-(1+t)+1) \approx \pi'(n,t)$.
+$\frac{a}{1000000}((n+t)^3-(1+t)+1) \approx \pi'(n,t)$, gdzie $a$ to wartość zmiennej \texttt{ans} na końcu wykonania mojej symulacji.
 
-Poniższa heat-mapa ukazuje tak przybliżoną wartość $\log_2(\frac{\pi'(n,t)}{(n+t)^2})$, w zależności od $\log_2(n)$ i $\log_2(t)$. Jak widać zdecydowanie liczba liczb pierwszych możliwych do uzyskania w omówiony sposób
+Poniższa heat-mapa ukazuje tak przybliżoną w ten sposób wartość $\log_2(\frac{\pi'(n,t)}{(n+t)^2})$, w zależności od $\log_2(n)$ i $\log_2(t)$. 
+Jak widać zdecydowanie liczba liczb pierwszych możliwych do uzyskania w omówiony sposób
 jest $\Omega((n+t)^2)$.
+%\includegraphics[width=\textwidth]{wykres.png}
 
-W przeciwieństwie do większości pozostałego kodu, który przygotowałem, ze względu na jednoczesne łatwe wykonywanie wykresów, oraz szybkość działania eksperymentalne weryfikowanie
+W przeciwieństwie do większości pozostałego kodu, który przygotowałem, ze względu na jednoczesne łatwe wykonywanie wykresów, oraz szybkość działania 
+eksperymentalne weryfikowanie
 tej hipotezy przeprowadziłem w języku Julia. Kod użyty do testowania znajduje się  w pliku \texttt{PrimesExperiment.jl}.
 
 Omówię teraz już samą implementację modułu szukającego liczby pierwszej. Wszystkie wymienione niżej funkcje zostały  zaimplementowane w języku C++ i znajdują się w pliku \texttt{FindPrimes.cpp}.
 
-Moduł losujący składa się z kilku funkcji, z których zdecydowanie najprostszą jest \texttt{pow2} która dla przyjmowanej jako argument liczby \texttt{t}
+Moduł losujący składa się z kilku funkcji, z których zdecydowanie najprostszą jest \texttt{pow2}, która dla przyjmowanej jako argument liczby \texttt{t}
 zwraca najmniejszą potęgę \texttt{2} z wykładnikiem naturalnym, która jest większa niż \texttt{2t}. Polega ona na
 mnożeniu przez \texttt{2} zmiennej \texttt{ans} której początkowa wartość jest równa \texttt{1} dopóki nie będzie 
-większa niż \texttt{2*t}. Musimy wykonać co najwyżej kilkadziesiąt mnożeń, co jest na tyle szybkie, że nie ma 
-potrzeby stosowania jakiś bardziej zaawansowanych algorytmów jak na przykład 
+większa niż \texttt{2*t}. Musimy wykonać co najwyżej \texttt{126} mnożeń, co jest na tyle szybkie, że nie ma 
+potrzeby stosowania bardziej zaawansowanych algorytmów jak na przykład 
 używających algorytmu szybkiego potęgowania.
 
 Funkcja \texttt{randomLongLong} służy losowaniu liczby dodatniej 64-bitowej nie większej niż podana jako argument 
@@ -663,12 +665,11 @@ a następnie losuję bity wiodące jako wynik  operacji \texttt{std::abs(((long 
 \texttt{mod} będą nieosiągalne, jednak jest z pewnością mniej niż $\frac{mod}{2}$, więc nie będzie to wpływać na 
 asymptotyczną złożoność prawdopodobieństwa błędu. 
 
-Podobną konstrukcję ma funkcja \texttt{random128} służąca do losowania dodatniej liczby typu
+Funkcja \texttt{random128} służy do losowania dodatniej liczby typu
 \texttt{\textunderscore \textunderscore int128} z przedziału $[0,1,...,mod]$, gdzie \texttt{mod}
 to liczba typu \texttt{\textunderscore \textunderscore int128} podana jako argument. 
-Rolę jaką w funkcji \texttt{randomLongLong} pełnią funkcja \texttt{rand} i liczby $2^{31}-1$i $2^{30}$ w kodzie \texttt{random128} pełnią odpowiednio
-funkcja \texttt{randomLongLong} i liczby $2^{63}-1$ i $2^{62}$. Nie musimy też w funkcji również troszczyć
-się o wyciąganie wartości bezwzględnej bo funkcja \texttt{randomLongLong} zwraca tylko
+Polega na losowaniu kolejnych bajtów zmiennej \texttt{ans} typu \texttt{\textunderscore \textunderscore int128}, a następnie
+zwróceniu wartości bezwzględnej jej reszty z dzielenia przez \texttt{mod}.
 
 Sprawdzenie czy wylosowana liczba jest pierwsza wykonuję przy pomocy testu Millera-Rabina. 
 
@@ -682,26 +683,26 @@ $$ a^{p-1}-1=a^{d2^s}-1=(a^d)^{2^s}-1=((a^d)^{2^{s-1}}+1)((a^d)^{2^{s-1}}-1)=$$
 
 $$((a^d)^{2^0}-1)((a^d)^{2^0}+1)((a^d)^{2^1}+1)((a^d)^{2^2}+1)...((a^d)^{2^{s-1}}+1) $$
 
-Tak więc z wyboru $a$ wiemy, że któraś z liczb  $((a^d)^{2^0}+1),((a^d)^{2^1}+1),...,((a^d)^{2^{s-1}}+1)$
+Tak więc z wyboru $a$ wiemy, że któraś z liczb  $(a^d)^{2^0}+1$, $(a^d)^{2^1}+1$,..., $(a^d)^{2^{s-1}}+1$
 jest podzielna przez $p$, czyli dla pewnego $i \in \{0,1,2,...,s-1\}$ zachodzi 
 
-$$(a^d)^{2 ^i} + 1\equiv 0 (\mod p)$$
+$$(a^d)^{2 ^i} + 1\equiv 0 \pmod p$$
 czyli równoważnie 
-$$(a^d)^{2 ^i} + 1\equiv n-1 (\mod p)$$
+$$(a^d)^{2 ^i} \equiv n-1\pmod p$$
 
 Test Millera-Rabina opiera się na następującej obserwacji:
 \begin{tcolorbox}
-\textbf{Obserwacja 1:}Dla większej niż $2$ liczby $n=2^sd+1$, gdzie $s$ jest naturalne, zaś $d$ naturalne nieparzyste i liczby $
+\textbf{Obserwacja 1:} Dla większej niż $2$ liczby $n=2^sd+1$, gdzie $s$ jest naturalne, zaś $d$ naturalne nieparzyste i liczby $
 a \in \{2,3,...,n-1\}$
 jeżeli istnieje liczba $i \in \{0,1,2,..,s-1\}$ taka, że $(a^d)^{2^i} \equiv n-1 (\mod p)$ to $n$
-prawdopodobnie jest pierwsza. Jeżeli takie $i$ nie istnieje $n$ liczbą pierwszą nie jest na pewno.
+prawdopodobnie jest pierwsza. Jeżeli takie $i$ nie istnieje $n$ liczbą pierwszą na pewno nie jest.
 \end{tcolorbox}
 
-prawdopodobieństwo błędu można minimalizować wybierając kilka liczb $a$. 
+Prawdopodobieństwo błędu można minimalizować wybierając kilka liczb $a$. 
 \begin{tcolorbox}
-    \textbf{Fakt 1:}Jeżeli hipoteza Riemanna jest 
+    \textbf{Fakt 1:} Jeżeli hipoteza Riemanna jest 
     prawdziwa wystarczające okazuje się sprawdzenie sprawdzenie $a$ z mniejsze lub równe 
-    $\max(n-2,2\ln^2(n))$.[ŹROOOOOOOOOOOOOOODŁOOOOOOOOOOOOO]
+    $\min(n-2,2\ln^2(n))$ ~\cite{durnoga2017large}.
     
 \end{tcolorbox}
 
@@ -711,19 +712,18 @@ Pierwsza z nich to \texttt{MillerRabinOne} mająca za zadanie sprawdzić warunek
 \texttt{n} i \texttt{a} zwracając \texttt{false} gdy wiemy, że liczba nie jest pierwsza.
 Na początku rozważam przypadki gdy \texttt{n} i \texttt{a} nie spełniają początkowych założeń dla których
 \textbf{Hipoteza 1} była formułowana przy pomocy następujących zapytań warunkowych:
-\begin{lstlisting}
-    \begin{}t  
+\begin{verbatim}
     if(n == 2) return true;
     if(n < 2) return false;
-    if(n \% 2==0) return false;
-    if(a \% n == 1) return true;
+    if(n % 2==0) return false;
+    if(a % n == 1) return true;
     if(a > n) return true;
-\end{lstlisting}
+\end{verbatim}
 
 Jeżeli warunki początkowe są spełnione przy pomocy funkcji \texttt{field::setPstupid} ustawiam wartości pól statycznych klasy 
 \texttt{field} tak, żeby symulowała
 ona obliczenia w pierścieniu $\mathbb{Z}_n$. Oczywiście nie wszystkie działania zdefiniowane
-w klasie \texttt{field} działają w pierścieniu $\mathbb{Z}_n$(na przykład dzielenie). Jednak
+w klasie \texttt{field} działają w pierścieniu $\mathbb{Z}_n$ (na przykład dzielenie). Jednak
 możemy to zignorować po prostu ograniczając się do działań dodawania, odejmowania, mnożenia i potęgowania
 z wykładnikiem naturalnym.
 
@@ -732,9 +732,9 @@ Wyznaczam \texttt{d} i \texttt{s} zgodnie z oznaczeniami z \textbf{Hipotezy 1}.
 Następnie tworzę obiekt \texttt{x} klasy \texttt{field} z wartością pola \texttt{value} równą \texttt{a}.
 Podnoszę \texttt{x} do potęgi \texttt{d} przy pomocy operatora \verb!^!\texttt{=} zdefiniowanego w module definiującym klasę \texttt{field}.
 Następnie \texttt{s}-krotnie podnoszę w miejscu \texttt{x} do kwadratu przed każdym kolejnym podniesieniem sprawdzając, czy \texttt{x==n-1} 
-co oznaczałoby, że liczba \texttt{n} jest "raczej pierwsza" i zwracamy wtedy \texttt{true} lub \texttt{x==1} co oznaczałoby, że \texttt{x} po kolejnych podniesieniach do kwadratu
-będzie równe \texttt{1}, więc \texttt{n} nie jest pierwsza i zwracamy \texttt{false}. Jeżeli żaden z tych warunków nigdy nie zaszedł 
-po \texttt{s-1} podniesieniach do kwadratu zwracamy \texttt{false}.
+co oznaczałoby, że liczba \texttt{n} jest ,,raczej pierwsza'' i zwracamy wtedy \texttt{true} lub \texttt{x==1} co oznaczałoby, że \texttt{x} po kolejnych podniesieniach do kwadratu
+będzie wciąż równe \texttt{1}, więc \texttt{n} nie jest pierwsza i zwracamy \texttt{false}. Jeżeli żaden z tych warunków nigdy nie zaszedł 
+po \texttt{s} podniesieniach do kwadratu zwracamy \texttt{false}.
 
 Kolejną funkcją jest \texttt{MillerRabin}, która przyjmuje liczbę \texttt{n} typu \texttt{\texttt{\textunderscore \textunderscore int128}} i 
 wywołuje funkcję \texttt{MillerRabinOne} z \texttt{n} jako pierwszym argumentem oraz drugim będącym kolejnymi liczbami ze zbioru
@@ -744,9 +744,9 @@ zwraca \texttt{false}. Jeżeli jednak tak nie będzie to na podstawie \textbf{Fa
 
 Kolejną już ostatnią funkcją w tym module jest funkcja \texttt{find\_prime}. Przyjmuje ona jako argumenty liczbę \texttt{n} i 
 \texttt{t}, zaś następnie zwraca liczbę pierwszą postaci $r2^k+1$, gdzie $r$ jest liczbą naturalną z przedziału $[t+1,(n+t)^3]$.
-Najpierw przy pomocy wywołania \texttt{srand((unsigned int)time(NULL)) ;} zwiększam losowość testu. 
+Najpierw przy pomocy wywołania \texttt{srand((unsigned int)time(NULL))} zwiększam losowość testu. 
 Następnie przy pomocy funkcji \texttt{pow2} wyznaczam $2^k$. Następnie losuję potencjalne liczby \texttt{candidate} przy pomocy wywołania
-funkcji \texttt{random128} na $(n+t)^3$ . Jeżeli wylosuję liczbę nie większą niż \texttt{t} losuję jeszcze raz. Dla dużych \texttt{n} i \texttt{n}
+funkcji \texttt{random128} na $(n+t)^3$. Jeżeli wylosuję liczbę nie większą niż \texttt{t} losuję jeszcze raz. Dla dużych \texttt{n} i \texttt{n}
 prawdopodobieństwo tego jest znikome, a ewentualny koszt niewielki. Następnie mnożę
 wylosowane $r$ z wyznaczonym $2^k$ i dodaję do wyniku $1$. Kolejnym krokiem jest dla tak uzyskanej liczby sprawdzenie, czy 
 jest pierwsza przy pomocy funkcji \texttt{MillerRabin}.
@@ -755,11 +755,11 @@ Omówione w tej sekcji funkcje znajdują się w pliku \texttt{find\_prime.cpp} i
 
 
 
-\section{Teorio-liczbowa szybka transformata Furiera}
+\section{Teorio-liczbowa szybka transformata Fouriera}
 
-Dyskretna transformata Furiera służy przyspieszeniu mnożenia wielomianów. 
-Wielomiany możemy reprezentować jako ciąg współczynników lub jako ciąg wartości w ustalonych punktach 
-, których liczba przekracza stopień reprezentowanego wielomianu. Pierwsza reprezentacja jest wygodna
+Dyskretna transformata Fouriera ~\cite{wang1984fast} służy przyspieszeniu mnożenia wielomianów. 
+Wielomiany możemy reprezentować jako ciąg współczynników lub jako ciąg wartości w ustalonych punktach, 
+których liczba przekracza stopień reprezentowanego wielomianu. Pierwsza reprezentacja jest wygodna
 do wyliczania wartości w dowolnym punkcie z dziedziny, jednak mnożenie wielomianów w takiej postaci
 jest czasochłonne i ma czas kwadratowy od długości wielomianów. Druga reprezentacja pozwala na 
 mnożenie wielomianów w czasie liniowym, jednak wyliczanie ich wartości w innych punktach jest
@@ -770,15 +770,15 @@ Wybór punktów opiera się na prostej obserwacji, że jeżeli $A(x) = a_0x^0+a_
 (jeżeli stopień $A$ ma stopień parzysty przyjmujemy po prostu, że $a_{2n-1}$ jest równe $0$). jest równe
 sumie $A_0(x^2)$ gdzie $A_0(t)$ jest równe $\sum_{i=0}^{n-1}a_{2i}t^{i}$, oraz 
 $A_1(x^2)x$, gdzie $A_1(t)$ jest równe $\sum_{i=0}^{n-1}a_{2n+1}t^{i}$. Tak więc jeżeli dwie
-liczby $a$ i $b$ mają te same wartości swoich kwadratów możemy obliczyć tylko raz wartości $A_1$ i $A_2$
-od tego kwadratu, a następnie w czasie stałym połączyć te wyniki, tak aby uzyskać wartości 
+liczby $a$ i $b$ mają te same wartości swoich kwadratów możemy obliczyć tylko raz wartości $A_1(a^2)=A_1(a^2)$ i $A_0(a^2)=A_0(b^2)$, 
+a następnie w czasie stałym połączyć te wyniki, tak aby uzyskać wartości 
 wielomianu $A$ w punktach $a$ i $b$. 
 
 
-Klasyczna wersja dyskretnej transformaty Furiera oblicza wartości wielomianu $A$ dla
+Klasyczna wersja dyskretnej transformaty Fouriera oblicza wartości wielomianu $A$ dla
 argumentów z ciała liczb zespolonych. Przyjmujemy następujące oznaczenie $A(x)=\sum_{i=0}^{\infty}a_ix^i$,
 przy czym istnieje $I$ takie, że $\forall i>I: a_i = 0$. I oznaczając dalej 
- $A_0(x) = a_0x^0+a_2x^1+..+a_{2^m-2}x^{2^{m-1}-1} $
+$A_0(x) = a_0x^0+a_2x^1+..+a_{2^m-2}x^{2^{m-1}-1} $
 oraz $A_1(x) = a_1x^1+a_3x^1+..+a_{2^m-1}x^{2^{m-1}-1} $, przy czym $2^m$ jest najmniejszą
 potęgą $2$ o wykładniku naturalnym, większym niż stopień wielomianu będącego wynikiem optymalizowanego 
 przez nas mnożenia. 
@@ -794,32 +794,31 @@ Zaważmy, że :
   A(\omega_m^{2^m}) = A_0(\omega_m^{2^{m+1}})+A_1(\omega_m^{2^{m+1}})\omega_m^{2^m} = A_0(\omega_{m-1}^{2^m})+A_1(\omega_{m-1}^{2^m})\omega_m^{2^m}}
 \end{equation*}
 
-Tak więc gdy mamy wektory $V_0=\Bigl( A_0(\omega_{m-1}^0),A_0(\omega_{m-1}^1),...,A_0(\omega_{m-1}^{2^{m-1}})\Bigr)$ oraz                          
+Tak więc gdy mamy wektory $V_0=\Bigl( A_0(\omega_{m-1}^0),A_0(\omega_{m-1}^1),...,A_0(\omega_{m-1}^{2^{m-1}-1})\Bigr)$ oraz                          
 
-$V_1=\Bigl( A_1(\omega_{m-1}^0),A_1(\omega_{m-1}^1),...,A_1(\omega_{m-1}^{2^{m-1}})\Bigr)$ możemy
-w czasie liniowym wyliczyć wektor $V=\Bigl( A(\omega_{m}^0),A(\omega_{m}^1),...,A(\omega_{m}^{2^{m}})\Bigr)$, jednak wyliczenie wektorów 
+$V_1=\Bigl( A_1(\omega_{m-1}^0),A_1(\omega_{m-1}^1),...,A_1(\omega_{m-1}^{2^{m-1}-1})\Bigr)$ możemy
+w czasie liniowym od ich długości wyliczyć wektor $V=\Bigl( A(\omega_{m}^0),A(\omega_{m}^1),...,A(\omega_{m}^{2^{m}-1})\Bigr)$, jednak wyliczenie wektorów 
 $V_1$ i $V_2$ można znów rozbić na wyliczenie najpierw $2$ wektorów długości $2^{m-2}$ i 
-następnie połączenie tych dwóch wektorów w czasie liniowym od ich długości. Możemy tak rozbijać kolejne wektory, aż dojdziemy do wektorów długości
-$1$ które przechowują wartości pewnych wielomianów $0$-stopnia będący po prostu jednym ze współczynników $A$.
+następnie połączenie tych dwóch wektorów w czasie liniowym od ich długości. Możemy tak rozbijać kolejne wektory aż dojdziemy do wektorów długości
+$1$ które przechowują wartości pewnych wielomianów $0$-stopnia będących po prostu jednym ze współczynników $A$.
 
-Niech $O(t)$ będzie czasem policzenia wartości wielomianu $A$ w $n=2^m$ punktach przy pomocy dyskretnej transformaty Furiera. 
-Furiera. Wiemy, że $O(t)=2O(\frac{t}{2})+O(n)$. Rozwiązaniem takiego równania jest $O(t)=O(n\log(n))$.
-Okazuje się, że po wyliczeniu wartości wielomianu $AB$ w omawianych punktach możemy "wyciągnąć" z tych wartości w czasie
-$O(n)$ wartości współczynników wielomianu $AB$, gdzie $n$ to ilość tych punktów, tak więc cały algorytm mnożenia odbywa się w czasie $O(\log(n)n)+O(n)=O(\log(n)n)$
+Niech $O(t)$ będzie czasem policzenia wartości wielomianu $A$ w $n=2^m$ punktach przy pomocy dyskretnej transformaty Fouriera. 
+Fouriera. Wiemy, że $O(t)=2O(\frac{t}{2})+O(n)$. Rozwiązaniem takiego równania jest $O(t)=O(n\log(n))$.
+Okazuje się, że po wyliczeniu wartości wielomianu $AB$ w omawianych punktach możemy ,,wyciągnąć'' z tych wartości w czasie
+$O(n\log(n))$ wartości współczynników wielomianu $AB$, gdzie $n$ to ilość tych punktów, tak więc cały algorytm mnożenia odbywa się w czasie $=O(\log(n)n)$.
 
-Moja implementacja korzysta z dwóch klasycznych ulepszeń dyskretnej transformaty Furiera. 
+Moja implementacja korzysta z dwóch klasycznych ulepszeń dyskretnej transformaty Fouriera. 
 
-Pierwsza to tak zwana "Teorio-liczbowa transformata Furiera". Polega ona na nie wykonywaniu obliczeń w ciele $C$ lecz
-w $Z_p$, przy czym oczywiście musi w ciele tym istnieć pierwiastek z $1$ stopnia $2^m$, gdzie $2^m$ jest potęgą $2$ o wykładniku
-naturalnym i większa niż stopień zwracanego wielomianu. Pierwiastek ten też podniesiony do jakiejkolwiek potęgi 
-o wykładniku naturalnym dodatnim, mniejszym niż $2^m$ musi być różny od $1$. 
+Pierwsza to tak zwana ,,Teorio-liczbowa transformata Fouriera'' ~\cite{garg2017digital}. Polega ona na nie wykonywaniu obliczeń w ciele $\mathbb{C}$ lecz
+w $\mathbb{Z}_p$, przy czym oczywiście musi w ciele tym istnieć pierwiastek z $1$ stopnia $2^m$, gdzie $2^m$ jest potęgą $2$ o wykładniku
+naturalnym i większym niż stopień zwracanego wielomianu. 
 Tak naprawdę oznacza to po prostu, że $p$ ma postać $r2^m+1$, gdzie $r$ jest liczbą naturalną, o czym pisałem w poprzedniej 
 sekcji.
 
 Jako $A[i:j]$ będę oznaczał komórki tablicy ze współczynnikami wielomianu $A$ o indeksach większych lub równych niż $i$ oraz mniejszych lub równych $j$. 
 
 
-Drugim ulepszeniem jest użycie tak zwanej szybkiej transformaty Furiera. Opiera się ona na obserwacji że rekurencyjna wersja dyskretnej transformaty Furiera 
+Drugim ulepszeniem jest użycie iteracyjnej szybkiej transformaty Fouriera ~\cite{wyrowski1988iterative}. Opiera się ona na obserwacji że rekurencyjna wersja dyskretnej transformaty Furiera 
 polega najpierw na podzieleniu współczynników wielomianu na coraz mniejsze grupy, aż do zawierających tylko pojedynczy współczynnik, a następnie łączeniu pojedynczych współczynników
 w pary zawierające informację o $2$ współczynnikach, potem czwórki, ósemki itd aż do połączenia ich w jeden duży blok zawierający informacje o wszystkich współczynnikach, a rekurencyjne wywołania służą jedynie 
 pogrupowaniu w jakiej kolejności będziemy wykonywać łączenia.(NIE WIEM JAK TO NAPISAC LEPIEJ????)
@@ -828,13 +827,13 @@ pogrupowaniu w jakiej kolejności będziemy wykonywać łączenia.(NIE WIEM JAK 
 Możemy jednak to grupowanie wykonać bez kolejnych rekurencyjnych wywoływań transformaty po prostu ustawiając obok siebie współczynniki w takiej kolejności 
 żeby współczynniki wielomianów stopnia $2^l-1$ które w wersji rekurencyjnej powstają na $m-l$ poziomie rekursji
 były w spójnych segmentach $A[0:2^l-1]$,$A[2^l:2 \cdot 2^l-1]$,
-$A[2 \cdot 2^l:2(2^l)-1]$,...,$[2^m-2^l,2^m-1]$. Przy czym współczynniki wielomianu powstałego na
+$A[2 \cdot 2^l:3\cdot 2^l-1]$,...,$A[(2^{m-l}-1)\cdot 2^l:2^m-1]$. Przy czym współczynniki wielomianu powstałego na
 $l+1$ poziomie rekursji, które w wielomianie powstałym na $l$-tym poziomie rekursji były przy 
-potęgach o wykładniku parzystym zostają umieszczone w "pierwszej połowie" segmentu 
+potęgach o wykładniku parzystym zostają umieszczone w ,,pierwszej połowie" segmentu 
 długości $2^l$ w którym były umieszczone na poprzednim etapie, zaś te, które były przy 
 potęgach nieparzystych w drugim.
 
-Zaważmy, że pierwsze "rozbicie" wektora współczynników w wersji rekurencyjnej sprowadza się,
+Zaważmy, że pierwsze ,,rozbicie'' wektora współczynników w wersji rekurencyjnej sprowadza się
 do wybrania osobno współczynników parzystych i nieparzystych. Tak więc nasze grupowanie
 powinno w polach o indeksach $(0,1,2,...,2^{m-1}-1)$ umieścić liczby znajdujące się najpierw 
 w polach o indeksach parzystych, czyli mające ostatni bit równy \texttt{0}, z kolei 
@@ -845,29 +844,33 @@ Przyjmijmy, że pierwszy poziom rekursji rozbija wielomian
 $A(x)=\sum_{i=0}^{2^m-1}a_ix^i$, na $A_0(x)=\sum_{i=0}^{2^{m-1}-1}a_{2i}x^{i}$ oraz
 $A_1(x)=\sum_{i=0}^{2^{m-1}-1}a_{2i+1}x^{i}$. 
 
-Gdy umieścimy współczynniki $A_0$ w $A[0,2^{m-1}-1]$, zaś $A_1$ w $A[2^{m-1},2^m-1]$ należy umieścić współczynniki przy potęgach parzystych w wielomianie $A_0$ w pierwszej połówce 
-$A[0,2^{m-1}-1]$, nieparzyste zaś w drugiej. I analogicznie współczynniki przy potęgach 
+Gdy umieścimy współczynniki $A_0$ w $A[0:2^{m-1}-1]$, zaś $A_1$ w $A[2^{m-1}:2^m-1]$ należy umieścić 
+współczynniki przy potęgach parzystych w wielomianie $A_0$ w pierwszej połówce 
+$A[0:2^{m-1}-1]$, nieparzyste zaś w drugiej. I analogicznie współczynniki przy potęgach 
 parzystych w wielomianie $A_1$ w pierwszej połówce 
-$A[2^{m-1},2^{m}-1]$, nieparzyste zaś w drugiej. To który współczynnik jest przy potędze 
+$A[2^{m-1}:2^{m}-1]$, nieparzyste zaś w drugiej. To który współczynnik jest przy potędze 
 parzystej czy nie w wielomianach $A_0$ i $A_1$ decyduje to czy początkowo był przy potędze
 której wykładnik miał drugi bit równy $0$, czy $1$. Dalsze kontynuowanie tego rozumowania 
 prowadzi do wniosku, że jeżeli odwrócimy $m-1$ ostatnich bitów liczby $i$ otrzymamy numer komórki
-w której powinniśmy umieścić liczbę $a_i$. Istotnie załóżmy, że liczba powstała po odwróceniu $m$ ostatnich bitów liczby $i$ jest większa niż że liczba powstała po odwróceniu $m$ ostatnich bitów liczby $j$. Prosta indukcja pozwala stwierdzić, że współczynniki, których indeksy mają $k$ 
+w której powinniśmy umieścić liczbę $a_i$. Istotnie załóżmy, że liczba powstała po odwróceniu $m$ ostatnich bitów liczby $i$ jest większa 
+niż że liczba powstała po odwróceniu $m$ ostatnich bitów liczby $j$. Prosta indukcja pozwala stwierdzić, że współczynniki, których indeksy mają $k$ 
 wspólnych ostatnich 
 bitów zostają na $k$-tym poziomie rekursji umieszczone w tym samym wielomianie. 
 To czy zostaną umieszczone w pierwszej czy drugiej połowie segmentu do którego były przypisane 
 na $k$-tym poziomie rekursji determinuje to czy ich $k+1$ bit jest równy $0$ czy $1$.
 
-To, że liczba powstała po odwróceniu $m$ ostatnich bitów liczby $i$ jest większa niż liczba powstała po odwróceniu $m$ ostatnich bitów liczby $j$ oznacza, że pewna liczba $k$(być może równa 
-$0$)ostatnich bitów liczby $i$ jest taka sama jak liczby $j$ 
+To, że liczba powstała po odwróceniu $m$ ostatnich bitów liczby $i$ jest większa niż liczba powstała po odwróceniu 
+$m$ ostatnich bitów liczby $j$ oznacza, że pewna liczba $k$ (być może równa 
+$0$) ostatnich bitów liczby $i$ jest taka sama jak liczby $j$ 
 zaś $k+1$ ostatni bit liczby $i$ jest równy $1$, podczas gdy $k+1$ ostatni bit liczby $j$
 jest równy $0$.
-Tak więc do $k-tego$ poziomu rekursji $a_i$ i $a_j$ pozostają w tym samym wielomianie $B(x)=
+Tak więc do $k$-tego poziomu rekursji $a_i$ i $a_j$ pozostają w tym samym wielomianie $B(x)=
 \sum^{2^{m-k}-1}_{l=0} b_lx^l$, czyli w wersji iteracyjnej są w tym samym segmencie 
-długości $2^{m-k}$ i na $k+1$ poziomie rekursji $a_j$ jest umieszczane w wielomianie
+długości $2^{m-k}$ i na $k+1$ poziomie rekursji w wersji rekurencyjnej $a_j$ jest umieszczane w wielomianie
 ze współczynnikami $b_0,b_2,...,b_{2^{m-k}-2}$, zaś $a_i$ w wielomianie ze współczynnikami
 $b_1,b_3,...,b_{2^{m-k}-1}$, tak więc w wersji iteracyjnej $a_j$ zostaje w umieszczone w pierwszej połowie 
-segmentu w którym są współczynniki $b_0, b_1,...,b_{2^{m-k}-1}$ zaś $a_i$ w drugiej, tak więc $a_i$ zostaje umieszczone w komórce o większym indeksie niż $a_j$. Ponieważ indeksy tablicy $A[0:2^m-1]$ 
+segmentu w którym są współczynniki $b_0$, $b_1$,..., $b_{2^{m-k}-1}$ zaś $a_i$ w drugiej, tak więc $a_i$ zostaje umieszczone w komórce o większym indeksie 
+niż $a_j$. Ponieważ indeksy tablicy $A[0:2^m-1]$ 
 wyznaczają wszystkie możliwe binarne liczby $m$-bitowe to istotnie jeżeli odwrócimy $m-1$ ostatnich bitów liczby $i$ otrzymamy numer komórki
 w której powinniśmy umieścić liczbę $a_i$.
 
@@ -877,14 +880,16 @@ Przejdźmy do dokładnego opisu naszej implementacji.
 Najpierw definiuję funkcję \texttt{enoughGoodRoot} która przyjmuje liczbę \texttt{k} typu 
 \texttt{\textunderscore \textunderscore int128}
  i zwraca element typu \texttt{field}, który jest pierwiastkiem z \texttt{1} stopnia $2^k$. 
-Jest to po prostu podniesienie elementu \texttt{field::almostPrimitiveRoot} (będącego pierwiastkiem z $1$ stopnia $2^{field::degreeOfDegree}$) \texttt{field::almostPrimitiveRoot-k}
+Jest to po prostu podniesienie elementu \texttt{field::almostPrimitiveRoot} (będącego pierwiastkiem z $1$ stopnia $2^{r}$, gdzie $r$
+to wartość zmiennej \texttt{field::degreeOfDegree}) \texttt{field::almostPrimitiveRoot-k}
 razy do kwadratu.
 
 
 
 
 
-Kolejnym etapem jest odpowiednie ustawienie wartości w komórkach wektora ze współczynnikami wielomianu(nazwę go \texttt{coefficients}, tak by można było wykonać na niej iteracyjną wersję szybkiej transformaty Furiera. 
+Kolejnym etapem jest odpowiednie ustawienie wartości w komórkach wektora ze współczynnikami wielomianu 
+(nazwę go \texttt{coefficients}) tak by można było wykonać na nim iteracyjną wersję szybkiej transformaty Fouriera. 
 
 
 
@@ -901,36 +906,40 @@ Pierwszą kopię przesuwamy o $1$ bit w prawo, tak, że bity o indeksach parzyst
 o indeksach nieparzystych, zaś drugą w lewo i wykonujemy na tak zmodyfikowanych kopiach operację
 \texttt{or}-a bitowego. 
 
-Analogiczną operację jak omówiona w poprzednim akapicie dla bloków składających się z $1$ 
-liczby wykonujemy na blokach $2$-bitowych, $4$-bitowych, $8$-bitowych, $16$-bitowych,
+Analogiczną operację jak omówiona w poprzednim akapicie dla bloków składających się z $1$-bitowych 
+wykonujemy na blokach $2$-bitowych, $4$-bitowych, $8$-bitowych, $16$-bitowych,
 i $32$-bitowych. 
 
 Tak zmodyfikowana zmienna \texttt{x} jest odwróconą bitowo początkową wartością zmiennej 
 \texttt{x}. Ponieważ chcieliśmy odwrócić jedynie jej ostatnie \texttt{k} bitów przed 
-zwróceniem \texttt{x} jako wyniku przesuwamy ją jeszcze o \texttt{64-k} bitów w prawo.
+zwróceniem \texttt{x} jako wyniku przesuwamy ją jeszcze o \texttt{64-k} bitów w prawo bez znaku.
 
 
 
 
 
 
-Gdy mamy już funkcję \texttt{reverseBits} możemy stworzyć funkcję \texttt{setToDo} transformującą wektor współczynników w "surowej" formie w wektor gotowy
-do wyliczenia jego szybkiej transformaty Furiera. Jako argumenty dla tej funkcji otrzymujemy wektor elementów typu \texttt{field} o nazwie \texttt{coefficients} oraz
-zmienną \texttt{long long} o nazwie \texttt{size} oznaczającą żądaną długość wektora wynikowego(jest to odpowiednio duża potęga dwójki o wykładniku naturalnym). Na początku dopełniamy wektor 
+Gdy mamy już funkcję \texttt{reverseBits} możemy stworzyć funkcję \texttt{setToDo} transformującą wektor współczynników w ,,surowej'' formie w wektor gotowy
+do wyliczenia jego szybkiej transformaty Fouriera. Jako argumenty dla tej funkcji otrzymujemy wektor elementów typu \texttt{field} o nazwie 
+\texttt{coefficients} oraz 
+zmienną \texttt{long long} o nazwie \texttt{size} oznaczającą żądaną długość wektora wynikowego(jest to odpowiednio duża potęga dwójki o wykładniku naturalnym). 
+Na początku dopełniamy wektor 
 \texttt{coefficients} elementami równymi \texttt{field(0)} do rozmiaru \texttt{size}. 
 W zmiennej \texttt{log} zapisujemy wartość logarytmu o podstawie $2$ na argumencie będącym długością
 wektora \texttt{coefficients}
 Następnie w pętli z iteratorem \texttt{i} przechodzącym po wszystkich liczbach naturalnych od \texttt{0} do 
-\texttt{size-1} i jeżeli \texttt{reverseBits(i,log) > i}(warunek ten służy temu, by każdy element został zamieniony dokładnie raz, zauważmy też, że \texttt{reverseBits(reverseBits(i,log),log)=i}) zamieniam w tabeli pole o indeksie \texttt{i} z polem o indeksie 
+\texttt{size-1} i jeżeli \texttt{reverseBits(i,log) > i} (warunek ten służy temu, by każdy element został zamieniony dokładnie raz. 
+Zauważmy też, że \texttt{reverseBits(reverseBits(i,log),log)=i}) zamieniam w tabeli pole o indeksie \texttt{i} z polem o indeksie 
 \texttt{reverseBits(i,log)} miejscami. Funkcja nic nie zwraca, a jedynie modyfikuje wektor podany jako argument.
 
 Przejdźmy do funkcji \texttt{DFT}, która otrzymując wektor współczynników wielomianu \texttt{coefficients}, 
 liczbę \texttt{size} nie mniejszą niż długość tego wektora i będący potęgą $2$ o wykładniku naturalnym oraz obiekt \texttt{omegaM} typu \texttt{field},
-który jest pierwiastkiem z \texttt{1} stopnia \texttt{size} zwraca wektor zawierający wartości tego wielomianu w punktach kolejno $omegaM^0$, $omegaM^1$,...,$omegaM^{size}$. 
+który jest pierwiastkiem z \texttt{1} stopnia \texttt{size} zwraca wektor zawierający wartości tego wielomianu w punktach kolejno 
+\texttt{omegaM}\verb!^!\texttt{0}, \texttt{omegaM}\verb!^!\texttt{1},..., \texttt{omegaM}\verb!^!\texttt{size-1}. 
 
 Poniżej umieściłem kod tej procedury.
 
-\begin{lstlisting}
+\begin{verbatim}
 void inline DFT(std::vector<field>&coefficients, long long size, field omegaM){
     setToDo(coefficients,size);
     std::stack<field> omegasM;
@@ -957,8 +966,7 @@ void inline DFT(std::vector<field>&coefficients, long long size, field omegaM){
         }
     }
 }
-\end{lstlisting}
-
+\end{verbatim}
 
 
 
@@ -969,21 +977,22 @@ Tworzymy stos na który kładziemy wyniki kolejnych złożeń podniesienia do kw
 
 Póki stos nie będzie pusty będę w każdej iteracji pętli \texttt{while} ściągał z niego kolejne wartości i przypisywał je do zmiennej \texttt{currentOmegaM}.
 
-W dalszej części będę oznaczał jako $\omega_i$ pierwiastek z $1$ stopnia $2^i$, w $Z_p$.
+W dalszej części będę oznaczał jako $\omega_i$ pierwiastek z $1$ stopnia $2^i$, w $\mathbb{Z}_p$.
 
 Przyjmijmy oznaczenie, że na początku \texttt{i}-tej iteracji wektor \texttt{coefficients} ma postać $\frac{size}{2^{i-1}}$ bloków postaci
-$(f_{i,k}(\omega_i^0),f_{i,k}(\omega_i^1),...,f_{i,k}(\omega^{2^{i-1}-1}_i))$. gdzie $k$ to numer bloku. Chcemy
+$(f_{i,k}(\omega_i^0), f_{i,k}(\omega_i^1), ...,f_{i,k}(\omega^{2^{i-1}-1}_i))$. gdzie $k$ to numer bloku. Chcemy
 następujące po sobie pary bloków połączyć w jeden blok postaci $(f_{i+1,k}(\omega_{i+1}^0),f_{i+1,k}(\omega_{i+1}^1),...,
 f_{i+1,k}(\omega^{2^{i}-1}_{i+1}))$, przy czym 
 $f_{i+1,k}(\omega_{i+1}^j) = f_{i,2k}(\omega_{i}^\frac{j}{2})+f_{i,2k+1}(\omega_{i}^{\frac{j}{2}})\omega_{i+1}^j$. 
 
-Kolejne iteracje pętli z iteratorem \texttt{j} odpowiadają kolejnym punktom w których wyliczamy wartości odpowiednich wielomianów, zaś pętla z iteratorem \texttt{k}
-numery kolejnych rozpatrywanych wielomianów. Ponieważ $\omega_{i+1}^{2^i}=-1$ wyliczenie $f_{i+1,k}(\omega_{i+1}^{j})$ i $f_{i+1,k}(\omega_{i+1}^{j+2^i})$ 
+Kolejne iteracje pętli z iteratorem \texttt{j} odpowiadają kolejnym punktom w których wyliczamy wartości odpowiednich wielomianów, zaś pętli z iteratorem 
+\texttt{k}
+numerom kolejnych rozpatrywanych wielomianów. Ponieważ $\omega_{i+1}^{2^i}=-1$ wyliczenie $f_{i+1,k}(\omega_{i+1}^{j})$ i $f_{i+1,k}(\omega_{i+1}^{j+2^i})$ 
 wyliczam w jednej iteracji pętli.(jak lepiej to napisać?)
 
 
 Przejdźmy do pełnej procedury mnożenia. 
-\begin{lstlisting}
+\begin{verbatim}
 std::vector<field>multiplication(std::vector<field> A, std::vector<field> B){
     long long size = 1;
     while(size < (long long)((A.size() + B.size()) +2 )){
@@ -1003,17 +1012,19 @@ std::vector<field>multiplication(std::vector<field> A, std::vector<field> B){
     } 
     return A;
 }
-\end{lstlisting}
+\end{verbatim}
 Wektorów nie przekazuję przez referencje bo będę je modyfikował.
 
-Najpierw wliczamy wartość \texttt{size} będącą liczbą punktów w których będziemy liczyć wartości wielomianu $AB$(jest to najmniejsza liczba będąca potęgą 
-$2$ o wykładniku naturalnym większa niż stopień $AB$). Kolejnym etapem jest znalezienie pierwiastka stopnia \texttt{size} z \texttt{1} w $\mathbb{Z}_p$, nie będącym w tym ciele jednocześnie pierwiastkiem 
-z $1$ niższego naturalnego stopnia. Następnie wyliczamy przez wywołania $DFT$ na odpowiednich argumentach wektor $(A(omegaM^0),A(omegaM^1),...,A(omegaM^{size}))$ oraz
-$(B(omegaM^0),B(omegaM^1),...,B(omegaM^{size}))$, następnie w kopii wektora $A$ zapisuję wartości $AB$ w kolejnych punktach będące wartościami odpowiednich 
+Najpierw wliczamy wartość \texttt{size} będącą liczbą punktów w których będziemy liczyć wartości wielomianu $AB$ (jest to najmniejsza liczba będąca potęgą 
+$2$ o wykładniku naturalnym większa niż stopień $AB$). Kolejnym etapem jest znalezienie pierwiastka stopnia \texttt{size} z \texttt{1} w $\mathbb{Z}_p$. 
+Następnie wyliczamy przez wywołania \texttt{DFT} na odpowiednich argumentach wektor $(A(omegaM^0),A(omegaM^1),...,A(omegaM^{s-1}))$, 
+oraz $(B(omegaM^0),B(omegaM^1),...,B(omegaM^{s-1}))$ gdzie $s$
+to wartość zmiennej \texttt{size}. Następnie w kopii wektora \texttt{A} zapisuję wartości $AB$ w kolejnych punktach będące wartościami odpowiednich 
 mnożeń.
 
-Okazuje się, że aby zmienić, wektor $(AB(omegaM^0),AB(omegaM^1),...,AB(omegaM^{size}))$ w wektor kolejnych współczynników $AB$ wystarczy wywołać na nim $DFT$ z drugim argumentem równym $size$ i trzecim 
-będącym równym odwrotności $omegaM$ w $Z_p$, a następnie podzielić w $Z_p$ każdy jego element przez $size$. 
+Okazuje się, że aby zmienić, wektor $(AB(omegaM^0),AB(omegaM^1),...,AB(omegaM^{s-1}))$ gdzie $s$ jest wartością zmiennej \texttt{size}
+w wektor kolejnych współczynników $AB$ wystarczy wywołać na nim \texttt{DFT} z drugim argumentem równym \texttt{size} i trzecim 
+będącym równym odwrotności \texttt{omegaM} w $\mathbb{Z}_p$, a następnie podzielić w $\mathbb{Z}_p$ każdy jego element przez $size$. 
 
 
 
@@ -1041,14 +1052,14 @@ będącym równym odwrotności $omegaM$ w $Z_p$, a następnie podzielić w $Z_p$
 Klasyczna analityczna definicja pochodnej jest to przekształcenie funkcji $f(x)$ w funkcję $f'(x)$ taką, że
 $f'(x)=\lim_{h \to 0}\frac{f(x+h)-f(x)}{h}$. Definicja taka traci jednak cały sens jeżeli chcemy zmienić dziedzinę
 funkcji $f$ i $f'$ z liczb rzeczywistych na dziedzinę gdzie nie możemy zmniejszać $h$ w taki sposób by było 
-dowolnie małe lecz niezerowe. Przykładem takiej dziedziny jest ciało $Z_p$. 
+dowolnie małe lecz niezerowe. Przykładem takiej dziedziny jest ciało $\mathbb{Z}_p$. 
 
 Zauważmy, że jeżeli funkcja $f$ $\mathbb{R}\to \mathbb{R}$ jest gładka w okolicy $0$, możemy ją utożsamić z jej szeregiem Taylora $\sum_{i=0}^{\infty}f_ix^i$. 
 
 Weźmy liczbę pierwszą $p$. W dalszej części sekcji będę zakładał, że współczynniki szeregu Taylora 
 rozważanej funkcji są postaci 
 $\frac{a_i}{b_i}$, gdzie $a,b \in \mathbb{Z}$ i  $b$ jest niepodzielne przez $p$. Przy takim założeniu napis  
-$\sum_{i=0}^{\infty}\frac{a_i}{b_i}x^i$ zachowuje algebraiczny sens również w ciele reszt $Z_p$, w którym 
+$\sum_{i=0}^{\infty}\frac{a_i}{b_i}x^i$ zachowuje algebraiczny sens również w ciele reszt $\mathbb{Z}_p$, w którym 
 liczbę całkowitą utożsamiamy z jej resztą z dzielenia przez $p$. W języku szeregów Taylora pochodną można 
 zdefiniować jako przekształcenie funkcji $f(x)=\sum_{i=0}^\infty f_ix^i$ w funkcję 
 $f '(x)=\sum_{i=0}^{\infty}(i+1)f_{i+1}x^i$. 
@@ -1075,7 +1086,7 @@ $f(g)'=f'(g)g'$.
     \sum_{i=1}^{\infty}(\sum_{j=0}^if_jg_{i-j})ix^{i-1}=
     \sum_{i=0}^{\infty}(\sum_{j=0}^if_jg_{i+1-j})(i+1)x^{i}$ z kolei
 
-    $f'g+fg'=(\sum_{0}^{\infty}(i+1)f_{i+1}x^{i-1})(\sum_{i=0}^{\infty}g_ix^i)+(\sum_{0}^{\infty}(i+1)g_{i+1}x^{i})(\sum_{i=0}^{\infty}f_ix^i)=
+    $f'g+fg'=(\sum_{0}^{\infty}(i+1)f_{i+1}x^{i})(\sum_{i=0}^{\infty}g_ix^i)+(\sum_{0}^{\infty}(i+1)g_{i+1}x^{i})(\sum_{i=0}^{\infty}f_ix^i)=
     \sum_{i=0}^\infty(\sum_{j=0}^{i}f_{i+1-j}g_{j}(i+1-j))x^i+
     \sum_{i=0}^\infty(\sum_{j=0}^{i}g_{i+1-j}f_{j}(i+1-j))x^i=
     \sum_{i=0}^\infty(\sum_{j=0}^{i}g_{i+1-j}f_{j}(i+1-j+j))x^i=
@@ -1087,12 +1098,12 @@ $f(g)'=f'(g)g'$.
     \textbf{Lemat:} $(f(g))'=f'(g)g'$.
     
     \textbf{Dowód:} Na początek przyjmijmy, że $f(x)=x^k$, gdzie $k$ jest liczbą naturalną. Dla $k=0$ i $k=1$ teza jest 
-    spełniona. Niech teza jest spełniona dla $f(x)=x^l$ dla każdego naturalnego $l$ mniejszego niż $k$.
+    spełniona. Niech teza jest spełniona dla $f(x)=x^l$ oraz dla każdego naturalnego $k$ mniejszego niż $l$.
     Wtedy
     $(g^k)'=((g^{k-1})g)'=(g^{k-1})g'+g(g^{k-1})'=(g^{k-1})g'+g((k-1)g^{k-2}g')=
-    (g^{k-1})g'+((k-1)g^{k-1}g')=kg^{k-1}g'$, tak więc na mocy zasady indukcji dla dowolnego $k$ naturalnego jeżeli $f(x)=x^k$ to $(f(g))'=f'(g)g'$ dla dowolnego $g$ postaci $\sum_{1}^{\infty}g_ix^i$. W takim razie dla dowolnego $f$
-    postaci $\sum_{1}^{\infty}g_ix^i$ zachodzi  $(f(g))'=(\sum_{i=0}^{\infty}f_ig^i)'=\sum_{i=0}^{\infty}f_i(g^i)'=
-    \sum_{i=0}^{\infty}f_i ig^{i-1}g'=f'(g)g'$.
+    (g^{k-1})g'+((k-1)g^{k-1}g')=kg^{k-1}g'$, tak więc na mocy zasady indukcji dla dowolnego $k$ naturalnego jeżeli $f(x)=x^k$ to $(f(g))'=f'(g)g'$ dla dowolnego $g$ postaci $\sum_{0}^{\infty}g_ix^i$. W takim razie dla dowolnego $f$
+    postaci $\sum_{0}^{\infty}f_ix^i$ zachodzi  $(f(g))'=(\sum_{i=0}^{\infty}f_ig(x)^i)'=\sum_{i=0}^{\infty}f_i(g(x)^i)'=
+    \sum_{i=0}^{\infty}f_i ig^{i-1}(x)g'=f'(g)g'$.
 
     
     
@@ -1115,7 +1126,7 @@ Zasadnicza implementacja algorytmu Jin i Wu składa się z $4$ funkcji.
 Pierwszą z nich jaką omówię jest funkcja \texttt{B}, której zadaniem jest wyliczenie pierwszych 
 $t+1$ współczynników szeregu Taylora $B(x)=\ln(\prod_{i=1}^n(1+x^{s_i}))$.
 
-Funkcja \texttt{B} wyznacza wektor $t+1$ pierwszych wyrazów szeregu Taylora w ciele $Z_p$ następującej 
+Funkcja \texttt{B} wyznacza wektor $t+1$ pierwszych wyrazów szeregu Taylora w ciele $\mathbb{Z}_p$ następującej 
 funkcji:
 $$
 B(x)=\ln(\prod_{i=1}^n(1+x^{s_i}))=\sum_{i=1}^n \ln(1+x^{s_i})=\sum_{i=1}^n(\sum_{j=1}^\infty
@@ -1130,9 +1141,9 @@ $$
 B_t(x)=\sum_{i=1}^n (\sum_{j=1}^{\lfloor \frac{t}{s_i} \rfloor}\frac{(-1)^{j-1}}{j}x^{s_ij})
 =\sum_{k=1}^t (\sum_{j=1}^{\lfloor \frac{t}{k} \rfloor}\frac{a_k(-1)^{j-1}}{j}x^{jk})$$
 
-Spójrzmy na implementację funkcji $B$.
+Spójrzmy na implementację funkcji \texttt{B}.
 
-\begin{lstlisting}
+\begin{verbatim}
 std::vector<field> B(std::vector<field> s, long long t){
     std::vector<field> a(t+1,field(0));
     std::vector<field> ans(t+1,field(0));
@@ -1148,17 +1159,17 @@ std::vector<field> B(std::vector<field> s, long long t){
     }
     return ans;
 }
-\end{lstlisting}
+\end{verbatim}
 
 Na początku tworzę wektor \texttt{a} którego \texttt{k}-ty element oznacza zdefiniowane wcześniej $a_k$. 
 Reszta kodu jest prostym przetłumaczeniem matematycznej notacji sumy na składnię zawierającą pętle, przy 
-czym pole $ans[i]$ odpowiada współczynnikowi przy $x^i$ w rozwinięciu w szereg Taylora funkcji $B(x)$.
+czym pole \texttt{ans[i]} odpowiada współczynnikowi przy $x^i$ w rozwinięciu w szereg Taylora funkcji $B(x)$.
 
 Kolejne dwie funkcje to \texttt{compute} i \texttt{mainCompute}. 
 
 
 
-Ich celem jest wyliczenie $(\exp(B(x)))_t=(\sum_{i=0}^\infty \frac{B(x)^i}{i!})_t$
+Ich celem jest wyliczenie współczynników $(\exp(B(x)))_t=(\sum_{i=0}^\infty \frac{B(x)^i}{i!})_t$
 
 Algorytm ten bazuje na spostrzeżeniu, że żeby wyliczyć $G_t(x)$,gdzie $G(x)=\exp(F(x))$ i $F(x) =\sum_{i=1}^\infty f_ix^i$,
 jeżeli znamy $G(0)$ wystarczy znaleźć wartości $f_0,f_1,...,f_t$. Co więcej $G_t(F(x))=G_t(F_t(x))$
@@ -1174,13 +1185,14 @@ Zauważmy, że $G(0)=g_0$, tak więc mając wyliczone $f_0,f_1,...,f_t$ jesteśm
 
 Weźmy liczbę pierwszą $p>t$.
 
-$B(x)=\ln(\prod_{i=0}^n(1+x^{s_i}))=\sum_{i=1}^{n}(\sum_{k=1}^{\infty}\frac{(-1)^{k-1}x^{s_ik}}{k}):=\sum_{i=0}^{\infty}b_ix^i$, więc każda z liczb $b_0,b_1,...,b_n$ da się zapisać jako liczba wymierna postaci $\frac{x}{y}$, gdzie $x,y$ to
+$B(x)=\ln(\prod_{i=0}^n(1+x^{s_i}))=\sum_{i=1}^{n}(\sum_{k=1}^{\infty}\frac{(-1)^{k-1}x^{s_ik}}{k}):=\sum_{i=0}^{\infty}b_ix^i$, 
+więc każda z liczb $b_0,b_1,...,b_t$ da się zapisać jako liczba wymierna postaci $\frac{x}{y}$, gdzie $x,y$ to
 względnie pierwsze liczby naturalne i $y$ nie jest podzielne przez $p$. Jeżeli $x$ i $y$ utożsamimy z resztą dzielenia ich 
-przez $p$ to wartość wyrażenia $\frac{x}{y}$ da się wyliczyć w ciele $Z_p$, a z tego.
+przez $p$ to wartość wyrażenia $\frac{x}{y}$ da się wyliczyć w ciele $\mathbb{Z}_p$.
 
 Niech $A(x)=\exp(B(x))=\prod_{i=0}^n(1+x^{s_i}):=\sum_{i=0}^{\infty}a_ix^i$.
 
-Wiemy, że $a_{i+1}=(i+1)^{-1}(\sum_{j=1}^{i+1}b_ja_{i+1-j})$, a także $a_0=\prod_{i=0}^n(1+0^{s_i})=1$, więc każda
+Wiemy, że $a_{i+1}=(i+1)^{-1}(\sum_{j=1}^{i+1}jb_ja_{i+1-j})$, a także $a_0=\prod_{i=0}^n(1+0^{s_i})=1$, więc każda
 z liczb $a_i$, gdzie $i \in \{0,1,2,..,t \}$ da się przedstawić w postaci $\frac{X_i}{Y_i}$, gdzie $X_i,Y_i$ to
 względnie pierwsze liczby naturalne i $Y_i$ nie jest podzielne przez $p$. Jeżeli $X_i$ i $Y_i$ utożsamimy z resztą dzielenia ich 
 przez $p$ to wartość wyrażenia $\frac{X_i}{Y_i}$ da się wyliczyć w ciele $Z_p$ i wartość liczby $a_i$ dla naturalnego $i$
@@ -1188,20 +1200,20 @@ nie większego niż $t$ jest równa $0$ wtedy i tylko wtedy gdy dla jej postaci 
 że $A(x)$ jest iloczynem wielomianów o całkowitych współczynnikach, więc też jest wielomianem o całkowitych współczynnikach,
 więc $a_i$ jest wartością całkowitą, która w ciele $Z_p$ jest utożsamiona z $0$ wtedy i tylko wtedy, gdy jest podzielna przez $p$.
 
-Na mocy powyższych rozważań, możemy dalsze obliczenia wykonywać w ciele $Z_p$, chyba, że explicite zaznaczę inaczej.
+Na mocy powyższych rozważań, możemy dalsze obliczenia wykonywać w ciele $\mathbb{Z}_p$, chyba, że explicite zaznaczę inaczej.
 
 
 Procedura \texttt{mainCompute} jako argument przyjmuje wektor \texttt{f} $t+1$ pierwszych współczynników rozwinięcia w 
 szereg Taylora funkcji $B$. Na początku inicjuje wynikowy $t+1$-elementowy wektor \texttt{g} ustawiając wszystkie
-jego komórki poza \texttt{g[0]} na $0$, z kolei \texttt{g[0]} ustawiamy na $1$. Następnie uruchamiamy funkcję 
+jego komórki poza \texttt{g[0]} na \texttt{0}, z kolei \texttt{g[0]} ustawiamy na \texttt{1}. Następnie uruchamiamy funkcję 
 \texttt{compute} na argumentach \texttt{0}, \texttt{t}, \texttt{g} i \texttt{f}.
 
 Funkcja \texttt{compute} zapisuje do wektora podanego jako trzeci argument(oczywiście przez referencję, żeby 
 można było go modyfikować) wartości kolejnych współczynników szeregu Taylora funkcji 
 $g(x)=\exp(\sum_{i=0}^tf_ix^i)$, gdzie $t+1$ to długość wektora podanego jako czwarty argument, zaś
-$f_i$ to wartość $i$-tej komórki wektora podanego jako czwarty argument. W dalszej części jako $f_i$ będę 
-oznaczał wartość $i$-tej komórki wektora podanego jako czwarty argument, zaś jako $g_i$ będę 
-$i$-tej komórki wektora podanego jako trzeci argument. Jako $t$ będę oznaczał \texttt{f.size()-1}
+$f_i$ to wartość \texttt{i}-tej komórki wektora podanego jako czwarty argument. W dalszej części jako $f_i$ będę 
+oznaczał wartość \texttt{i}-tej komórki wektora podanego jako czwarty argument, zaś jako $g_i$ będę oznaczał wartość 
+\texttt{i}-tej komórki wektora podanego jako trzeci argument. Jako $t$ będę oznaczał \texttt{f.size()-1}
 
 Idea funkcji \texttt{compute} bazuje na tym, że aby wyliczyć $g_i=(i+1)^{-1}(\sum_{j=1}^{i+1}jf_jg_{i+1-j})$ dla wszystkich $i \in \{1,2,...,t\}$ należy
 wykonać $O(n^2)$ dodawań składników postaci $(i+1)^{-1}jf_jg_{i+1-j}$ do odpowiednich komórek. Nie każde dodawanie można wykonać w dowolnym
@@ -1210,7 +1222,7 @@ dodawanym składniku $(i+1)^{-1}f_jg_{i+1-j}$ nie ulega zmianie.
 
 Zapisana w pseudokodzie funkcja \texttt{compute} ma postać:
 
-\begin{lstlisting}
+\begin{verbatim}
 procedure compute(l,r,g,f)
     if l < r
         m <- floor((l+r)/2) #obliczenia w tej linii wykonujemy w liczbach naturalnych
@@ -1223,7 +1235,7 @@ procedure compute(l,r,g,f)
         compute(m+1,r,g,f)
     end if
 end procedure
-\end{lstlisting}
+\end{verbatim}
 
 Po wykonaniu \texttt{compute(l,r,f,g)} chcemy, żeby wartości $g_l,g_{l+1},...,g_{r}$ były już ustawione na wartości docelowe, zaś
 przed wykonaniem \texttt{compute(l,r,f,g)} chcemy, żeby wszystkie składniki postaci $(i+1)^{-1}f_jg_{i+1-j}$ gdzie $i+1-j<l$ zostały
@@ -1236,13 +1248,13 @@ Załóżmy indukcyjnie, że są spełnione dla \texttt{g} długości $0,1,2,..,t
 Wywołanie \texttt{compute(0,t,f,g)} sprowadza się do wywołania \texttt{compute(0,m,f,g)}, gdzie \texttt{m} to wynik wykonanej w
 liczbach całkowitych działania $\lfloor \frac{t}{2}\rfloor$. Po jej wykonaniu z tezy indukcyjnej $g_0,g_2,...,g_m$ mają docelowe
 wartości. Następnie przechodzimy do wykonania pętli
-\begin{lstlisting}
+\begin{verbatim}
 for i <- m+1, m+2,...,r
     for j<-l,l+1,..,m
         g[i] <- g[i]+(i-j)f[i-j]g[j]/i
     end for
 end for
-\end{lstlisting}
+\end{verbatim}
 
 Ponieważ indeks $j$ jest nie większy niż $m$ wszystkie dodawania są dozwolone. 
 Po wykonaniu tej pętli zostają już wykonane wszystkie
@@ -1260,13 +1272,13 @@ Nasza implementacja jednak korzysta z jednego usprawnienia. Zauważmy, że ilocz
 $G(x)=\sum_{j=0}^{m-l}g_{j+l}x^j$, ma postać 
 $\sum_{i=0}^{r+m-2l}(\sum_{k=0}^{r-l}kf_kg_{i-k+l})x^i$, tak więc w tym iloczynie współczynnik przy potędze $x^{i-l}$ podzielony
 przez $i$ jest równy liczbie o którą zostaje zwiększone $g_i$ po wykonaniu pętli
-\begin{lstlisting}
+\begin{verbatim}
 for i <- m+1, m+2,...,r
             for j<-l,l+1,..,m
                 g[i] <- g[i]+(i-j)f[i-j]g[j]/i
             end for
 end for
-\end{lstlisting}
+\end{verbatim}
 
 Wykonanie pętli naiwnie zajmuje czas $O(t^2)$, zaś wykorzystanie szybkiej teorio-liczbowej transformaty Fouriera do mnożenia wielomianów,
 w mojej implementacji przyspieszyć wykonanie tej pętli do $O(t\ln(t))$.
@@ -1291,7 +1303,8 @@ przez $p$. Jednak liczba tych podzbiorów na pewno jest nie większa niż $2^n$,
 Eksperymenty w sekcji poświęconej losowaniu liczby pierwszej zostało wykazane, że liczba możliwych do wylosowania wartości $p$
 jest $O(\frac{(n+t)^3}{\log(n+t)})=O((n+t)^2)$, więc prawdopodobieństwo, że $p$ dzieli niezerową liczbę podzbiorów $S$ o sumie $t$
 jest $O(\frac{n}{(n+t)^2})=O(\frac{1}{n+t})$.
-
+\bibliographystyle{plain}
+\bibliography{bibliography.bib}
 
 
 \end{document}
