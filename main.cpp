@@ -102,7 +102,7 @@ std::vector<bool> JinWu(std::vector<field>& s, __int128 t){
 
 
 std::vector<bool> brutalSum(std::vector<field>  s,long long t){    
-    std::bitset<1000000>DP = std::bitset<1000000>();
+    std::bitset<10000000>DP = std::bitset<10000000>();
     DP.set(0,1);
     for(int i = 0; i < s.size(); i++){
         std::cout<<i<<" "<<Q<<" B"<<std::endl;
@@ -119,7 +119,7 @@ int main() {
     int start = std::time(NULL);
     std::ofstream wynik;
     wynik.open("wynik");
-    for(int q = 0 ; q < 80; q++){
+    for(int q = 0 ; q < 4; q++){
         Q = q;
         //std::srand(2);
         __int128 n,t;

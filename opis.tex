@@ -7,6 +7,7 @@
 \usepackage{tikz}
 \usepackage{systeme}
 \usepackage{tcolorbox}
+
 % Language setting
 % Replace `english' with e.g. `spanish' to change the document language
 \usepackage[polish]{babel}
@@ -19,11 +20,11 @@
 \usepackage{amsmath}
 \usepackage{inconsolata}
 \usepackage{graphicx}
-\graphicspath{ {./} }
+\graphicspath{ {.} }
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 
 \title{Algorytm znajdowania sumy podzbioru}
-\author{You}
+\author{Łukasz Wasilewski}
 
 \begin{document}
 \maketitle
@@ -240,7 +241,7 @@ Ogólnie implementację algorytmu można podzielić na 5 zasadniczych części
 
 Ogólny szablon, jakie metody należy zaimplementować był 
 mocno inspirowany implementacją klasy dużych liczb całkowitych
-zamieszczony na stronie [ https://www.geeksforgeeks.org/bigint-big-integers-in-c-with-example/ ]
+zamieszczony na stronie .
 
 
 Ponieważ znaczną część obliczeń mój program będzie wykonywać na elementach ciała
@@ -261,7 +262,7 @@ wartość owego $r$, zaś w statycznej zmiennej \texttt{degreeOfDegree} typu
 \texttt{\textunderscore \textunderscore int128} przechowujemy wartość owego $k$.
 
 Dla każdej liczby pierwszej $p$ istnieje pierwiastek pierwotny, czyli taka liczba, że $x$, że nie istnieje 
-dodatnia liczba naturalna $w$ mniejsza niż $p-1$ taka, że $x^w \equiv 1 (\mod p)$ (oczywiście z małego twierdzenia
+dodatnia liczba naturalna $w$ mniejsza niż $p-1$ taka, że $x^w \equiv 1 \pmod p$ (oczywiście z małego twierdzenia
 Fermata $r^{p-1} \equiv 1 (\mod p)$). W dalszej części pracy stopniem liczby/pierwiastka będę oznaczał najmniejszy wykładnik
 naturalny do którego należy ją podnieść, aby uzyskać $1$ w ciele $Z_p$. Stopień pierwiastka pierwotnego wynosi 
 oczywiście $p-1$. Bardzo często będziemy chcieli szybko wyliczyć liczbę mającą stopień będący potęgą $2$ o 
@@ -304,7 +305,7 @@ stosunkowo mały wielkości $O(\log^6(p))$ ~\cite{durnoga2017large},
 tak więc kandydatów możemy szukać sprawdzając kolejne liczby naturalne zaczynając od 2. 
 Tak naprawdę nie potrzebujemy wyznaczyć pierwiastka pierwotnego, ale jedynie liczbę jedynie liczbę 
 $r$, że nie zachodzi $r^{2^{d-1}} \equiv 1 \pmod p$ gdzie $d$ to wartość zmiennej \texttt{degreeOfDegree}. Sprawdzenie dla liczby $r$ czy nie zachodzi 
-$r^{2^\frac{p-1}{2}} \equiv 1 (\mod p)$ jest mocniejszym warunkiem i dla uproszczenia kodu on zostaje sprawdzony. Następnie
+$r^{2^\frac{p-1}{2}} \equiv 1 \pmod p$ jest mocniejszym warunkiem i dla uproszczenia kodu on zostaje sprawdzony. Następnie
 jeżeli wspomniany warunek zachodzi do zmiennej \texttt{almostPrimitiveRoot} zapisujemy $r^{odd}$.
 
 W module zajmującym losowaniem liczb pierwszych istnieje miejsce w którym wykonujemy operacje modularne modulo liczb
@@ -444,7 +445,7 @@ Kolejnym operatorem jest operator potęgowania \texttt{friend field inline \&ope
 Pierwszym argumentem jaki przyjmuje jest obiekt typu \texttt{field} o nazwie \texttt{a} oraz zmienna typu 
 \texttt{\textunderscore \textunderscore int128} o
 nazwie \texttt{b}. Zauważmy, że z małego twierdzenia Fermata (jeżeli $p$ nie dzieli $a$, jeżeli jednak dzieli również własność zachodzi, 
-czego dowód jest trywialny) $a^{k(p-1)+l} \equiv (a^{p-1})^ka^l \equiv 1^ka^l \equiv a^l (\mod p)$ dla dowolnych naturalnych
+czego dowód jest trywialny) $a^{k(p-1)+l} \equiv (a^{p-1})^ka^l \equiv 1^ka^l \equiv a^l \pmod p$ dla dowolnych naturalnych
 $a,k,l$, tak więc
 zamiast podnosić \texttt{a} do potęgi \texttt{b} możemy podnieść ją do potęgi \texttt{b\%(p-1)}.
 Teoretycznie moglibyśmy rozpatrywać \texttt{((b\%(p-1))+p-1) \% (p - 1)}, jednak z pewnych powodów, o 
@@ -563,12 +564,12 @@ przyjmuje wartość \texttt{x} typu \texttt{\textunderscore \textunderscore int1
 Jeżeli \texttt{x==0} zwraca \texttt{"0"}. Jeżeli \texttt{x} jest ujemne zapamiętuje to w zmiennej
 \texttt{minus} typu \texttt{bool} i następnie mnoży w miejscu \texttt{x} przez \texttt{-1}. 
 Funkcja inicjalizuję zmienną wynikową \texttt{ans} na słowo puste, a następnie wykonuje pętlę
-\begin{lstlisting}
-    while(x != 0){
-		ans = toStringOneNumber(x)+ans;
-		x/=10;
-	}
-\end{lstlisting}
+\begin{verbatim}
+while(x != 0){
+    ans = toStringOneNumber(x)+ans;
+	    x/=10;
+}
+\end{verbatim}
 W przypadku gdy zmienna \texttt{minus} została ustawiona na \texttt{true} dodaję z przodu wyniku słowo \texttt{"\textminus"}.
 Po wykonaniu omówionych operacji zwracam wynik. 
 
@@ -590,7 +591,7 @@ spośród liczb na przedziale $[t+1,(n+t)^3]$.
     %\end{center}    
 \end{tcolorbox}
 
-Twierdzeniem o liczbach pierwszych mówi, że: [ŹROOOOOOOOOOOOOOODŁOOOOOOOOOOOOO] 
+Twierdzeniem o liczbach pierwszych ~\cite{goldfeld2004elementary} mówi, że: 
 $$\lim_{x \to \infty} \frac{\pi(x)}{\frac{x}{\ln(x)}}=1$$
 
 Tak więc liczb pierwszych na przedziale $[t+1,(n+t)^3]$ jest $\Omega((n+t)^2)$. Celem naszego algorytmu jest sprawdzenie
@@ -642,7 +643,10 @@ $\frac{a}{1000000}((n+t)^3-(1+t)+1) \approx \pi'(n,t)$, gdzie $a$ to wartość z
 Poniższa heat-mapa ukazuje tak przybliżoną w ten sposób wartość $\log_2(\frac{\pi'(n,t)}{(n+t)^2})$, w zależności od $\log_2(n)$ i $\log_2(t)$. 
 Jak widać zdecydowanie liczba liczb pierwszych możliwych do uzyskania w omówiony sposób
 jest $\Omega((n+t)^2)$.
-%\includegraphics[width=\textwidth]{wykres.png}
+\begin{center}
+    \includegraphics[width=\textwidth]{wykres.png}    
+\end{center}
+
 
 W przeciwieństwie do większości pozostałego kodu, który przygotowałem, ze względu na jednoczesne łatwe wykonywanie wykresów, oraz szybkość działania 
 eksperymentalne weryfikowanie
@@ -694,7 +698,7 @@ Test Millera-Rabina opiera się na następującej obserwacji:
 \begin{tcolorbox}
 \textbf{Obserwacja 1:} Dla większej niż $2$ liczby $n=2^sd+1$, gdzie $s$ jest naturalne, zaś $d$ naturalne nieparzyste i liczby $
 a \in \{2,3,...,n-1\}$
-jeżeli istnieje liczba $i \in \{0,1,2,..,s-1\}$ taka, że $(a^d)^{2^i} \equiv n-1 (\mod p)$ to $n$
+jeżeli istnieje liczba $i \in \{0,1,2,..,s-1\}$ taka, że $(a^d)^{2^i} \equiv n-1 \pmod p$ to $n$
 prawdopodobnie jest pierwsza. Jeżeli takie $i$ nie istnieje $n$ liczbą pierwszą na pewno nie jest.
 \end{tcolorbox}
 
@@ -821,7 +825,7 @@ Jako $A[i:j]$ będę oznaczał komórki tablicy ze współczynnikami wielomianu 
 Drugim ulepszeniem jest użycie iteracyjnej szybkiej transformaty Fouriera ~\cite{wyrowski1988iterative}. Opiera się ona na obserwacji że rekurencyjna wersja dyskretnej transformaty Furiera 
 polega najpierw na podzieleniu współczynników wielomianu na coraz mniejsze grupy, aż do zawierających tylko pojedynczy współczynnik, a następnie łączeniu pojedynczych współczynników
 w pary zawierające informację o $2$ współczynnikach, potem czwórki, ósemki itd aż do połączenia ich w jeden duży blok zawierający informacje o wszystkich współczynnikach, a rekurencyjne wywołania służą jedynie 
-pogrupowaniu w jakiej kolejności będziemy wykonywać łączenia.(NIE WIEM JAK TO NAPISAC LEPIEJ????)
+pogrupowaniu w jakiej kolejności będziemy wykonywać łączenia.
 
 
 Możemy jednak to grupowanie wykonać bez kolejnych rekurencyjnych wywoływań transformaty po prostu ustawiając obok siebie współczynniki w takiej kolejności 
@@ -988,7 +992,7 @@ $f_{i+1,k}(\omega_{i+1}^j) = f_{i,2k}(\omega_{i}^\frac{j}{2})+f_{i,2k+1}(\omega_
 Kolejne iteracje pętli z iteratorem \texttt{j} odpowiadają kolejnym punktom w których wyliczamy wartości odpowiednich wielomianów, zaś pętli z iteratorem 
 \texttt{k}
 numerom kolejnych rozpatrywanych wielomianów. Ponieważ $\omega_{i+1}^{2^i}=-1$ wyliczenie $f_{i+1,k}(\omega_{i+1}^{j})$ i $f_{i+1,k}(\omega_{i+1}^{j+2^i})$ 
-wyliczam w jednej iteracji pętli.(jak lepiej to napisać?)
+wyliczam w jednej iteracji pętli.
 
 
 Przejdźmy do pełnej procedury mnożenia. 
@@ -1265,7 +1269,7 @@ zmiennych \texttt{i} i \texttt{j} zastępujemy odpowiednio zmiennymi \texttt{i+m
 indukcyjną po wykonaniu \texttt{$compute(0,r-m-1,f,g)$}
 $g_i$ zostaje zwiększone o $(i+1)^{-1}(\sum_{j=1}^{i+1}jf_jg_{i+1-j})$, dla $i \in \{1,2,...,r-m-1\}$ 
 to po wykonaniu \texttt{compute(m+1,r,f,g)} $g_{i+m+1}$  zostaje zwiększone o $(m+1+i+1)^{-1}(\sum_{j=1}^{i+1}jf_{m+1+j}g_{m+1+i+1-j})$, 
-dla $i \in \{1,2,...,r-m-1\}$, więc po wykonaniu $compute(m+1,r,g,f)$ $g_i=(i+1)^{-1}(\sum_{j=1}^{i+1}jf_jg_{i+1-j})$ dla każdego
+dla $i \in \{1,2,...,r-m-1\}$, więc po wykonaniu $compute(m+1,r,g,f)$ $g_i=(i+1)^{-1}(\sum_{j=1}^{i+1}jf_jg_{i+1-j})$ dla każdego
 $i \in \{0,1,2,3,...,t\}$. 
 
 Nasza implementacja jednak korzysta z jednego usprawnienia. Zauważmy, że iloczyn wielomianów $F(x)=\sum_{k=0}^{r-l}kf_kx^k$ i 
@@ -1274,9 +1278,9 @@ $\sum_{i=0}^{r+m-2l}(\sum_{k=0}^{r-l}kf_kg_{i-k+l})x^i$, tak więc w tym iloczyn
 przez $i$ jest równy liczbie o którą zostaje zwiększone $g_i$ po wykonaniu pętli
 \begin{verbatim}
 for i <- m+1, m+2,...,r
-            for j<-l,l+1,..,m
-                g[i] <- g[i]+(i-j)f[i-j]g[j]/i
-            end for
+    for j<-l,l+1,..,m
+        g[i] <- g[i]+(i-j)f[i-j]g[j]/i
+    end for
 end for
 \end{verbatim}
 
@@ -1285,26 +1289,58 @@ w mojej implementacji przyspieszyć wykonanie tej pętli do $O(t\ln(t))$.
 Niech $T(t)$ oznacza czas wykonania \texttt{compute}, gdzie różnica między drugim i pierwszym argumentem wynosi $t+1$.
 Ponieważ $T(t)=2T(\frac{t}{2})+O(t\ln(t))$, to $T(t)=O(t \ln^2(t))$.
 
-Kolejną ostatnią już implementowaną prze zemnie funkcją jest \texttt{JinWu}. Przyjmuje ona wektor \texttt{s} elementów zbioru 
+Kolejną ostatnią już implementowaną prze zemnie funkcją jest \texttt{JinWu}. Przyjmuje ona wektor \texttt{s} 
+elementów zbioru 
 $S$, oraz
-liczbę $t$. Najpierw losuje liczbę pierwszą $p$ która jest wynikiem wykonania funkcji \texttt{find\_prime(s.size(),t)}. Następnie
+liczbę \texttt{t}. Najpierw losuje ona liczbę pierwszą \texttt{p} która jest wynikiem wykonania funkcji 
+\texttt{find\_prime(s.size(),t)}. Następnie
 wywołując \texttt{field::setP(p)} ustawiam zmienne statyczne klasy \texttt{field} tak, żeby obliczenia w niej wykonywane 
-odpowiadały wykonaniu ich w klasie $Z_p$. Potem do wektora $Bans$ przy pomocy wykonania funkcji $B(s,t)$ zapisuję
-$t+1$ pierwszych współczynników(w $Z_p$) szeregu Taylora funkcji $B(x)=\ln(\prod_{i=0}^{n-1}(1+x^{s_i}))$, gdzie jako $n$ oznaczam długość
-wektora \texttt{s}, zaś jako $s_i$ oznaczam jego $i$-tą komórkę w $Z_p$(będę to oznaczenie stosował również w dalszej części pracy). 
-Następnie do wektora \texttt{computeAns} zapisuję $t+1$ pierwszych współczynników(w $Z_p$) szeregu Taylora funkcji 
+odpowiadały wykonaniu ich w klasie $\mathbb{Z}_p$. Potem do wektora \texttt{Bans} przy pomocy wykonania funkcji 
+\texttt{B(s,t)} zapisuję
+$t+1$ pierwszych współczynników(w $\mathbb{Z}_p$) szeregu Taylora funkcji $B(x)=\ln(\prod_{i=0}^{n-1}(1+x^{s_i}))$, gdzie jako $n$ oznaczam długość
+wektora \texttt{s}, zaś jako $s_i$ oznaczam jego $i$-tą komórkę w $\mathbb{Z}_p$ (będę to oznaczenie stosował również w dalszej części pracy). 
+Następnie do wektora \texttt{computeAns} zapisuję $t+1$ pierwszych współczynników(w $\mathbb{Z}_p$) szeregu Taylora funkcji 
 $A(x)=\prod_{i=0}^{n-1}(1+x^{s_i})$ jako wynik procedury \texttt{mainCompute(t,Bans)}. 
 Zauważmy, że ponieważ $A(x)$ jest wielomianem współczynnik
 przy potędze $x^i$ w jego rozwinięciu w szereg Taylora jest po prostu współczynnikiem przy potędze $x^i$ w wielomianie $A(x)$, zaś współczynnik przy potędze $x^i$ w $A(x)$ oznacza ilość sposobów wybrania ciągu indeksów naturalnych $-1<i_1<i_2<...<i_m<n$, 
 takich, że
 $x^{s_{i_1}+s_{i_2}+...+s_{i_m}}=x^i$, czyli ilość podzbiorów $S$ dających sumę $i$. Ponieważ liczby te zapisujemy jako elementy 
-$Z_p$ możliwe, \texttt{computeAns[t]} jest równe $0$ mimo, że istnieją podzbiory $S$ o sumie $t$ jednak ich liczba jest podzielna
+$\mathbb{Z}_p$ możliwe, \texttt{computeAns[t]} jest równe $0$ mimo, że istnieją podzbiory $S$ o sumie $t$ jednak ich liczba jest podzielna
 przez $p$. Jednak liczba tych podzbiorów na pewno jest nie większa niż $2^n$, więc ma co najwyżej $n$ różnych czynników pierwszych.
-Eksperymenty w sekcji poświęconej losowaniu liczby pierwszej zostało wykazane, że liczba możliwych do wylosowania wartości $p$
+Eksperymenty w sekcji poświęconej losowaniu liczby pierwszej wykazały, że liczba możliwych do wylosowania wartości $p$
 jest $O(\frac{(n+t)^3}{\log(n+t)})=O((n+t)^2)$, więc prawdopodobieństwo, że $p$ dzieli niezerową liczbę podzbiorów $S$ o sumie $t$
 jest $O(\frac{n}{(n+t)^2})=O(\frac{1}{n+t})$.
+
+\section{Wyniki}
+Poniżej prezentuję wyniki działania mojego algorytmu w porównaniu z algorytmem klasycznym omówionym w sekcji drugiej
+używającym \texttt{bitset}-u o \texttt{10000000} elementów.
+Testy zostały wykonane na komputerze z procesorem \texttt{Intel i5-7300HQ (4) @ 3.500GHz}. Niestety nawet dla dużych
+danych nie udało się osiągnąć przewagi nad algorytmem dynamicznym.
+
+\begin{verbatim}
+n=100000 t=2000000
+Jin Wu time =935s
+Brutal time =530s
+poprawne 2000001/2000001
+_______________________________________________________
+n=200000 t=3000000
+Jin Wu time =1961s
+Brutal time =580s
+poprawne 3000001/3000001
+_______________________________________________________
+n=300000 t=4000000
+Jin Wu time =2455s
+Brutal time =1627s
+poprawne 4000001/4000001
+_______________________________________________________
+n=400000 t=5000000
+Jin Wu time =2576s
+Brutal time =2062s
+poprawne 5000001/5000001
+_______________________________________________________
+\end{verbatim}
+    
 \bibliographystyle{plain}
 \bibliography{bibliography.bib}
-
 
 \end{document}

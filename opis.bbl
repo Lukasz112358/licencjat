@@ -1,0 +1,89 @@
+\begin{thebibliography}{10}
+
+\bibitem{agarwal2011encrypting}
+Ashish Agarwal.
+\newblock Encrypting messages using the merkle-hellman knapsack cryptosystem.
+\newblock {\em IJCSNS}, 11(5):12, 2011.
+
+\bibitem{bach1997comments}
+Eric Bach.
+\newblock Comments on search procedures for primitive roots.
+\newblock {\em Mathematics of computation}, 66(220):1719--1727, 1997.
+
+\bibitem{becker2011improved}
+Anja Becker, Jean-S{\'e}bastien Coron, and Antoine Joux.
+\newblock Improved generic algorithms for hard knapsacks.
+\newblock In {\em Advances in Cryptology--EUROCRYPT 2011: 30th Annual
+  International Conference on the Theory and Applications of Cryptographic
+  Techniques, Tallinn, Estonia, May 15-19, 2011. Proceedings 30}, pages
+  364--385. Springer, 2011.
+
+\bibitem{biesner2022solving}
+David Biesner, Rafet Sifa, and Christian Bauckhage.
+\newblock Solving subset sum problems using binary optimization with
+  applications in auditing and financial data analysis.
+\newblock 2022.
+
+\bibitem{durnoga2017large}
+Konrad Durnoga and Jacek Pomyka{\l}a.
+\newblock Large sieve, miller-rabin compositeness witnesses and integer
+  factoring problem.
+\newblock {\em Fundamenta Informaticae}, 156(2):179--185, 2017.
+
+\bibitem{garg2017digital}
+Hari~Krishna Garg.
+\newblock {\em Digital signal processing algorithms: number theory,
+  convolution, fast Fourier transforms, and applications}.
+\newblock Routledge, 2017.
+
+\bibitem{goldfeld2004elementary}
+Dorian Goldfeld.
+\newblock The elementary proof of the prime number theorem: An historical
+  perspective.
+\newblock In {\em Number Theory: New York Seminar 2003}, pages 179--192.
+  Springer, 2004.
+
+\bibitem{horowitz1974computing}
+Ellis Horowitz and Sartaj Sahni.
+\newblock Computing partitions with applications to the knapsack problem.
+\newblock {\em Journal of the ACM (JACM)}, 21(2):277--292, 1974.
+
+\bibitem{howgrave2010new}
+Nick Howgrave-Graham and Antoine Joux.
+\newblock New generic algorithms for hard knapsacks.
+\newblock In {\em Advances in Cryptology--EUROCRYPT 2010: 29th Annual
+  International Conference on the Theory and Applications of Cryptographic
+  Techniques, French Riviera, May 30--June 3, 2010. Proceedings 29}, pages
+  235--256. Springer, 2010.
+
+\bibitem{jin2018simple}
+Ce~Jin and Hongxun Wu.
+\newblock A simple near-linear pseudopolynomial time randomized algorithm for
+  subset sum.
+\newblock {\em arXiv preprint arXiv:1807.11597}, 2018.
+
+\bibitem{sasamoto2001statistical}
+Tomohiro Sasamoto, Taro Toyoizumi, and Hidetoshi Nishimori.
+\newblock Statistical mechanics of an np-complete problem: subset sum.
+\newblock {\em Journal of Physics A: Mathematical and General}, 34(44):9555,
+  2001.
+
+\bibitem{schroeppel1981t}
+Richard Schroeppel and Adi Shamir.
+\newblock A t=o(2\^{}n/2), s=o(2\^{}n/4) algorithm for certain np-complete
+  problems.
+\newblock {\em SIAM journal on Computing}, 10(3):456--464, 1981.
+
+\bibitem{wang1984fast}
+Zhongde Wang.
+\newblock Fast algorithms for the discrete w transform and for the discrete
+  fourier transform.
+\newblock {\em IEEE Transactions on Acoustics, Speech, and Signal Processing},
+  32(4):803--816, 1984.
+
+\bibitem{wyrowski1988iterative}
+Frank Wyrowski and Olof Bryngdahl.
+\newblock Iterative fourier-transform algorithm applied to computer holography.
+\newblock {\em JOSA A}, 5(7):1058--1065, 1988.
+
+\end{thebibliography}

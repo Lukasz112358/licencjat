@@ -7,23 +7,17 @@
 using namespace std;
 
 
-long long randomLongLong(long long mod){
-    long long candidate = std::abs(rand()); 
-    if(mod<=2147483647)return candidate%mod;
-    else{
-        long long candidate2 = std::abs(((long long)std::rand())%((long long)mod/(long long)2147483648));
-        return candidate2*1073741824+candidate;
-    } 
-    return 0;
-}
+
 __int128 random128(__int128 mod){
-    long long candidate = randomLongLong(4611686018427387904);
-    if(mod<=4611686018427387904)return candidate%mod;
-    else{
-        __int128 candidate2 = randomLongLong(4611686018427387904)%(mod/4611686018427387904);
-        return candidate2*4611686018427387904+candidate;
-    } 
-    return candidate;
+    __int128 ans=0;
+    __int128 x;
+    for(int i =0; i< 16; i++){
+        x = std::abs(std::rand())%256;
+        std::cout<<toString(x)<<std::endl;
+        ans += x;
+        ans *=256;
+    }
+    return std::abs(ans)%mod;
 }
 
 
@@ -70,8 +64,8 @@ bool MillerRabin(__int128 n){
  }
 
 __int128 find_prime(__int128  n, __int128  t){
-    //srand((unsigned int)time(NULL)) ;
-    srand(0);
+    srand((unsigned int)time(NULL));
+    //srand(0);
     //std::setSeed(1);
     __int128  twotok  = pow2(t);
     __int128  mod = (t+n)*(n+t)*(n+t);
@@ -85,5 +79,3 @@ __int128 find_prime(__int128  n, __int128  t){
     }
     return 0;
 }
-
-
