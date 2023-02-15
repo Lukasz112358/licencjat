@@ -1,15 +1,9 @@
-// printer.h file
 #ifndef FIELD_H_
 #define FIELD_H_
-
- // printer.h code goes here
-
-
 #include<iostream>
 #include<map>
 #include<climits>
 #include<string.h>
-//using namespace std;
 std::string toStringOneNumber(__int128 x){
     if(x % 10 == 0)return "0" ;
 	if(x % 10 == 1)return "1" ;
@@ -34,9 +28,6 @@ __int128 charToDigit(char x){
 	if(x == '8')return 8;
 	return 9 ;
 }
-
-
-
 std::string toString(__int128 x){
     if(x == 0)return "0";
 	std::string ans = "";
@@ -62,7 +53,6 @@ __int128 fromString(std::string x){
 	}
 	return ans;
 }
-
 class field{
     static   __int128 p;
     static   __int128 m;
@@ -90,7 +80,7 @@ public:
         return degreeOfDegree;
     }
     static void setP( __int128 x);
-    static void setPstupid(__int128 x);
+    static void setPsilly(__int128 x);
     static void insertInverse(field a,field b){
         field::inverse[a.value] = b.value;
         field::inverse[b.value] = a.value;
@@ -102,9 +92,6 @@ public:
         if(val >= 0)this->value = val%p;
         else this->value = (val+p)%p;
     }
-    /*field(int val){
-        this->value = (val+p)%p;
-    }*/
     field(field& a){
         this->value = a.value;
     }
@@ -115,32 +102,26 @@ public:
         return this->value;
     }
     field &operator=(const field &);
-    //Post/Pre - Incrementation
     field inline &operator++();
     field inline operator++(int temp);
     field inline &operator--();
     field inline operator--(int temp);
-    //Addition and Subtraction
     friend inline field &operator+=(field &, const field &);
     friend inline field operator+(const field &, const field &);
     friend inline field operator-(const  field &, const field &);
     friend inline field &operator-=(field &, const field &);
-    //Comparison operators
     friend bool inline operator==(const field &, const field &);
     friend bool inline operator!=(const field &, const field &);
     friend bool inline operator>(const field &, const field &);
     friend bool inline operator>=(const field &, const field &);
     friend bool inline operator<(const field &, const field &);
     friend bool inline operator<=(const field &, const field &);
-    //Multiplication and Division
     friend field &operator*=(field &, const field &);
     friend field operator*(const field &, const field &);
     friend field &operator/=(field &, const field &);
     friend field operator/(const field &, const field &);
-    //Power Function
     friend field inline &operator ^=(field &,const __int128 &);
     friend field inline operator^(field &,  __int128  &);
-    //Read and Write
     friend std::ostream &operator<<(std::ostream &,const field &);
     friend std::istream &operator>>(std::istream &, field &);
 };
@@ -150,9 +131,6 @@ __int128 field::odd = 1;
 field field::almostPrimitiveRoot = field(1);
 __int128 field::degreeOfDegree = 0;
 std::map<  __int128,  __int128>field::inverse = std::map<  __int128, __int128>();
-
-
-
 field &field::operator=(const field &a){
     value = a.value;
     return *this;
@@ -184,8 +162,7 @@ field operator+(const field &a, const field &b){
     temp = a;
     temp += b;
     return temp;
-}
- 
+} 
 field &operator-=(field&a,const field &b){
     a.value = (a.value-b.value+field::p)%field::p;
     return a;
@@ -238,7 +215,6 @@ field operator*(const field&a,const field&b){
     return temp;
 } 
 field &operator^=(field & a, __int128 const & b){
-    //std::cout<<"wwwwwwwwwwwwwwww"<<a<<" "<<toString(b)<<std::endl;
     __int128 B = (b%(field::p-1));
     if(field::odd == 0)B=b; 
     field A(a);
@@ -253,7 +229,6 @@ field &operator^=(field & a, __int128 const & b){
         a = field(field::inverse[a.getValue()]);
     }
     if(B > 1){
-        //std::cout<<toString(B)<<std::endl;
         field multiplier = a;
         field ans = 1;
         while(B != 0){
@@ -277,10 +252,7 @@ field operator^(field & a, __int128 b){
 } 
 field &operator/=(field& a,const field &b){
     field B(b.getValue());
-    //std::cout<<"ccccccccccccc"<<std::endl;
-    //a *= (B^(__int128)(-1));
     field z = (B^(__int128)(-1));
-    //std::cout<<"ccccccccccccc"<<std::endl;
     a*=z;
     return a;
 }
@@ -300,7 +272,6 @@ std::ostream &operator<<(std::ostream &out,const field &a){
     std::cout << toString(a.value);
     return out;
 }
-
 void field::setP( __int128 x){
     field::inverse.clear();
     field::p = x;
@@ -321,11 +292,7 @@ void field::setP( __int128 x){
     field::degreeOfDegree = degree;
     field r;
     for(__int128 i = 2; i<field::p;i++){
-        //std::cout<<  toString(i) << "   aaaaa"<<std::endl;
         r = field(i);
-        //std::cout << toString((field::p-1)/2) << std::endl;
-        //int X;
-        //std::cin >> X;
         r ^= ((field::p-1)/2);
         if(r.getValue() != 1){
             r = field(i);
@@ -335,8 +302,7 @@ void field::setP( __int128 x){
     }
     
 } 
-
-void field::setPstupid(__int128 x){
+void field::setPsilly(__int128 x){
     field::inverse.clear();
     field::p = x;
     field::odd = 0;

@@ -5,15 +5,11 @@
 #include <stdlib.h>
 #include "field.h"
 using namespace std;
-
-
-
 __int128 random128(__int128 mod){
     __int128 ans=0;
     __int128 x;
     for(int i =0; i< 16; i++){
         x = std::abs(std::rand())%256;
-        std::cout<<toString(x)<<std::endl;
         ans += x;
         ans *=256;
     }
@@ -38,7 +34,7 @@ bool MillerRabinOne(__int128 n, __int128 a){
     if(a > n) return true;
     __int128 d = n -1;
     __int128 s = 0;
-    field::setPstupid(n);
+    field::setPsilly(n);
     while(d%2==0){
         d = d/(__int128)2;
         s ++;
@@ -50,7 +46,6 @@ bool MillerRabinOne(__int128 n, __int128 a){
             if(x == 1)return false;
             x ^=2;
     }
-    //std::cout<<std::endl<<std::endl;
     return false;
 }
 
@@ -65,16 +60,19 @@ bool MillerRabin(__int128 n){
 
 __int128 find_prime(__int128  n, __int128  t){
     srand((unsigned int)time(NULL));
-    //srand(0);
-    //std::setSeed(1);
     __int128  twotok  = pow2(t);
     __int128  mod = (t+n)*(n+t)*(n+t);
+    int iterator = 0;
     while (true){
+        if(iterator % 10000 == 9999)mod*=2;
+        iterator ++;
         __int128  candidate = random128(mod);
         if(candidate > t){
             candidate = candidate * twotok + 1;
-            //std::cout<<toString(candidate)<<endl;
-            if(MillerRabin(candidate)) return candidate;
+            if(MillerRabin(candidate)){
+                std::cout<<toString(candidate);
+                return candidate;
+            } 
         }
     }
     return 0;

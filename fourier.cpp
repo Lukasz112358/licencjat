@@ -7,7 +7,6 @@
 #include<time.h>
 #include<stack>
 
-//const int mod = 7340033;
 
 field enoughGoodRoot(__int128 k){
     field ans = field::getAlmostPrimitiveRoot();
@@ -40,7 +39,6 @@ long long reverseBits(long long x, long long k) {
 }
 
 void setToDo(std::vector<field>&coefficients, long long size){
-    //std::cout << std::endl <<std::endl;
     long long length = coefficients.size();
     long long log = 0;
     long long s = size;
@@ -68,28 +66,6 @@ __int128 log(__int128 x){
     }
     return ans - 1;
 }
-
-
-field stupidEvaluation(std::vector<field>&coefficients,field x){
-    field ans = 0;
-    field xToPower = 1;
-    for(size_t i =0;i<coefficients.size();i++){
-        ans += coefficients[i]*xToPower;
-        xToPower *= x;   
-    }
-    return ans;
-}
-
-
-std::vector<field> stupidEvaluationComplete(std::vector<field>&coefficients,field x){
-    std::vector<field>ans(coefficients.size());
-    field xToPower = 1;
-    for(size_t i =0; i<coefficients.size(); i++){
-        ans[i]=stupidEvaluation(coefficients,xToPower);
-        xToPower *= x;    
-    }
-    return ans;    
-}
 std::vector<field> copy(std::vector<field> x){
     std::vector<field> ans(x.size());
     for(size_t i = 0; i<x.size(); i++){
@@ -100,7 +76,6 @@ std::vector<field> copy(std::vector<field> x){
 void inline DFT(std::vector<field>&coefficients, __int128 size, field omegaM){
     std::vector<field>useLater = copy(coefficients);
     setToDo(coefficients,size);
-    //std::cout<<std::endl;
     field omegaMLater = omegaM;
     field useLaterM = omegaM;
     std::stack<field> omegasM;
@@ -125,8 +100,6 @@ void inline DFT(std::vector<field>&coefficients, __int128 size, field omegaM){
         }
     }
 }
-
-
 std::vector<field>multiplication(std::vector<field> A, std::vector<field> B){
     __int128 size = 1;
     while(size < (__int128)((A.size() + B.size()) -1 )){
@@ -134,9 +107,7 @@ std::vector<field>multiplication(std::vector<field> A, std::vector<field> B){
     }
     __int128 l = log(size);
     field omegaM = enoughGoodRoot(l);
-    //std::cout<<omegaM<<std::endl;
     DFT(A,size,omegaM);
-    //for(int i =0; i< A.size(); i++)std::cout<<A[i]<<" ";  
     DFT(B,size,omegaM);
     for(__int128 i=0;i<size;i++){
         A[i] = B[i] * A[i]; 

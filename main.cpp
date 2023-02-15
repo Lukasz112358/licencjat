@@ -15,11 +15,10 @@
 #include"find_prime.cpp"
 
 
-//using namespace std;
+
 int Q;
 std::vector<field>& compute(__int128 l, __int128 r, std::vector<field>& g, std::vector<field>& f){
     if(r-l>20)std::cout<<toString(l)<<' '<<toString(r)<<" "<<Q<<std::endl;
-    //std::cout<<"aaaaaaaaaaaaaaaaaaaaaaaaaaaa"<<endl;
     if(l < r ){
         __int128 m = (l+r)/2;
         compute(l,m,g,f);
@@ -49,7 +48,6 @@ std::vector<field>& compute(__int128 l, __int128 r, std::vector<field>& g, std::
 std::vector<field> mainCompute(std::vector<field>& f){
     std::vector<field> g(f.size(),0);
     g[0] = 1;
-    std::cout<<"aaaaaaaaa"<<std::endl;
     compute(0,f.size()-1,g,f);
     return g;
 }
@@ -67,13 +65,8 @@ std::vector<field> B(std::vector<field> s, __int128 t){
         std::cout<<"k="<<toString(k)<<" B"<<" "<<Q<<" JW"<<std::endl;
         for(__int128 j = 1; j <= t/k ; j++){
             if(j % 1000 == 0) std::cout<<"j="<<toString(j)<<" B"<<std::endl;
-            //std::cout<<toString(j)<<std::endl;
-            //std::cout<<toString(k*j)<<std::endl;
             field x(1);
             if((j-1)%2==1) x *=(-1);
-            //field x(-1);
-            //for(int z = 0; z<1000; z++)std::cout<<z<<std::endl;
-            //std::cout<<toString(j)<<"qqqqqqqqqqqqqqq"<<a[k]*(x^(j-1))<<" "<<toString(field::getP())<<std::endl;
             ans[k*j] = ans[k*j] + a[k]*x/field(j);
         }
     }
@@ -86,13 +79,10 @@ std::vector<bool> JinWu(std::vector<field>& s, __int128 t){
     field::setP(p);
     std::vector<field> Bans(t+1,field(0));
     Bans= B(s,t) ;
-    //for(int i = 0; i< Bans.size();i++)std::cout<<Bans[i]<<std::endl;
     std::vector<field> computeAns(t+1,field(0));
-    std::cout<<"xx"<<std::endl;
     computeAns = mainCompute(Bans);
     std::vector<bool>ans(t+1,false);
     for(int i =0; i< t+1; i++){
-        //std::cout<<computeAns[i]<<std::endl;
         if(computeAns[i].getValue() != 0)ans[i]=true;
     }
     return ans;
@@ -105,7 +95,7 @@ std::vector<bool> brutalSum(std::vector<field>  s,long long t){
     std::bitset<10000000>DP = std::bitset<10000000>();
     DP.set(0,1);
     for(int i = 0; i < s.size(); i++){
-        std::cout<<i<<" "<<Q<<" B"<<std::endl;
+        std::cout<<"i="<<i<<" "<<Q<<" B"<<std::endl;
         DP=DP|(DP<<((long long)s[i].getValue()));
     }
     
@@ -117,20 +107,22 @@ std::vector<bool> brutalSum(std::vector<field>  s,long long t){
 }
 int main() {
     int start = std::time(NULL);
+    std::cout<<"podaj liczbe testow"<<std::endl;
+    int tests;
+    std::cin>>tests;
     std::ofstream wynik;
     wynik.open("wynik");
-    for(int q = 0 ; q < 4; q++){
+    for(int q = 0 ; q < tests; q++){
         Q = q;
-        //std::srand(2);
         __int128 n,t;
         std::string sn,st;
+        std::cout<<"podaj n i t"<<std::endl;
         std::cin>>sn>>st;
         n = fromString(sn);
         t = fromString(st);
-
         __int128 p  = find_prime(n, t);
         field::setP(p);
-
+        std::cout<<"podaj S"<<std::endl;
         vector<field>S(n,0);
         std::string s;
         for(int i = 0; i < n; i++){
@@ -143,7 +135,6 @@ int main() {
         ans =  JinWu(S,t);
         int stop = std::time(NULL);
         wynik<<"Jin Wu time ="<<stop-start<<std::endl;
-        //std::cout<<"xx"<<std::endl;
         std::vector<bool>ans2(t+1,false);
         start = std::time(NULL);
         ans2 = brutalSum(S,t);
@@ -155,10 +146,6 @@ int main() {
             std::cout<<ans[i];
         }
         std::cout<<std::endl<<std::endl;
-        for(int i = 0; i< t+1; i++){
-            if(i%200==199)std::cout<<endl;
-            std::cout<<ans2[i];
-        }
         std::cout<<std::endl<<std::endl;
         int poprawne = 0;
         for(int i = 0; i< t+1; i++){
